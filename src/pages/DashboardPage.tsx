@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
 import {
   DollarSign,
   ShoppingBag,
@@ -17,6 +18,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
+import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
@@ -137,66 +139,105 @@ export function DashboardPage() {
         </div>
 
         {/* 4-Metric Connected Bar matching user reference */}
-        <div className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#e8e2d9]">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#e8e2d9]"
+        >
           {/* 1. Pendapatan selesai */}
-          <div className="p-5 flex flex-col justify-between">
+          <motion.div
+            whileHover={{ backgroundColor: '#faf8f5', y: -1 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 flex flex-col justify-between transition-colors"
+          >
             <div className="flex items-center justify-between text-xs text-[#706c64]">
               <span>Pendapatan selesai</span>
               <DollarSign className="size-4 text-[#8c867b]" />
             </div>
             <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
-              {metrics.total_settled_revenue > 0 ? formatIDR(metrics.total_settled_revenue) : 'Rp 0'}
+              <AnimatedCounter
+                value={metrics.total_settled_revenue}
+                formatter={formatIDR}
+                duration={1200}
+              />
             </div>
-          </div>
+          </motion.div>
 
           {/* 2. Pesanan aktif */}
-          <div className="p-5 flex flex-col justify-between">
+          <motion.div
+            whileHover={{ backgroundColor: '#faf8f5', y: -1 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 flex flex-col justify-between transition-colors"
+          >
             <div className="flex items-center justify-between text-xs text-[#706c64]">
               <span>Pesanan aktif</span>
               <ShoppingBag className="size-4 text-[#8c867b]" />
             </div>
             <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
-              {metrics.pending_orders_count + 1}
+              <AnimatedCounter
+                value={metrics.pending_orders_count + 1}
+                duration={800}
+              />
             </div>
-          </div>
+          </motion.div>
 
           {/* 3. Pelanggan */}
-          <div className="p-5 flex flex-col justify-between">
+          <motion.div
+            whileHover={{ backgroundColor: '#faf8f5', y: -1 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 flex flex-col justify-between transition-colors"
+          >
             <div className="flex items-center justify-between text-xs text-[#706c64]">
               <span>Pelanggan</span>
               <Users className="size-4 text-[#8c867b]" />
             </div>
             <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
-              {recentOrders.length}
+              <AnimatedCounter
+                value={recentOrders.length}
+                duration={900}
+              />
             </div>
-          </div>
+          </motion.div>
 
           {/* 4. Stok menipis / Katalog */}
-          <div className="p-5 flex flex-col justify-between">
+          <motion.div
+            whileHover={{ backgroundColor: '#faf8f5', y: -1 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 flex flex-col justify-between transition-colors"
+          >
             <div className="flex items-center justify-between text-xs text-[#706c64]">
               <span>Stok menipis</span>
               <Package className="size-4 text-[#8c867b]" />
             </div>
             <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
-              1
+              <AnimatedCounter
+                value={1}
+                duration={600}
+              />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Content Split: Pesanan Terbaru (Left) & WhatsApp Follow-up Callout (Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Side: Pesanan Terbaru (7 Cols) */}
-          <div className="lg:col-span-8 flex flex-col">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.1, ease: 'easeOut' }}
+            className="lg:col-span-8 flex flex-col"
+          >
             <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
               <h3 className="font-serif text-xl font-normal text-[#141413]">
                 Pesanan terbaru
               </h3>
               <Link
                 to="/orders"
-                className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1"
+                className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1 group"
               >
                 <span>Lihat semua</span>
-                <span>&gt;</span>
+                <span className="group-hover:translate-x-0.5 transition-transform">&gt;</span>
               </Link>
             </div>
 
@@ -206,15 +247,18 @@ export function DashboardPage() {
                   Belum ada pesanan masuk.
                 </div>
               ) : (
-                recentOrders.map((order) => (
-                  <div
+                recentOrders.map((order, idx) => (
+                  <motion.div
                     key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15 + idx * 0.05 }}
                     onClick={() => navigate('/orders')}
-                    className="p-4 hover:bg-[#faf8f5] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer"
+                    className="p-4 hover:bg-[#faf8f5] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm text-[#141413]">
+                        <span className="font-medium text-sm text-[#141413] group-hover:text-[#cc785c] transition-colors">
                           {order.buyer_name}
                         </span>
                         <span className="font-mono text-xs text-muted">
@@ -232,18 +276,28 @@ export function DashboardPage() {
                         {formatIDR(order.total_amount || order.subtotal)}
                       </span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Side: Dark Card Callout (5 Cols) matching user screenshot */}
-          <div className="lg:col-span-4 rounded-xl bg-[#111625] text-white p-7 flex flex-col justify-between shadow-md">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.15, ease: 'easeOut' }}
+            whileHover={{ y: -2 }}
+            className="lg:col-span-4 rounded-xl bg-[#111625] text-white p-7 flex flex-col justify-between shadow-md"
+          >
             <div>
-              <div className="size-10 rounded-full bg-[#1b2238] flex items-center justify-center text-[#7c9cd1] mb-6">
+              <motion.div
+                animate={{ scale: [1, 1.06, 1] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="size-10 rounded-full bg-[#1b2238] flex items-center justify-center text-[#7c9cd1] mb-6"
+              >
                 <MessageCircle className="size-5" />
-              </div>
+              </motion.div>
 
               <h4 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-white leading-snug">
                 {metrics.pending_orders_count} pesanan menunggu chat.
@@ -256,16 +310,18 @@ export function DashboardPage() {
 
             <div className="mt-8">
               <Link to="/orders">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   type="button"
-                  className="px-4 py-2.5 rounded-md bg-white hover:bg-white/90 text-[#111625] text-xs font-semibold flex items-center gap-2 transition-all shadow-2xs active:scale-[0.98]"
+                  className="px-4 py-2.5 rounded-md bg-white hover:bg-white/95 text-[#111625] text-xs font-semibold flex items-center gap-2 transition-all shadow-2xs"
                 >
                   <span>Tinjau pesanan</span>
                   <ArrowRight className="size-3.5" />
-                </button>
+                </motion.button>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

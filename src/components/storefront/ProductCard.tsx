@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { Plus, Check } from 'lucide-react'
 import type { Product, VariantOption } from '@/types'
 import { formatIDR } from '@/lib/utils'
@@ -58,7 +59,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <div className="flex flex-col rounded-xl overflow-hidden bg-surface-card border border-hairline transition-all duration-200 hover:shadow-md group">
+      <motion.div
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        className="flex flex-col rounded-xl overflow-hidden bg-surface-card border border-hairline transition-shadow duration-200 hover:shadow-md group"
+      >
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden bg-[#e8e2d8]">
           <img
@@ -97,28 +102,47 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
 
-            <Button
-              size="sm"
-              variant={addedAnimation ? 'secondary' : 'primary'}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="button"
               onClick={handleOpenVariantModal}
-              className="shrink-0"
+              className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs ${
+                addedAnimation
+                  ? 'bg-status-success/15 text-status-success border border-status-success/30'
+                  : 'bg-primary hover:bg-primary-active text-white'
+              }`}
               aria-label={`Tambah ${product.name} ke keranjang`}
             >
-              {addedAnimation ? (
-                <>
-                  <Check className="size-3.5 text-status-success" />
-                  <span>Masuk</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="size-3.5" />
-                  <span>Tambah</span>
-                </>
-              )}
-            </Button>
+              <AnimatePresence mode="wait" initial={false}>
+                {addedAnimation ? (
+                  <motion.span
+                    key="added"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    className="flex items-center gap-1"
+                  >
+                    <Check className="size-3.5" />
+                    <span>Masuk</span>
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="normal"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    className="flex items-center gap-1"
+                  >
+                    <Plus className="size-3.5" />
+                    <span>Tambah</span>
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Variant Selection Modal */}
       {hasVariants && (

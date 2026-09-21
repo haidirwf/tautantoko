@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
 import {
   LayoutGrid,
   ShoppingBag,
@@ -115,39 +116,53 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
           </div>
 
           {/* Navigation Items */}
-          <nav className="p-3 flex flex-col gap-1">
+          <nav className="p-3 flex flex-col gap-1 relative">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = item.active
 
               return (
-                <Link
+                <motion.div
                   key={item.label}
-                  to={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? 'bg-[#fae7e0] text-[#cc785c] font-semibold'
-                      : 'text-[#5c5850] hover:bg-[#efe9de]/70 hover:text-[#141413]'
-                  }`}
+                  whileHover={!isActive ? { x: 3 } : undefined}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                 >
-                  <Icon className={`size-4 ${isActive ? 'text-[#cc785c]' : 'text-[#8c867b]'}`} />
-                  <span>{item.label}</span>
-                </Link>
+                  <Link
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
+                      isActive
+                        ? 'text-[#cc785c] font-semibold'
+                        : 'text-[#5c5850] hover:text-[#141413]'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeSidebarPill"
+                        className="absolute inset-0 bg-[#fae7e0] rounded-lg -z-10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <Icon className={`size-4 ${isActive ? 'text-[#cc785c]' : 'text-[#8c867b]'}`} />
+                    <span>{item.label}</span>
+                  </Link>
+                </motion.div>
               )
             })}
           </nav>
 
           {/* Quick add product button in sidebar */}
           <div className="px-4 pt-2">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="button"
               onClick={handleOpenAddProduct}
               className="w-full h-9 rounded-lg bg-[#efe9de]/80 hover:bg-[#fae7e0] text-[#5c5850] hover:text-[#cc785c] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-[#e8e2d9]"
             >
               <Plus className="size-3.5" />
               <span>Tambah Produk</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 

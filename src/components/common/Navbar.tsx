@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, ListOrdered, ExternalLink, LogOut, ArrowRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { LayoutDashboard, ListOrdered, ExternalLink, LogOut, ArrowRight, Menu, X } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
@@ -9,34 +10,39 @@ export function Navbar() {
   const path = location.pathname
   const { user, isAuthenticated, logout } = useAuthStore()
   const [isAuthOpen, setIsAuthOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const isMerchantArea = path.startsWith('/dashboard') || path.startsWith('/orders')
   const isLandingPage = path === '/'
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-canvas/85 backdrop-blur-md border-b border-hairline transition-all">
+      <header className="sticky top-0 z-40 w-full bg-[#faf8f5]/90 backdrop-blur-md border-b border-[#e8e2d9] transition-all">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Logo on Left */}
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-serif text-2xl font-medium tracking-tight text-ink flex items-center">
-              tautan<span className="text-primary font-sans text-base font-normal">.site</span>
-            </span>
+            <motion.span
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="font-serif text-2xl font-medium tracking-tight text-[#141413] flex items-center"
+            >
+              tautan<span className="text-[#cc785c] font-sans text-base font-normal">.site</span>
+            </motion.span>
           </Link>
 
           {/* Navigation Links in Center */}
           {isLandingPage ? (
-            <nav className="hidden md:flex items-center gap-8 text-xs sm:text-sm font-medium text-muted">
-              <a href="#features" className="hover:text-ink transition-colors">
+            <nav className="hidden md:flex items-center gap-8 text-xs sm:text-sm font-medium text-[#706c64]">
+              <a href="#features" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
                 Fitur
               </a>
-              <a href="#usecases" className="hover:text-ink transition-colors">
+              <a href="#usecases" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
                 Solusi Bisnis
               </a>
-              <a href="#how" className="hover:text-ink transition-colors">
+              <a href="#how" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
                 Alur Kerja
               </a>
-              <a href="#faq" className="hover:text-ink transition-colors">
+              <a href="#faq" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
                 FAQ
               </a>
             </nav>
@@ -46,11 +52,11 @@ export function Navbar() {
                 to="/dashboard"
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                   path === '/dashboard'
-                    ? 'bg-surface-card text-ink border border-hairline font-semibold'
-                    : 'text-muted hover:text-ink'
+                    ? 'bg-[#efe9de] text-[#141413] border border-[#e8e2d9] font-semibold'
+                    : 'text-[#706c64] hover:text-[#141413]'
                 }`}
               >
-                <LayoutDashboard className="size-3.5 text-primary" />
+                <LayoutDashboard className="size-3.5 text-[#cc785c]" />
                 <span>Dashboard Finansial</span>
               </Link>
 
@@ -58,69 +64,140 @@ export function Navbar() {
                 to="/orders"
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                   path === '/orders'
-                    ? 'bg-surface-card text-ink border border-hairline font-semibold'
-                    : 'text-muted hover:text-ink'
+                    ? 'bg-[#efe9de] text-[#141413] border border-[#e8e2d9] font-semibold'
+                    : 'text-[#706c64] hover:text-[#141413]'
                 }`}
               >
-                <ListOrdered className="size-3.5 text-primary" />
+                <ListOrdered className="size-3.5 text-[#cc785c]" />
                 <span>Kelola Pesanan</span>
               </Link>
             </nav>
           ) : (
-            <nav className="hidden sm:flex items-center gap-2 text-xs text-muted">
-              <Link to="/" className="hover:text-ink">Beranda</Link>
+            <nav className="hidden sm:flex items-center gap-2 text-xs text-[#706c64]">
+              <Link to="/" className="hover:text-[#141413]">Beranda</Link>
               <span>•</span>
-              <span className="text-ink font-medium">Etalase Toko</span>
+              <span className="text-[#141413] font-medium">Etalase Toko</span>
             </nav>
           )}
 
           {/* Right Action: Auth / Logout / Mulai Gratis */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {isAuthenticated && user ? (
               <div className="flex items-center gap-2">
-                {/* Link to public store */}
                 <Link
                   to={`/${user.storeSlug || 'batik-nusantara'}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-card border border-hairline text-xs font-medium text-ink hover:bg-surface-soft transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#efe9de] border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#e4dcce] transition-colors"
                 >
                   <span>Lihat Toko</span>
-                  <ExternalLink className="size-3 text-muted" />
+                  <ExternalLink className="size-3 text-[#706c64]" />
                 </Link>
 
                 {isMerchantArea ? (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={logout}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-canvas hover:bg-surface-card border border-hairline text-xs font-medium text-muted hover:text-status-error transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-[#efe9de] border border-[#e8e2d9] text-xs font-medium text-[#706c64] hover:text-status-error transition-colors"
                     title="Keluar dari akun penjual"
                   >
                     <LogOut className="size-3.5" />
                     <span className="hidden sm:inline">Keluar</span>
-                  </button>
+                  </motion.button>
                 ) : (
-                  <Link
-                    to="/dashboard"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-xs font-medium text-canvas hover:bg-ink/90 transition-all shadow-2xs"
-                  >
-                    <span>Dashboard Toko</span>
-                    <ArrowRight className="size-3" />
-                  </Link>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                    <Link
+                      to="/dashboard"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[#141413] px-4 py-2 text-xs font-medium text-[#faf8f5] hover:bg-[#252523] transition-all shadow-2xs"
+                    >
+                      <span>Dashboard Toko</span>
+                      <ArrowRight className="size-3" />
+                    </Link>
+                  </motion.div>
                 )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   type="button"
                   onClick={() => setIsAuthOpen(true)}
-                  className="rounded-full bg-ink px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium text-canvas hover:bg-ink/90 transition-all shadow-xs inline-flex items-center gap-1.5"
+                  className="rounded-full bg-[#141413] px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium text-[#faf8f5] hover:bg-[#252523] transition-all shadow-xs inline-flex items-center gap-1.5"
                 >
                   <span>Mulai gratis</span>
-                </button>
+                </motion.button>
               </div>
+            )}
+
+            {/* Mobile Hamburger Toggle */}
+            {isLandingPage && (
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg text-[#141413] hover:bg-[#efe9de] transition-colors"
+                aria-label="Toggle Menu"
+              >
+                {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              </button>
             )}
           </div>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        <AnimatePresence>
+          {isMobileMenuOpen && isLandingPage && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+              className="md:hidden overflow-hidden border-t border-[#e8e2d9] bg-[#faf8f5] px-4 py-4 flex flex-col gap-3 shadow-md"
+            >
+              <a
+                href="#features"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+              >
+                Fitur Utama
+              </a>
+              <a
+                href="#usecases"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+              >
+                Solusi Bisnis
+              </a>
+              <a
+                href="#how"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+              >
+                Alur Kerja
+              </a>
+              <a
+                href="#faq"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+              >
+                Pertanyaan Umum (FAQ)
+              </a>
+              <div className="pt-2 border-t border-[#e8e2d9]/60 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsAuthOpen(true)
+                  }}
+                  className="w-full text-center py-2.5 rounded-full bg-[#cc785c] text-white text-xs font-semibold shadow-xs"
+                >
+                  Buka Toko Gratis Sekarang
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Auth Modal for 30s registration */}

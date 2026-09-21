@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { Search, MessageCircle, SlidersHorizontal, Package, RefreshCw, Lock } from 'lucide-react'
 import type { Order, OrderStatus } from '@/types'
 import { api } from '@/lib/supabase'
@@ -144,13 +145,20 @@ export function OrdersPage() {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedStatus(tab.id)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium shrink-0 transition-all border ${
+                  className={`relative px-3.5 py-1.5 rounded-md text-xs font-medium shrink-0 transition-colors ${
                     isSelected
-                      ? 'bg-primary text-white border-primary shadow-2xs font-semibold'
-                      : 'bg-surface-card text-ink border-hairline hover:bg-surface-soft'
+                      ? 'text-white font-semibold shadow-2xs'
+                      : 'text-[#5c5850] hover:text-[#141413] bg-[#efe9de]/50 border border-[#e8e2d9]'
                   }`}
                 >
-                  {tab.label} ({count})
+                  {isSelected && (
+                    <motion.div
+                      layoutId="activeOrderTabIndicator"
+                      className="absolute inset-0 bg-[#cc785c] rounded-md -z-10"
+                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span>{tab.label} ({count})</span>
                 </button>
               )
             })}
@@ -185,14 +193,18 @@ export function OrdersPage() {
           </div>
         ) : (
           <div className="mt-6 flex flex-col gap-3">
-            {filteredOrders.map((order) => {
+            {filteredOrders.map((order, idx) => {
               const buyerWaClean = sanitizeWhatsApp(order.buyer_phone)
               const directWaUrl = `https://wa.me/${buyerWaClean}`
 
               return (
-                <div
+                <motion.div
                   key={order.id}
-                  className="p-5 rounded-xl bg-surface-card border border-hairline hover:shadow-xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: idx * 0.04, ease: 'easeOut' }}
+                  whileHover={{ y: -2 }}
+                  className="p-5 rounded-xl bg-surface-card border border-hairline hover:shadow-sm transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                 >
                   {/* Left Column: Order Code & Customer */}
                   <div className="flex flex-col gap-1 min-w-0 max-w-md">
@@ -278,7 +290,7 @@ export function OrdersPage() {
                       <span>Kelola Status</span>
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>

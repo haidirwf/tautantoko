@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { motion } from 'motion/react'
 import type { Store, StoreLink, Category, Product } from '@/types'
 import { api } from '@/lib/supabase'
 import { StoreHeader } from '@/components/storefront/StoreHeader'
@@ -103,13 +104,20 @@ export function StorefrontPage() {
             <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all border ${
+                className={`relative px-3.5 py-1.5 rounded-full text-xs font-medium shrink-0 transition-colors ${
                   selectedCategory === 'all'
-                    ? 'bg-primary text-white border-primary shadow-xs'
-                    : 'bg-surface-card text-ink border-hairline hover:bg-surface-soft'
+                    ? 'text-white font-semibold'
+                    : 'bg-surface-card text-ink border border-hairline hover:bg-surface-soft'
                 }`}
               >
-                Semua ({products.length})
+                {selectedCategory === 'all' && (
+                  <motion.div
+                    layoutId="activeCategoryPill"
+                    className="absolute inset-0 bg-primary rounded-full -z-10 shadow-xs"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span>Semua ({products.length})</span>
               </button>
               {categories
                 .filter((c) => c.id !== 'cat-all')
@@ -120,13 +128,20 @@ export function StorefrontPage() {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all border ${
+                      className={`relative px-3.5 py-1.5 rounded-full text-xs font-medium shrink-0 transition-colors ${
                         isSelected
-                          ? 'bg-primary text-white border-primary shadow-xs'
-                          : 'bg-surface-card text-ink border-hairline hover:bg-surface-soft'
+                          ? 'text-white font-semibold'
+                          : 'bg-surface-card text-ink border border-hairline hover:bg-surface-soft'
                       }`}
                     >
-                      {category.name} ({count})
+                      {isSelected && (
+                        <motion.div
+                          layoutId="activeCategoryPill"
+                          className="absolute inset-0 bg-primary rounded-full -z-10 shadow-xs"
+                          transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                        />
+                      )}
+                      <span>{category.name} ({count})</span>
                     </button>
                   )
                 })}
@@ -153,11 +168,14 @@ export function StorefrontPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <motion.div
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </motion.div>
         )}
       </main>
 

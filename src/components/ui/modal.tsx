@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { X } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
 
 interface ModalProps {
@@ -35,8 +36,6 @@ export function Modal({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
-
   const maxWClass = {
     sm: 'max-w-sm',
     md: 'max-w-md',
@@ -47,59 +46,73 @@ export function Modal({
   const surfaceClass = {
     canvas: 'bg-canvas text-ink border-hairline',
     cream: 'bg-surface-card text-ink border-hairline',
-    dark: 'bg-surface-dark text-on-dark border-[#2b2824]',
+    dark: 'bg-[#111625] text-white border-[#242b40]',
   }[surface]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in"
-        onClick={onClose}
-      />
-
-      {/* Modal Dialog */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        className={cn(
-          'relative w-full rounded-xl border shadow-xl transition-all animate-in zoom-in-95 max-h-[90vh] flex flex-col',
-          surfaceClass,
-          maxWClass
-        )}
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between p-5 pb-3 border-b border-inherit">
-          <div>
-            {title && (
-              <h3 className="font-serif text-xl font-medium tracking-tight">
-                {title}
-              </h3>
-            )}
-            {description && (
-              <p className={cn('text-xs mt-1', surface === 'dark' ? 'text-on-dark-soft' : 'text-muted')}>
-                {description}
-              </p>
-            )}
-          </div>
-          <button
-            type="button"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
             onClick={onClose}
-            className={cn(
-              'p-1.5 rounded-full transition-colors',
-              surface === 'dark'
-                ? 'hover:bg-surface-dark-elevated text-on-dark-soft hover:text-on-dark'
-                : 'hover:bg-surface-card text-muted hover:text-ink'
-            )}
-            aria-label="Tutup"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+          />
 
-        {/* Content Body */}
-        <div className="p-5 overflow-y-auto">{children}</div>
-      </div>
-    </div>
+          {/* Modal Dialog */}
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            className={cn(
+              'relative w-full rounded-2xl border shadow-xl max-h-[90vh] flex flex-col z-10 overflow-hidden',
+              surfaceClass,
+              maxWClass
+            )}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between p-5 pb-3.5 border-b border-inherit">
+              <div>
+                {title && (
+                  <h3 className="font-serif text-xl sm:text-2xl font-normal tracking-tight">
+                    {title}
+                  </h3>
+                )}
+                {description && (
+                  <p className={cn('text-xs mt-1', surface === 'dark' ? 'text-[#9bb0d1]' : 'text-muted')}>
+                    {description}
+                  </p>
+                )}
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="button"
+                onClick={onClose}
+                className={cn(
+                  'p-1.5 rounded-full transition-colors',
+                  surface === 'dark'
+                    ? 'hover:bg-[#1b2238] text-[#9bb0d1] hover:text-white'
+                    : 'hover:bg-surface-card text-muted hover:text-ink'
+                )}
+                aria-label="Tutup"
+              >
+                <X className="size-4" />
+              </motion.button>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-5 overflow-y-auto">{children}</div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   )
 }
