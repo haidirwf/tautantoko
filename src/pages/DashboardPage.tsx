@@ -83,7 +83,7 @@ export function DashboardPage() {
           <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
             <Lock className="size-5" />
           </div>
-          <h2 className="font-serif text-3xl font-medium text-[#141413]">Area Privat Penjual</h2>
+          <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">Area Privat Penjual</h2>
           <p className="text-xs sm:text-sm text-[#706c64] mt-2 leading-relaxed">
             Data keuangan, analitik omzet, dan rincian pesanan hanya dapat diakses oleh pemilik toko yang terautentikasi.
           </p>
@@ -109,7 +109,7 @@ export function DashboardPage() {
       <DashboardLayout>
         <div className="py-24 flex flex-col items-center justify-center">
           <div className="size-8 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin" />
-          <p className="font-serif text-base text-[#706c64] mt-3">Menyiapkan ringkasan toko...</p>
+          <p className="font-sans text-sm font-medium text-[#706c64] mt-3">Menyiapkan ringkasan toko...</p>
         </div>
       </DashboardLayout>
     )
@@ -136,7 +136,7 @@ export function DashboardPage() {
                 RINGKASAN TOKO
               </span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#141413]">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">
               Selamat datang di {storeName}
             </h1>
             <p className="text-xs sm:text-sm text-[#706c64] mt-0.5">
@@ -252,7 +252,7 @@ export function DashboardPage() {
           <div className="lg:col-span-8 flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
               <div>
-                <h3 className="font-serif text-xl font-normal text-[#141413]">
+                <h3 className="font-sans text-lg font-bold tracking-tight text-[#141413]">
                   Pesanan Terbaru
                 </h3>
               </div>
@@ -320,7 +320,7 @@ export function DashboardPage() {
                   </span>
                 </div>
 
-                <h4 className="font-serif text-2xl font-normal tracking-tight text-[#141413] leading-snug">
+                <h4 className="font-sans text-xl font-bold tracking-tight text-[#141413] leading-snug">
                   {metrics.pending_orders_count} pesanan menunggu chat
                 </h4>
 

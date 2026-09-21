@@ -62,10 +62,10 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
-          <div className="size-8 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-serif text-lg font-bold">
+          <div className="size-8 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-sans text-base font-bold shadow-2xs">
             T
           </div>
-          <span className="font-serif text-xl font-medium tracking-tight text-ink">
+          <span className="font-sans text-xl font-bold tracking-tight text-ink">
             tautan<span className="text-[#cc785c] font-sans text-sm">.site</span>
           </span>
         </div>
@@ -87,11 +87,11 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
         <div className="flex flex-col">
           {/* Top Brand Logo */}
           <div className="h-16 px-6 flex items-center gap-3 border-b border-[#e8e2d9]">
-            <div className="size-8 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-serif text-lg font-bold shadow-2xs">
+            <div className="size-8 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-sans text-base font-bold shadow-2xs">
               T
             </div>
             <div className="flex flex-col">
-              <span className="font-serif text-xl font-medium tracking-tight leading-none text-[#141413]">
+              <span className="font-sans text-xl font-bold tracking-tight leading-none text-[#141413]">
                 tautan<span className="text-[#cc785c] font-sans text-sm">.site</span>
               </span>
             </div>
@@ -99,7 +99,7 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
 
           {/* Store Profile Card */}
           <div className="p-5 flex items-center gap-3 border-b border-[#e8e2d9]/60">
-            <div className="size-10 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-serif text-sm font-semibold text-[#cc785c] shrink-0">
+            <div className="size-10 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-sans text-sm font-bold text-[#cc785c] shrink-0">
               {storeName.slice(0, 2).toUpperCase()}
             </div>
             <div className="truncate">

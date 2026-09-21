@@ -21,7 +21,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
     <div className="p-6 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs text-[#141413] flex flex-col justify-between">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
         <div>
-          <h3 className="font-serif text-xl font-normal tracking-tight text-[#141413]">
+          <h3 className="font-sans text-base sm:text-lg font-bold tracking-tight text-[#141413]">
             Tren Pendapatan Harian
           </h3>
           <p className="text-xs text-muted mt-0.5">

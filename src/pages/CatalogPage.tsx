@@ -141,7 +141,7 @@ export function CatalogPage() {
                 KATALOG ETALASE
               </span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#141413] tracking-tight">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
               Daftar Produk & Varian
             </h1>
             <p className="text-xs sm:text-sm text-[#706c64] mt-0.5">
@@ -240,7 +240,7 @@ export function CatalogPage() {
         ) : filtered.length === 0 ? (
           <div className="p-14 text-center rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs">
             <Package className="size-10 text-[#8c867b]/50 mx-auto mb-2" />
-            <p className="font-serif text-xl font-normal text-[#141413]">Belum ada produk ditemukan</p>
+            <p className="font-sans text-lg font-bold text-[#141413]">Belum ada produk ditemukan</p>
             <p className="text-xs text-[#706c64] mt-1 max-w-sm mx-auto">
               Tidak ada produk yang cocok dengan pencarian "{searchQuery}" atau kategori yang dipilih.
             </p>

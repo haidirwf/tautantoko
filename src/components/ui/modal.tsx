@@ -81,7 +81,7 @@ export function Modal({
             <div className="flex items-start justify-between p-5 pb-3.5 border-b border-inherit">
               <div>
                 {title && (
-                  <h3 className="font-serif text-xl sm:text-2xl font-normal tracking-tight">
+                  <h3 className="font-sans text-xl font-bold tracking-tight text-[#141413]">
                     {title}
                   </h3>
                 )}

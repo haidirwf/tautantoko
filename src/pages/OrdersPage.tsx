@@ -95,7 +95,7 @@ export function OrdersPage() {
           <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
             <Lock className="size-5" />
           </div>
-          <h2 className="font-serif text-3xl font-medium text-[#141413]">Pesanan Toko Bersifat Privat</h2>
+          <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">Pesanan Toko Bersifat Privat</h2>
           <p className="text-xs sm:text-sm text-[#706c64] mt-2 leading-relaxed">
             Hanya pemilik toko yang terautentikasi yang dapat melihat dan mengelola pesanan WhatsApp.
           </p>
@@ -122,7 +122,7 @@ export function OrdersPage() {
         {/* Simple & Clean Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#e8e2d9]">
           <div>
-            <h1 className="font-serif text-3xl font-normal text-[#141413] tracking-tight">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
               Pesanan Masuk
             </h1>
             <p className="text-xs text-[#706c64] mt-0.5">
@@ -208,7 +208,7 @@ export function OrdersPage() {
         ) : filteredOrders.length === 0 ? (
           <div className="p-12 text-center rounded-xl bg-white border border-[#e8e2d9] shadow-2xs">
             <Package className="size-8 text-[#8c867b]/50 mx-auto mb-2" />
-            <p className="font-serif text-lg font-normal text-[#141413]">Tidak ada pesanan</p>
+            <p className="font-sans text-base font-bold text-[#141413]">Tidak ada pesanan</p>
             <p className="text-xs text-[#706c64] mt-0.5">
               Tidak ada transaksi yang cocok dengan filter yang dipilih.
             </p>

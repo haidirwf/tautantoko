@@ -33,7 +33,7 @@ export function MetricCard({
       </div>
 
       <div className="mt-5">
-        <div className="font-serif text-3xl sm:text-4xl font-normal text-ink tracking-tight">
+        <div className="font-sans text-3xl sm:text-4xl font-bold text-ink tracking-tight">
           {value}
         </div>
 

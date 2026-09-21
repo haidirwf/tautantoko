@@ -30,7 +30,7 @@ export function CustomersPage() {
           <span className="text-xs font-mono uppercase tracking-wider text-[#cc785c] font-semibold">
             Buku Kontak
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#141413] tracking-tight mt-1">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight mt-1">
             Data Pelanggan
           </h1>
           <p className="text-xs sm:text-sm text-muted mt-1">
@@ -45,7 +45,7 @@ export function CustomersPage() {
             {orders.map((o) => (
               <div key={o.id} className="p-4 sm:p-5 hover:bg-[#faf8f5]/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-serif text-sm font-bold text-[#cc785c]">
+                  <div className="size-10 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-sans text-sm font-bold text-[#cc785c]">
                     {o.buyer_name.charAt(0)}
                   </div>
                   <div>

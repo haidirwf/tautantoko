@@ -30,7 +30,7 @@ export function ReportsPage() {
           <span className="text-xs font-mono uppercase tracking-wider text-[#cc785c] font-semibold">
             Finansial & Tren
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#141413] tracking-tight mt-1">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight mt-1">
             Laporan Penjualan
           </h1>
           <p className="text-xs sm:text-sm text-muted mt-1">
