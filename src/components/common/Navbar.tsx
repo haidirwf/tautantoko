@@ -31,10 +31,10 @@ export function Navbar() {
                 Fitur
               </a>
               <a href="#usecases" className="hover:text-ink transition-colors">
-                Use Cases
+                Solusi Bisnis
               </a>
               <a href="#how" className="hover:text-ink transition-colors">
-                Cara Kerja
+                Alur Kerja
               </a>
               <a href="#faq" className="hover:text-ink transition-colors">
                 FAQ

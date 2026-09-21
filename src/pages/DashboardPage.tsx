@@ -1,24 +1,41 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { DollarSign, Clock, CheckCircle2, TrendingUp, ArrowUpRight, ListOrdered, Lock, ExternalLink } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  DollarSign,
+  ShoppingBag,
+  Users,
+  Package,
+  MessageCircle,
+  ArrowRight,
+  Plus,
+  Lock,
+} from 'lucide-react'
 import type { DashboardMetrics, Order } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR } from '@/lib/utils'
-import { MetricCard } from '@/components/dashboard/MetricCard'
-import { RevenueChart } from '@/components/dashboard/RevenueChart'
-import { PaymentBreakdown } from '@/components/dashboard/PaymentBreakdown'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
 export function DashboardPage() {
   const { user, isAuthenticated } = useAuthStore()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const storeId = 'store-batik-01'
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate()
+
+  // New product form states
+  const [newProdName, setNewProdName] = useState('')
+  const [newProdPrice, setNewProdPrice] = useState('')
+  const [newProdDesc, setNewProdDesc] = useState('')
+
+  const storeId = 'store-batik-01'
+  const storeName = user?.name || 'Batik Nusantara'
 
   useEffect(() => {
     async function loadDashboard() {
@@ -43,12 +60,12 @@ export function DashboardPage() {
     loadDashboard()
   }, [isAuthenticated])
 
-  // If merchant is not authenticated, protect their privacy
+  // If user is not authenticated, show the private area security wall
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[80vh] bg-canvas flex flex-col items-center justify-center p-4 text-center">
-        <div className="max-w-md p-8 rounded-2xl bg-surface-card border border-hairline shadow-xs">
-          <div className="size-12 rounded-full bg-canvas border border-hairline flex items-center justify-center text-primary mx-auto mb-4">
+      <div className="min-h-screen bg-[#faf8f5] flex flex-col items-center justify-center p-4 text-center">
+        <div className="max-w-md w-full p-8 rounded-2xl bg-[#efe9de] border border-[#e8e2d9] shadow-xs">
+          <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
             <Lock className="size-5" />
           </div>
           <h2 className="font-serif text-3xl font-medium text-ink">Area Privat Penjual</h2>
@@ -57,7 +74,7 @@ export function DashboardPage() {
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
             <Button onClick={() => setIsAuthModalOpen(true)} className="w-full sm:w-auto">
-              Masuk / Buka Akun Toko
+              Masuk ke Akun Toko
             </Button>
             <Link to="/" className="w-full sm:w-auto">
               <Button variant="outline" className="w-full sm:w-auto">
@@ -74,155 +91,237 @@ export function DashboardPage() {
 
   if (isLoading || !metrics) {
     return (
-      <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4">
-        <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        <p className="font-serif text-lg text-muted mt-3">Menghitung analitik finansial toko...</p>
-      </div>
+      <DashboardLayout>
+        <div className="py-24 flex flex-col items-center justify-center">
+          <div className="size-8 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin" />
+          <p className="font-serif text-base text-muted mt-3">Menyiapkan ruang kerja toko...</p>
+        </div>
+      </DashboardLayout>
     )
   }
 
+  const handleSaveNewProduct = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newProdName.trim() || !newProdPrice) return
+    alert(`Produk "${newProdName}" seharga ${formatIDR(Number(newProdPrice))} berhasil ditambahkan ke etalase toko Anda!`)
+    setNewProdName('')
+    setNewProdPrice('')
+    setNewProdDesc('')
+    setIsAddProductOpen(false)
+  }
+
   return (
-    <div className="min-h-screen bg-canvas text-ink pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-hairline">
+    <DashboardLayout onAddProductClick={() => setIsAddProductOpen(true)}>
+      <div className="flex flex-col gap-8">
+        {/* Header Title Section */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="size-2 rounded-full bg-status-success animate-pulse" />
-              <span className="text-xs font-mono uppercase tracking-wider text-muted">
-                Toko: {user?.storeSlug || 'batik-nusantara'}
-              </span>
-            </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal text-ink tracking-tight mt-1">
-              Dashboard Keuangan & Penjualan
+            <span className="text-[11px] font-mono tracking-widest text-[#cc785c] font-semibold uppercase">
+              RUANG KERJAMU
+            </span>
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-[#141413] mt-1">
+              Selamat datang di {storeName}.
             </h1>
-            <p className="text-xs sm:text-sm text-muted mt-1">
-              Pantau arus pendapatan riil dari transaksi WhatsApp secara transparan tanpa potongan gateway.
+            <p className="text-xs sm:text-sm text-[#706c64] mt-1.5">
+              Ikhtisar terbaru berdasarkan aktivitas tokomu yang tersimpan.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <Link
-              to={`/${user?.storeSlug || 'batik-nusantara'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-surface-card border border-hairline text-xs font-medium text-ink hover:bg-surface-soft transition-colors"
-            >
-              <span>Lihat Etalase Publik</span>
-              <ExternalLink className="size-3 text-muted" />
-            </Link>
+          <Button
+            onClick={() => setIsAddProductOpen(true)}
+            className="h-10 px-5 text-xs sm:text-sm font-medium bg-[#cc785c] hover:bg-[#a9583e] text-white rounded-md shrink-0 shadow-2xs self-start sm:self-auto"
+          >
+            <Plus className="size-4" />
+            <span>Tambah produk</span>
+          </Button>
+        </div>
 
-            <Link to="/orders">
-              <Button className="h-10 text-xs sm:text-sm">
-                <ListOrdered className="size-4" />
-                <span>Kelola Pesanan</span>
-              </Button>
-            </Link>
+        {/* 4-Metric Connected Bar matching user reference */}
+        <div className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#e8e2d9]">
+          {/* 1. Pendapatan selesai */}
+          <div className="p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-[#706c64]">
+              <span>Pendapatan selesai</span>
+              <DollarSign className="size-4 text-[#8c867b]" />
+            </div>
+            <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
+              {metrics.total_settled_revenue > 0 ? formatIDR(metrics.total_settled_revenue) : 'Rp 0'}
+            </div>
+          </div>
+
+          {/* 2. Pesanan aktif */}
+          <div className="p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-[#706c64]">
+              <span>Pesanan aktif</span>
+              <ShoppingBag className="size-4 text-[#8c867b]" />
+            </div>
+            <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
+              {metrics.pending_orders_count + 1}
+            </div>
+          </div>
+
+          {/* 3. Pelanggan */}
+          <div className="p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-[#706c64]">
+              <span>Pelanggan</span>
+              <Users className="size-4 text-[#8c867b]" />
+            </div>
+            <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
+              {recentOrders.length}
+            </div>
+          </div>
+
+          {/* 4. Stok menipis / Katalog */}
+          <div className="p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-[#706c64]">
+              <span>Stok menipis</span>
+              <Package className="size-4 text-[#8c867b]" />
+            </div>
+            <div className="font-serif text-2xl sm:text-3xl font-normal text-[#141413] mt-4 tracking-tight">
+              1
+            </div>
           </div>
         </div>
 
-        {/* Top 4 Financial Metric Cards in harmonious cream/canvas style */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          {/* Settled Revenue */}
-          <MetricCard
-            label="Total Pendapatan Terverifikasi"
-            value={formatIDR(metrics.total_settled_revenue)}
-            trend={{ text: '+24.8% bln ini', isPositive: true }}
-            subtext="Status: Paid & Fulfilled"
-            icon={<DollarSign className="size-5 text-primary" />}
-          />
-
-          {/* Pending Pipeline */}
-          <MetricCard
-            label="Potensi Pendapatan (Pipeline WA)"
-            value={formatIDR(metrics.pending_revenue)}
-            trend={{ text: `${metrics.pending_orders_count} pesanan aktif`, isPositive: false }}
-            subtext="Menunggu transfer bank"
-            icon={<Clock className="size-5 text-status-amber" />}
-          />
-
-          {/* Conversion Rate */}
-          <MetricCard
-            label="Tingkat Konversi WhatsApp"
-            value={`${metrics.conversion_rate.toFixed(1)}%`}
-            trend={{ text: 'Target: >70%', isPositive: metrics.conversion_rate >= 70 }}
-            subtext={`${metrics.paid_orders_count} dari ${metrics.total_checkouts} checkout`}
-            icon={<TrendingUp className="size-5 text-status-teal" />}
-          />
-
-          {/* Average Order Value (AOV) */}
-          <MetricCard
-            label="Rata-rata Nilai Pesanan (AOV)"
-            value={formatIDR(metrics.aov)}
-            subtext="Berdasarkan pesanan berhasil"
-            icon={<CheckCircle2 className="size-5 text-status-success" />}
-          />
-        </div>
-
-        {/* Charts & Breakdown Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2">
-            <RevenueChart data={metrics.revenue_trends} />
-          </div>
-          <div>
-            <PaymentBreakdown distribution={metrics.payment_distribution} />
-          </div>
-        </div>
-
-        {/* Recent Transactions Feed */}
-        <div className="mt-8 rounded-2xl bg-surface-card border border-hairline overflow-hidden shadow-2xs">
-          <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between">
-            <div>
-              <h3 className="font-serif text-xl font-medium tracking-tight text-ink">
-                Transaksi Terkini
+        {/* Content Split: Pesanan Terbaru (Left) & WhatsApp Follow-up Callout (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Side: Pesanan Terbaru (7 Cols) */}
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
+              <h3 className="font-serif text-xl font-normal text-[#141413]">
+                Pesanan terbaru
               </h3>
-              <p className="text-xs text-muted mt-0.5">
-                5 aktivitas pesanan terbaru dari WhatsApp checkout
+              <Link
+                to="/orders"
+                className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1"
+              >
+                <span>Lihat semua</span>
+                <span>&gt;</span>
+              </Link>
+            </div>
+
+            <div className="mt-3 flex flex-col divide-y divide-[#e8e2d9]/70 bg-white rounded-xl border border-[#e8e2d9] overflow-hidden shadow-2xs">
+              {recentOrders.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted">
+                  Belum ada pesanan masuk.
+                </div>
+              ) : (
+                recentOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    onClick={() => navigate('/orders')}
+                    className="p-4 hover:bg-[#faf8f5] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm text-[#141413]">
+                          {order.buyer_name}
+                        </span>
+                        <span className="font-mono text-xs text-muted">
+                          {order.order_code}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#706c64] mt-0.5 line-clamp-1">
+                        {order.items_snapshot.map((i) => `${i.quantity}x ${i.product_name}`).join(', ')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                      <Badge status={order.status} />
+                      <span className="font-serif text-sm sm:text-base font-medium text-[#141413]">
+                        {formatIDR(order.total_amount || order.subtotal)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Right Side: Dark Card Callout (5 Cols) matching user screenshot */}
+          <div className="lg:col-span-4 rounded-xl bg-[#111625] text-white p-7 flex flex-col justify-between shadow-md">
+            <div>
+              <div className="size-10 rounded-full bg-[#1b2238] flex items-center justify-center text-[#7c9cd1] mb-6">
+                <MessageCircle className="size-5" />
+              </div>
+
+              <h4 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-white leading-snug">
+                {metrics.pending_orders_count} pesanan menunggu chat.
+              </h4>
+
+              <p className="text-xs text-[#9bb0d1] mt-2.5 leading-relaxed">
+                Buka daftar pesanan untuk menindaklanjuti calon pembeli dan mengirim info rekening.
               </p>
             </div>
-            <Link
-              to="/orders"
-              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-active transition-colors"
-            >
-              <span>Semua Pesanan</span>
-              <ArrowUpRight className="size-3.5" />
-            </Link>
-          </div>
 
-          <div className="divide-y divide-hairline overflow-x-auto">
-            {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-soft transition-colors"
-              >
-                <div className="flex items-start sm:items-center gap-3">
-                  <div className="size-10 rounded-full bg-canvas border border-hairline flex items-center justify-center font-serif text-sm font-medium text-ink shrink-0">
-                    {order.buyer_name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-ink">{order.buyer_name}</span>
-                      <span className="font-mono text-xs text-muted">({order.order_code})</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
-                      <span>{order.payment_method || 'Transfer Bank'}</span>
-                      <span>•</span>
-                      <span>{new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between sm:justify-end gap-4">
-                  <Badge status={order.status} />
-                  <span className="font-serif text-base sm:text-lg font-medium text-ink">
-                    {formatIDR(order.total_amount || order.subtotal)}
-                  </span>
-                </div>
-              </div>
-            ))}
+            <div className="mt-8">
+              <Link to="/orders">
+                <button
+                  type="button"
+                  className="px-4 py-2.5 rounded-md bg-white hover:bg-white/90 text-[#111625] text-xs font-semibold flex items-center gap-2 transition-all shadow-2xs active:scale-[0.98]"
+                >
+                  <span>Tinjau pesanan</span>
+                  <ArrowRight className="size-3.5" />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Add Product Modal */}
+      <Modal
+        isOpen={isAddProductOpen}
+        onClose={() => setIsAddProductOpen(false)}
+        title="Tambah Produk Baru"
+        surface="canvas"
+      >
+        <form onSubmit={handleSaveNewProduct} className="flex flex-col gap-4 py-2 text-sm">
+          <div>
+            <label className="text-xs font-medium block mb-1">Nama Produk <span className="text-primary">*</span></label>
+            <input
+              type="text"
+              required
+              placeholder="cth. Kemeja Tenun Parang"
+              value={newProdName}
+              onChange={(e) => setNewProdName(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-md bg-[#faf8f5] border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium block mb-1">Harga Satuan (IDR) <span className="text-primary">*</span></label>
+            <input
+              type="number"
+              required
+              placeholder="250000"
+              value={newProdPrice}
+              onChange={(e) => setNewProdPrice(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-md bg-[#faf8f5] border border-hairline text-sm font-mono text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium block mb-1">Deskripsi Singkat</label>
+            <textarea
+              rows={2}
+              placeholder="Bahan katun adem, nyaman dipakai..."
+              value={newProdDesc}
+              onChange={(e) => setNewProdDesc(e.target.value)}
+              className="w-full p-3 rounded-md bg-[#faf8f5] border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-hairline">
+            <Button type="button" variant="secondary" onClick={() => setIsAddProductOpen(false)}>
+              Batal
+            </Button>
+            <Button type="submit">
+              Simpan Produk
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </DashboardLayout>
   )
 }

@@ -7,6 +7,7 @@ import { formatIDR, sanitizeWhatsApp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { OrderEditModal } from '@/components/dashboard/OrderEditModal'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
@@ -107,10 +108,10 @@ export function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+    <DashboardLayout>
+      <div className="flex flex-col gap-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-hairline">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#e8e2d9]">
           <div>
             <span className="text-xs font-mono uppercase tracking-wider text-muted">
               Manajemen Siklus Pesanan
@@ -294,6 +295,6 @@ export function OrdersPage() {
         }}
         onSave={handleUpdateOrder}
       />
-    </div>
+    </DashboardLayout>
   )
 }
