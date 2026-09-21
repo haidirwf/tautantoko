@@ -14,6 +14,9 @@ import {
   Gift,
   Laptop,
   ArrowRight,
+  Wifi,
+  Battery,
+  ExternalLink,
 } from 'lucide-react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { useAuthStore } from '@/store/useAuthStore'
@@ -170,193 +173,178 @@ export function LandingPage() {
           </div>
         </motion.div>
 
-        {/* Interactive Storefront Mockup Preview with floating motion & live simulation */}
-        <div className="relative mt-16 max-w-2xl mx-auto">
-          {/* Floating Pill Left: 30-Second Launch */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
-            transition={{
-              opacity: { duration: 0.6, delay: 0.6 },
-              x: { duration: 0.6, delay: 0.6 },
-              y: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
-            }}
-            className="hidden sm:flex absolute -top-5 -left-4 items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#e8e2d9] shadow-md text-xs text-[#141413] z-20"
-          >
-            <span className="size-2 rounded-full bg-status-success animate-pulse" />
-            <span className="font-mono text-[11px] font-semibold text-[#141413]">
-              ⚡ Aktif dalam 30 Detik
-            </span>
-          </motion.div>
-
-          {/* Floating Pill Right: 0% Komisi */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0, y: [0, 6, 0] }}
-            transition={{
-              opacity: { duration: 0.6, delay: 0.8 },
-              x: { duration: 0.6, delay: 0.8 },
-              y: { duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 },
-            }}
-            className="hidden sm:flex absolute -bottom-4 -right-4 items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141413] text-[#faf8f5] shadow-lg text-xs z-20"
-          >
-            <Check className="size-3.5 text-[#cc785c]" />
-            <span className="font-mono text-[11px] font-medium">
-              💰 0% Potongan Komisi
-            </span>
-          </motion.div>
-
+        {/* Smartphone Storefront Showcase & Authentic WhatsApp Bubble */}
+        <div className="relative mt-14 max-w-xl mx-auto flex flex-col items-center">
+          {/* Smartphone Frame (iPhone aesthetic) */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-2xl border border-[#e8e2d9] bg-white p-5 sm:p-7 shadow-sm text-left hover:shadow-md transition-shadow relative overflow-hidden"
+            className="w-full max-w-[320px] sm:max-w-[340px] rounded-[44px] border-[7px] border-[#181715] bg-[#faf8f5] shadow-2xl overflow-hidden relative"
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#e8e2d9]/60">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  whileHover={{ rotate: 10, scale: 1.05 }}
-                  className="size-11 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-serif text-base font-semibold text-[#cc785c] cursor-pointer"
+            {/* Dynamic Island / Notch & Status Bar */}
+            <div className="pt-2 pb-1 bg-[#faf8f5] flex items-center justify-between px-6 text-[10px] text-[#141413] font-medium select-none">
+              <span>9:41</span>
+              <div className="w-20 h-4 bg-[#181715] rounded-full flex items-center justify-end px-1.5">
+                <span className="size-1.5 rounded-full bg-[#252523]" />
+              </div>
+              <div className="flex items-center gap-1 text-[#141413]">
+                <Wifi className="size-3" />
+                <Battery className="size-3" />
+              </div>
+            </div>
+
+            {/* Screen Content: Authentic Buyer View */}
+            <div className="p-4 flex flex-col gap-3">
+              {/* Store Avatar & Info */}
+              <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
+                <div className="flex items-center gap-2.5">
+                  <div className="size-9 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-serif text-sm font-semibold text-[#cc785c]">
+                    BN
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-xs text-[#141413]">Batik Nusantara</span>
+                      <span className="size-1.5 rounded-full bg-[#5db872]" />
+                    </div>
+                    <p className="text-[10px] text-[#706c64] line-clamp-1">Koleksi busana etnik katun primisima</p>
+                  </div>
+                </div>
+                <Link
+                  to="/batik-nusantara"
+                  className="p-1 rounded-full text-[#cc785c] hover:bg-[#efe9de] transition-colors"
+                  title="Buka Toko"
                 >
-                  BN
-                </motion.div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-sm text-[#141413]">Batik & Tenun Nusantara</h4>
-                    <span className="size-1.5 rounded-full bg-status-success animate-pulse" />
-                  </div>
-                  <p className="text-xs text-muted">Koleksi busana etnik modern katun primisima</p>
-                </div>
+                  <ExternalLink className="size-3.5" />
+                </Link>
               </div>
 
-              <Link
-                to="/batik-nusantara"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#faf8f5] border border-[#e8e2d9] text-xs font-medium text-[#cc785c] hover:bg-[#efe9de] transition-colors"
-              >
-                <span>Buka Demo</span>
-                <ArrowRight className="size-3" />
-              </Link>
-            </div>
-
-            {/* Sample Product Row */}
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <motion.div
-                whileHover={{ y: -3, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="p-3 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex items-center gap-3 transition-colors cursor-pointer group"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&auto=format&fit=crop&q=80"
-                  alt="Kemeja Batik"
-                  className="size-14 rounded-lg object-cover border border-[#e8e2d9] group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="truncate">
-                  <span className="font-medium text-xs text-[#141413] block truncate group-hover:text-[#cc785c] transition-colors">
-                    Kemeja Batik Parang
-                  </span>
-                  <span className="font-serif text-sm text-[#141413] font-medium block mt-0.5">
-                    {formatIDR(245000)}
-                  </span>
-                  <span className="text-[10px] text-muted font-mono">Pilihan: S, M, L, XL</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ y: -3, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="p-3 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex items-center gap-3 transition-colors cursor-pointer group"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80"
-                  alt="Dress Tenun"
-                  className="size-14 rounded-lg object-cover border border-[#e8e2d9] group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="truncate">
-                  <span className="font-medium text-xs text-[#141413] block truncate group-hover:text-[#cc785c] transition-colors">
-                    Dress Tenun Ikat Jepara
-                  </span>
-                  <span className="font-serif text-sm text-[#141413] font-medium block mt-0.5">
-                    {formatIDR(320000)}
-                  </span>
-                  <span className="text-[10px] text-muted font-mono">Pilihan: All Size, Big Size</span>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Live Simulated WhatsApp Incoming Order Notification */}
-            <motion.div
-              initial={{ opacity: 0, y: 15, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 1, duration: 0.6, type: 'spring', bounce: 0.25 }}
-              className="mt-4 p-3 rounded-xl bg-white border border-[#cc785c]/30 shadow-xs flex items-center justify-between gap-2"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="size-8 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366] shrink-0">
-                  <MessageCircle className="size-4" />
-                </div>
-                <div className="truncate text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-[#141413]">
-                      Pesanan Baru Masuk
+              {/* 2 Clean Product Cards */}
+              <div className="flex flex-col gap-2.5">
+                <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
+                  <img
+                    src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&auto=format&fit=crop&q=80"
+                    alt="Kemeja Batik"
+                    className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-medium text-xs text-[#141413] block truncate">
+                      Kemeja Batik Parang
                     </span>
-                    <span className="size-1.5 rounded-full bg-[#5db872] animate-ping" />
+                    <span className="font-serif text-sm font-medium text-[#141413] block">
+                      {formatIDR(245000)}
+                    </span>
+                    <span className="text-[9px] text-[#706c64] font-mono">Pilihan: S, M, L, XL</span>
                   </div>
-                  <p className="text-[11px] text-[#706c64] truncate">
-                    Budi S. • 1x Kemeja Batik Parang (L) • Rp 245.000
-                  </p>
+                  <Link
+                    to="/batik-nusantara"
+                    className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
+                  >
+                    + Beli
+                  </Link>
+                </div>
+
+                <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
+                  <img
+                    src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80"
+                    alt="Dress Tenun"
+                    className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-medium text-xs text-[#141413] block truncate">
+                      Dress Tenun Ikat Jepara
+                    </span>
+                    <span className="font-serif text-sm font-medium text-[#141413] block">
+                      {formatIDR(320000)}
+                    </span>
+                    <span className="text-[9px] text-[#706c64] font-mono">Pilihan: All Size</span>
+                  </div>
+                  <Link
+                    to="/batik-nusantara"
+                    className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
+                  >
+                    + Beli
+                  </Link>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#efe9de] text-[#cc785c] text-[10px] font-mono font-medium shrink-0">
-                WhatsApp Ready
-              </span>
-            </motion.div>
 
-            {/* Formatted Order Snippet */}
-            <div className="mt-3 p-3 rounded-xl bg-[#efe9de]/50 border border-[#e8e2d9] flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-[#5c5850]">
-                <Check className="size-3.5 text-[#5db872]" />
-                <span>Rincian produk, alamat kirim, & opsi varian tersusun otomatis</span>
+              {/* Bottom Bar inside Smartphone */}
+              <div className="p-2.5 rounded-xl bg-[#141413] text-[#faf8f5] flex items-center justify-between mt-1 shadow-xs">
+                <div className="text-left pl-1">
+                  <span className="text-[10px] text-[#faf8f5]/70 block leading-none">Keranjang Siap</span>
+                  <span className="font-serif text-xs font-medium text-[#faf8f5] mt-0.5 block">1 Barang • {formatIDR(245000)}</span>
+                </div>
+                <Link
+                  to="/batik-nusantara"
+                  className="px-3 py-1.5 rounded-lg bg-[#cc785c] text-white text-[10px] font-semibold flex items-center gap-1 hover:bg-[#a9583e] transition-colors"
+                >
+                  <span>Checkout WA</span>
+                  <ArrowRight className="size-2.5" />
+                </Link>
               </div>
-              <span className="font-mono text-[11px] text-[#cc785c] font-semibold hidden sm:inline">
-                Otomatis & Rapi
-              </span>
+
+              {/* Home Indicator */}
+              <div className="w-24 h-1 bg-[#181715]/30 rounded-full mx-auto mt-2" />
+            </div>
+          </motion.div>
+
+          {/* Authentic WhatsApp Message Bubble (Beside / Floating near the phone) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.7, duration: 0.5, type: 'spring', bounce: 0.2 }}
+            className="w-full max-w-[310px] sm:max-w-[330px] lg:absolute lg:-right-12 lg:top-1/3 mt-6 lg:mt-0 p-3.5 rounded-2xl rounded-tr-xs bg-[#d9fdd3] border border-[#b4e6ad] text-[#111b21] shadow-lg text-left"
+          >
+            <div className="flex items-center gap-2 mb-1.5 pb-1 border-b border-[#b4e6ad]/60">
+              <MessageCircle className="size-4 text-[#25D366]" />
+              <span className="text-[11px] font-semibold text-[#128C7E]">Format Order Otomatis di WhatsApp</span>
+            </div>
+            <p className="text-[11px] text-[#111b21] leading-relaxed font-sans">
+              Halo <strong>Batik Nusantara</strong>, saya mau pesan:
+              <br />• 1x Kemeja Batik Parang (Ukuran: L)
+              <br />• Total: <strong>Rp 245.000</strong>
+              <br /><span className="text-[10px] text-[#4a5568]">📍 Kirim ke: Budi Santoso, Jakarta Selatan</span>
+            </p>
+            <div className="flex items-center justify-end gap-1 text-[9px] text-[#667781] mt-1 font-mono">
+              <span>10:42</span>
+              <span className="text-[#53bdeb] font-bold">✓✓</span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. INFINITE TICKER OF MERCHANTS */}
-      <section className="border-y border-[#e8e2d9] bg-[#efe9de]/40 py-4.5 overflow-hidden">
-        <div className="flex items-center max-w-6xl mx-auto px-4">
-          <span className="shrink-0 text-xs font-mono tracking-widest text-[#141413] font-semibold uppercase mr-8">
-            Dipercaya Penjual:
+      {/* 2. CURATED PARTNER TICKER */}
+      <section className="border-y border-[#e8e2d9] bg-[#efe9de]/50 py-3.5 overflow-hidden">
+        <div className="flex items-center max-w-5xl mx-auto px-4">
+          <span className="shrink-0 text-[11px] font-mono tracking-widest text-[#706c64] font-semibold uppercase mr-6">
+            Cocok Untuk:
           </span>
           <div className="overflow-hidden flex-1 relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="animate-marquee flex items-center gap-12 text-xs font-mono tracking-wider text-[#706c64] uppercase">
-              <span>KOPI SENJA</span>
-              <span>•</span>
-              <span>BATIK NUSANTARA</span>
-              <span>•</span>
-              <span>HIJAB ATELIER</span>
-              <span>•</span>
-              <span>KERAJINAN ROTAN BALI</span>
-              <span>•</span>
-              <span>SNACK KERIPIK IBU</span>
-              <span>•</span>
-              <span>STUDIO KREATIF JEPARA</span>
-              <span>•</span>
+            <div className="animate-marquee flex items-center gap-10 text-xs font-serif tracking-wide text-[#141413]">
+              <span>Kopi & Kuliner</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Batik & Fashion</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Hijab & Gamis</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Kerajinan & Kriya</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Hampers & Reseller</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Studio & Jasa Kreator</span>
+              <span className="text-[#cc785c]">•</span>
               {/* Duplicate set for seamless continuous marquee */}
-              <span>KOPI SENJA</span>
-              <span>•</span>
-              <span>BATIK NUSANTARA</span>
-              <span>•</span>
-              <span>HIJAB ATELIER</span>
-              <span>•</span>
-              <span>KERAJINAN ROTAN BALI</span>
-              <span>•</span>
-              <span>SNACK KERIPIK IBU</span>
-              <span>•</span>
-              <span>STUDIO KREATIF JEPARA</span>
+              <span>Kopi & Kuliner</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Batik & Fashion</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Hijab & Gamis</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Kerajinan & Kriya</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Hampers & Reseller</span>
+              <span className="text-[#cc785c]">•</span>
+              <span>Studio & Jasa Kreator</span>
             </div>
           </div>
         </div>
