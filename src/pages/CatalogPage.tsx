@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Plus, Search, Tag, Package, ExternalLink, X } from 'lucide-react'
+import { Plus, Search, Tag, Package, ExternalLink, X, Pencil, Trash2 } from 'lucide-react'
 import type { Product } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR } from '@/lib/utils'
@@ -25,6 +25,16 @@ export function CatalogPage() {
   const [description, setDescription] = useState('')
   const [categoryName, setCategoryName] = useState('Kemeja Pria')
   const [imageUrl, setImageUrl] = useState('')
+
+  // Edit product states
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editPrice, setEditPrice] = useState('')
+  const [editDesc, setEditDesc] = useState('')
+  const [editCategory, setEditCategory] = useState('Kemeja Pria')
+  const [editImageUrl, setEditImageUrl] = useState('')
+  const [editIsActive, setEditIsActive] = useState(true)
 
   useEffect(() => {
     async function load() {
@@ -63,6 +73,47 @@ export function CatalogPage() {
     setDescription('')
     setImageUrl('')
     setIsAddModalOpen(false)
+  }
+
+  const handleOpenEdit = (prod: Product) => {
+    setEditingProduct(prod)
+    setEditName(prod.name)
+    setEditPrice(String(prod.base_price))
+    setEditDesc(prod.description || '')
+    setEditImageUrl(prod.image_url || '')
+    setEditIsActive(prod.is_active)
+    setIsEditModalOpen(true)
+  }
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingProduct || !editName.trim() || !editPrice) return
+
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === editingProduct.id
+          ? {
+              ...p,
+              name: editName,
+              base_price: Number(editPrice),
+              description: editDesc,
+              image_url: editImageUrl.trim() || p.image_url,
+              is_active: editIsActive,
+            }
+          : p
+      )
+    )
+
+    setIsEditModalOpen(false)
+    setEditingProduct(null)
+  }
+
+  const handleDeleteProduct = (productId: string) => {
+    if (confirm('Apakah Anda yakin ingin menghapus produk ini dari katalog?')) {
+      setProducts((prev) => prev.filter((p) => p.id !== productId))
+      setIsEditModalOpen(false)
+      setEditingProduct(null)
+    }
   }
 
   const filtered = products.filter((p) => {
@@ -223,7 +274,7 @@ export function CatalogPage() {
                 className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#cc785c]/40 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  {/* Clean Image Container (Warm Subtle Canvas, No Muddy Color) */}
+                  {/* Clean Image Container */}
                   <div className="aspect-video relative overflow-hidden bg-[#faf8f5] border-b border-[#e8e2d9]">
                     <img
                       src={prod.image_url}
@@ -231,10 +282,16 @@ export function CatalogPage() {
                       className="size-full object-cover group-hover:scale-102 transition-transform duration-300"
                     />
                     <div className="absolute top-2.5 right-2.5">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-xs text-[#137333] border border-[#ceead6] shadow-2xs">
-                        <span className="size-1.5 rounded-full bg-[#137333]" />
-                        <span>Aktif</span>
-                      </span>
+                      {prod.is_active ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-xs text-[#137333] border border-[#ceead6] shadow-2xs">
+                          <span className="size-1.5 rounded-full bg-[#137333]" />
+                          <span>Aktif</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-xs text-[#706c64] border border-[#e8e2d9] shadow-2xs">
+                          <span>Nonaktif</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -265,7 +322,7 @@ export function CatalogPage() {
                   </div>
                 </div>
 
-                {/* Footer: Price & Quick Action */}
+                {/* Footer: Price & Edit Action Button */}
                 <div className="p-4 sm:px-5 py-3 border-t border-[#e8e2d9]/60 flex items-center justify-between bg-[#faf8f5]/40">
                   <div>
                     <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c867b] block leading-none">
@@ -276,16 +333,15 @@ export function CatalogPage() {
                     </span>
                   </div>
 
-                  <a
-                    href={`/${storeSlug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-8 px-3 rounded-lg bg-white hover:bg-[#faf8f5] border border-[#e8e2d9] text-xs font-medium text-[#141413] flex items-center gap-1 transition-colors shadow-2xs"
-                    title="Lihat di etalase toko"
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(prod)}
+                    className="h-8 px-3 rounded-lg bg-white hover:bg-[#faf8f5] border border-[#e8e2d9] text-xs font-medium text-[#141413] flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                    title="Edit rincian dan harga produk"
                   >
-                    <span>Etalase</span>
-                    <ExternalLink className="size-3 text-[#706c64]" />
-                  </a>
+                    <Pencil className="size-3 text-[#cc785c]" />
+                    <span>Edit</span>
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -293,7 +349,7 @@ export function CatalogPage() {
         )}
       </div>
 
-      {/* Add Product Modal - Crisp White & Harmonized */}
+      {/* Add Product Modal */}
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
@@ -380,6 +436,129 @@ export function CatalogPage() {
             <Button type="submit" className="bg-[#cc785c] hover:bg-[#a9583e] text-white">
               Simpan ke Katalog
             </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Product Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditingProduct(null)
+        }}
+        title={`Edit Produk: ${editingProduct?.name || ''}`}
+        surface="canvas"
+      >
+        <form onSubmit={handleSaveEdit} className="flex flex-col gap-4 py-1 text-sm">
+          <div>
+            <label className="text-xs font-medium text-[#141413] block mb-1">
+              Nama Produk <span className="text-[#cc785c]">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-[#141413] block mb-1">
+                Harga Dasar (IDR) <span className="text-[#cc785c]">*</span>
+              </label>
+              <input
+                type="number"
+                required
+                value={editPrice}
+                onChange={(e) => setEditPrice(e.target.value)}
+                className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-[#141413] block mb-1">
+                Kategori
+              </label>
+              <select
+                value={editCategory}
+                onChange={(e) => setEditCategory(e.target.value)}
+                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+              >
+                <option value="Kemeja Pria">Kemeja Pria</option>
+                <option value="Dress Wanita">Dress Wanita</option>
+                <option value="Aksesoris & Tas">Aksesoris & Tas</option>
+                <option value="Kuliner & F&B">Kuliner & F&B</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-[#141413] block mb-1">
+              URL Foto Produk
+            </label>
+            <input
+              type="url"
+              value={editImageUrl}
+              onChange={(e) => setEditImageUrl(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-[#141413] block mb-1">
+              Deskripsi Produk
+            </label>
+            <textarea
+              rows={2}
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={editIsActive}
+              onChange={(e) => setEditIsActive(e.target.checked)}
+              className="size-4 rounded accent-[#cc785c] cursor-pointer"
+            />
+            <label htmlFor="editIsActive" className="text-xs text-[#141413] font-medium cursor-pointer">
+              Tampilkan produk ini di etalase toko (Aktif)
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between pt-3 border-t border-[#e8e2d9] mt-2">
+            {editingProduct && (
+              <button
+                type="button"
+                onClick={() => handleDeleteProduct(editingProduct.id)}
+                className="text-xs text-[#c5221f] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Trash2 className="size-3.5" />
+                <span>Hapus Produk</span>
+              </button>
+            )}
+
+            <div className="flex gap-2 ml-auto">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setIsEditModalOpen(false)
+                  setEditingProduct(null)
+                }}
+              >
+                Batal
+              </Button>
+              <Button type="submit" className="bg-[#cc785c] hover:bg-[#a9583e] text-white">
+                Simpan Perubahan
+              </Button>
+            </div>
           </div>
         </form>
       </Modal>
