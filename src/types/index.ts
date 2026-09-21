@@ -122,4 +122,16 @@ export interface DashboardMetrics {
     count: number
     percentage: number
   }[]
+  average_rating?: number
+  total_reviews?: number
+}
+
+export interface Review {
+  id: string
+  store_id: string
+  order_id?: string
+  buyer_name: string
+  rating: number // 1 to 5
+  comment: string
+  created_at: string
 }

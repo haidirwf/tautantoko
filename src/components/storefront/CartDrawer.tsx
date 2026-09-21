@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, MessageCircle, CheckCircle2 } from 'lucide-react'
+import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, MessageCircle, CheckCircle2, Star } from 'lucide-react'
 import type { Store, Order } from '@/types'
 import { formatIDR, sanitizeWhatsApp, generateOrderCode, buildWhatsAppOrderMessage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -31,6 +31,13 @@ export function CartDrawer({ store }: CartDrawerProps) {
   const [waLink, setWaLink] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+
+  // Buyer review states after checkout
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewHover, setReviewHover] = useState<number | null>(null)
+  const [reviewComment, setReviewComment] = useState('')
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+  const [reviewSubmitted, setReviewSubmitted] = useState(false)
 
   const subtotal = getSubtotal()
   const itemCount = getItemCount()
@@ -115,7 +122,33 @@ export function CartDrawer({ store }: CartDrawerProps) {
   const handleClose = () => {
     setCartOpen(false)
     if (step === 'success') {
-      setTimeout(() => setStep('cart'), 300)
+      setTimeout(() => {
+        setStep('cart')
+        setReviewSubmitted(false)
+        setReviewComment('')
+        setReviewRating(5)
+      }, 300)
+    }
+  }
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!lastCreatedOrder) return
+    setIsSubmittingReview(true)
+    try {
+      await api.createReview({
+        store_id: store.id,
+        order_id: lastCreatedOrder.id,
+        buyer_name: lastCreatedOrder.buyer_name || 'Pembeli',
+        rating: reviewRating,
+        comment: reviewComment.trim() || 'Pesanan sangat memuaskan, respon penjual cepat!',
+      })
+      setReviewSubmitted(true)
+    } catch (err) {
+      console.error('Failed to submit review', err)
+      alert('Gagal mengirim ulasan, silakan coba lagi.')
+    } finally {
+      setIsSubmittingReview(false)
     }
   }
 
@@ -450,6 +483,65 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <MessageCircle className="size-4" />
                   <span>Buka WhatsApp Lagi</span>
                 </motion.a>
+
+                {/* Buyer Review Form */}
+                <div className="w-full mt-2 p-4 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] text-left">
+                  {reviewSubmitted ? (
+                    <div className="flex items-center gap-2.5 text-xs text-[#1e6f32]">
+                      <CheckCircle2 className="size-4 text-[#1e6f32] shrink-0" />
+                      <span className="font-medium">
+                        Terima kasih! Ulasan bintang {reviewRating} Anda telah masuk ke dashboard toko.
+                      </span>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubmitReview} className="flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-[#141413]">
+                          Beri Ulasan Pembelian ⭐
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const isFilled = (reviewHover || reviewRating) >= star
+                            return (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => setReviewRating(star)}
+                                onMouseEnter={() => setReviewHover(star)}
+                                onMouseLeave={() => setReviewHover(null)}
+                                className="p-0.5 text-muted hover:text-amber-400 transition-colors cursor-pointer"
+                                title={`${star} Bintang`}
+                              >
+                                <Star
+                                  className={`size-4 ${
+                                    isFilled ? 'text-amber-400 fill-amber-400' : 'text-[#d4cebe]'
+                                  }`}
+                                />
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Tulis ulasan Anda (kualitas produk, respon WA)..."
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        className="w-full h-9 px-3 rounded-lg bg-white border border-[#e8e2d9] text-xs text-[#141413] placeholder:text-[#8c867b] focus:outline-none focus:border-[#cc785c]"
+                      />
+
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={isSubmittingReview}
+                        className="self-end bg-[#141413] text-white hover:bg-black text-xs py-1 h-8 rounded-lg"
+                      >
+                        {isSubmittingReview ? 'Mengirim...' : 'Kirim Ulasan'}
+                      </Button>
+                    </form>
+                  )}
+                </div>
 
                 <Button variant="outline" size="md" onClick={handleClose}>
                   Kembali ke Toko

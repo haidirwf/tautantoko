@@ -10,7 +10,7 @@ import {
   Link2,
   Star,
 } from 'lucide-react'
-import type { DashboardMetrics, Order } from '@/types'
+import type { DashboardMetrics, Order, Review } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR } from '@/lib/utils'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
@@ -25,6 +25,8 @@ export function DashboardPage() {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -46,12 +48,14 @@ export function DashboardPage() {
       }
       setIsLoading(true)
       try {
-        const [metricData, ordersData] = await Promise.all([
+        const [metricData, ordersData, reviewsData] = await Promise.all([
           api.getDashboardMetrics(storeId),
           api.getOrders(storeId),
+          api.getReviews(storeId),
         ])
         setMetrics(metricData)
         setRecentOrders(ordersData.slice(0, 5))
+        setReviews(reviewsData)
       } catch (err) {
         console.error('Error loading metrics', err)
       } finally {
@@ -114,6 +118,10 @@ export function DashboardPage() {
   }
 
   const sixMonthLabels = ['Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep']
+
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : (metrics.average_rating ? metrics.average_rating.toFixed(1) : '5.0')
 
   return (
     <DashboardLayout onAddProductClick={() => setIsAddProductOpen(true)}>
@@ -219,12 +227,12 @@ export function DashboardPage() {
             </span>
             <div className="my-2.5 flex items-baseline gap-1.5">
               <span className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] tracking-tight">
-                0.0
+                {averageRating}
               </span>
               <span className="text-sm font-normal text-[#706c64]">/ 5.0</span>
             </div>
             <span className="text-xs text-[#8c867b]">
-              0 ulasan diterima
+              {reviews.length} ulasan diterima
             </span>
           </div>
         </div>
@@ -316,17 +324,47 @@ export function DashboardPage() {
                 <h3 className="font-sans font-bold text-base text-[#141413]">
                   Ulasan Terbaru
                 </h3>
-                <Link
-                  to="/pelanggan"
-                  className="text-xs text-[#706c64] hover:text-[#cc785c] font-medium flex items-center gap-1 group"
+                <button
+                  type="button"
+                  onClick={() => setIsReviewsModalOpen(true)}
+                  className="text-xs text-[#706c64] hover:text-[#cc785c] font-medium flex items-center gap-1 group cursor-pointer"
                 >
                   <span>Lihat Semua</span>
                   <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
+                </button>
               </div>
 
-              <div className="py-12 flex items-center justify-center text-xs text-[#8c867b]">
-                Belum ada ulasan dari pembeli.
+              <div className="flex flex-col gap-2.5">
+                {reviews.length === 0 ? (
+                  <div className="py-12 flex items-center justify-center text-xs text-[#8c867b]">
+                    Belum ada ulasan dari pembeli.
+                  </div>
+                ) : (
+                  reviews.slice(0, 2).map((rev) => (
+                    <div
+                      key={rev.id}
+                      onClick={() => setIsReviewsModalOpen(true)}
+                      className="bg-[#faf8f5] hover:bg-[#f4f0e8] p-3 rounded-xl border border-[#e8e2d9]/60 flex flex-col gap-1 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-xs text-[#141413]">{rev.buyer_name}</span>
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`size-3 ${
+                                i < rev.rating ? 'text-amber-400 fill-amber-400' : 'text-[#d4cebe]'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-[#706c64] line-clamp-2 leading-relaxed">
+                        "{rev.comment}"
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -373,8 +411,8 @@ export function DashboardPage() {
           </Link>
 
           {/* Ulasan Pembeli */}
-          <Link
-            to="/pelanggan"
+          <div
+            onClick={() => setIsReviewsModalOpen(true)}
             className="rounded-2xl border border-[#e8e2d9] bg-white p-5 shadow-2xs hover:border-[#cc785c]/40 hover:shadow-xs transition-all cursor-pointer group flex flex-col justify-between min-h-[120px]"
           >
             <div className="flex items-center justify-between">
@@ -389,7 +427,7 @@ export function DashboardPage() {
                 Lihat dan analisis masukan kepuasan pelanggan toko.
               </p>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
 
@@ -451,6 +489,62 @@ export function DashboardPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* All Customer Reviews Modal */}
+      <Modal
+        isOpen={isReviewsModalOpen}
+        onClose={() => setIsReviewsModalOpen(false)}
+        title="Ulasan Pelanggan Toko"
+        description={`Total ${reviews.length} ulasan diterima dengan rata-rata rating ${averageRating} / 5.0`}
+        surface="canvas"
+      >
+        <div className="flex flex-col gap-3 py-2 max-h-[60vh] overflow-y-auto">
+          {reviews.length === 0 ? (
+            <div className="py-12 text-center text-xs text-[#8c867b]">
+              Belum ada ulasan yang masuk. Pembeli dapat memberikan ulasan setelah checkout selesai.
+            </div>
+          ) : (
+            reviews.map((rev) => (
+              <div
+                key={rev.id}
+                className="p-4 rounded-xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col gap-1.5"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="size-7 rounded-full bg-[#fae7e0] border border-[#f2cfc2] text-[#cc785c] font-bold text-xs flex items-center justify-center">
+                      {rev.buyer_name.charAt(0)}
+                    </div>
+                    <span className="font-semibold text-xs text-[#141413]">{rev.buyer_name}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`size-3.5 ${
+                          i < rev.rating ? 'text-amber-400 fill-amber-400' : 'text-[#d4cebe]'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-xs text-[#5c5850] leading-relaxed mt-1">
+                  "{rev.comment}"
+                </p>
+
+                <span className="text-[10px] text-[#8c867b] font-mono mt-1">
+                  {new Date(rev.created_at).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
       </Modal>
     </DashboardLayout>
   )

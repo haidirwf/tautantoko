@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Store, StoreLink, Category, Product, Order, OrderStatus, DashboardMetrics } from '@/types'
+import type { Store, StoreLink, Category, Product, Order, OrderStatus, DashboardMetrics, Review } from '@/types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -233,11 +233,50 @@ const INITIAL_ORDERS: Order[] = [
   },
 ]
 
-// In-browser local storage manager for demo mode
 const STORAGE_KEYS = {
   STORE: 'tautan_store_data',
   ORDERS: 'tautan_orders_data',
   PRODUCTS: 'tautan_products_data',
+  REVIEWS: 'tautan_reviews_data',
+}
+
+const INITIAL_REVIEWS: Review[] = [
+  {
+    id: 'rev-01',
+    store_id: 'store-batik-01',
+    order_id: 'ord-102',
+    buyer_name: 'Dewi Lestari',
+    rating: 5,
+    comment: 'Batiknya halus banget, jahitannya rapi dan pengiriman cepat via SiCepat. Seller sangat ramah!',
+    created_at: '2026-09-20T19:30:00Z',
+  },
+  {
+    id: 'rev-02',
+    store_id: 'store-batik-01',
+    order_id: 'ord-103',
+    buyer_name: 'Siti Rahmawati',
+    rating: 5,
+    comment: 'Bahan kemeja linennya adem dipakai seharian di kantor. Rekomen banget buat seragam!',
+    created_at: '2026-09-21T08:00:00Z',
+  },
+]
+
+function getStoredReviews(): Review[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.REVIEWS)
+    if (saved) return JSON.parse(saved)
+  } catch (e) {
+    console.error('Error reading localStorage reviews', e)
+  }
+  return INITIAL_REVIEWS
+}
+
+function saveStoredReviews(reviews: Review[]) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(reviews))
+  } catch (e) {
+    console.error('Error saving localStorage reviews', e)
+  }
 }
 
 function getStoredOrders(): Order[] {
@@ -453,6 +492,11 @@ export const api = {
       { date: '21 Sep', settled: total_settled_revenue, pending: pending_revenue },
     ]
 
+    const reviews = await this.getReviews(storeId)
+    const totalRatingSum = reviews.reduce((sum, r) => sum + r.rating, 0)
+    const average_rating = reviews.length > 0 ? Number((totalRatingSum / reviews.length).toFixed(1)) : 5.0
+    const total_reviews = reviews.length
+
     return {
       total_settled_revenue,
       pending_revenue,
@@ -463,6 +507,41 @@ export const api = {
       aov,
       revenue_trends,
       payment_distribution,
+      average_rating,
+      total_reviews,
     }
+  },
+
+  async getReviews(storeId: string): Promise<Review[]> {
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('store_id', storeId)
+        .order('created_at', { ascending: false })
+      if (error) {
+        console.warn('Supabase fetch failed, falling back to local reviews', error)
+        return getStoredReviews().filter((r) => r.store_id === storeId)
+      }
+      return data || []
+    }
+    return getStoredReviews().filter((r) => r.store_id === storeId)
+  },
+
+  async createReview(input: Omit<Review, 'id' | 'created_at'>): Promise<Review> {
+    const newRev: Review = {
+      ...input,
+      id: `rev-${Date.now()}`,
+      created_at: new Date().toISOString(),
+    }
+    const current = getStoredReviews()
+    const updated = [newRev, ...current]
+    saveStoredReviews(updated)
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('reviews').insert(newRev)
+    }
+
+    return newRev
   },
 }
