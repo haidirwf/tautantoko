@@ -8,8 +8,8 @@ export default {
     extend: {
       colors: {
         canvas: '#faf9f5',
-        'surface-card': '#efe9de',
-        'surface-soft': '#f5f0e8',
+        'surface-card': '#ffffff',
+        'surface-soft': '#faf8f5',
         'surface-dark': '#181715',
         'surface-dark-elevated': '#252320',
         'surface-dark-soft': '#1f1e1b',

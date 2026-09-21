@@ -44,9 +44,9 @@ export function Modal({
   }[maxWidth]
 
   const surfaceClass = {
-    canvas: 'bg-canvas text-ink border-hairline',
-    cream: 'bg-surface-card text-ink border-hairline',
-    dark: 'bg-[#111625] text-white border-[#242b40]',
+    canvas: 'bg-white text-[#141413] border-[#e8e2d9]',
+    cream: 'bg-white text-[#141413] border-[#e8e2d9]',
+    dark: 'bg-[#181715] text-[#faf9f5] border-[#2b2824]',
   }[surface]
 
   return (

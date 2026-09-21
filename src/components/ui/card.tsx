@@ -7,9 +7,9 @@ export function Card({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { variant?: 'cream' | 'dark' | 'canvas' }) {
   const variants = {
-    cream: 'bg-surface-card border border-hairline text-ink',
+    cream: 'bg-white border border-[#e8e2d9] text-ink shadow-2xs',
     dark: 'bg-surface-dark border border-[#2b2824] text-on-dark shadow-md',
-    canvas: 'bg-canvas border border-hairline text-ink',
+    canvas: 'bg-canvas border border-[#e8e2d9] text-ink',
   }
 
   return (

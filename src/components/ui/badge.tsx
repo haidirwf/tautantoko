@@ -10,12 +10,12 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Badge({ className, variant = 'default', status, children, ...props }: BadgeProps) {
   if (status) {
     const statusStyles: Record<OrderStatus, string> = {
-      PENDING_WA: 'bg-[#efe9de] text-status-amber border-[#e8a55a]/40 font-medium',
-      PAID: 'bg-[#5db872]/15 text-[#1e6f32] border-[#5db872]/30 font-medium',
-      PROCESSING: 'bg-[#5db8a6]/15 text-[#145d50] border-[#5db8a6]/30 font-medium',
-      SHIPPED: 'bg-[#5db8a6]/25 text-[#0d4f43] border-[#5db8a6]/50 font-medium',
-      COMPLETED: 'bg-[#5db872]/20 text-[#135424] border-[#5db872]/40 font-semibold',
-      CANCELLED: 'bg-status-error/15 text-status-error border-status-error/30 font-medium',
+      PENDING_WA: 'bg-[#fae7e0] text-[#cc785c] border-[#f2cfc2] font-medium',
+      PAID: 'bg-[#e6f4ea] text-[#137333] border-[#ceead6] font-medium',
+      PROCESSING: 'bg-[#e0f2fe] text-[#0369a1] border-[#bae6fd] font-medium',
+      SHIPPED: 'bg-[#ede9fe] text-[#6d28d9] border-[#ddd6fe] font-medium',
+      COMPLETED: 'bg-[#e6f4ea] text-[#137333] border-[#ceead6] font-semibold',
+      CANCELLED: 'bg-[#fce8e6] text-[#c5221f] border-[#fad2cf] font-medium',
     }
 
     const statusLabels: Record<OrderStatus, string> = {

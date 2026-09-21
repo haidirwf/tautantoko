@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --canvas: #faf9f5;
-    --surface-card: #efe9de;
+    --surface-card: #ffffff;
     --surface-dark: #181715;
     --surface-dark-elevated: #252320;
     --primary: #cc785c;

@@ -74,45 +74,50 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
     >
       <form onSubmit={handleSave} className="flex flex-col gap-5">
         {/* Customer & Items Overview */}
-        <div className="p-4 rounded-lg bg-surface-card border border-hairline flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-sm text-ink">{order.buyer_name}</span>
-                <span className="font-mono text-xs text-muted">({order.buyer_phone})</span>
+                <span className="font-semibold text-sm text-[#141413]">{order.buyer_name}</span>
+                <span className="font-mono text-xs text-[#8c867b]">({order.buyer_phone})</span>
               </div>
-              <p className="text-xs text-muted mt-0.5">{order.shipping_address}</p>
+              <p className="text-xs text-[#5c5850] mt-0.5 flex items-center gap-1">
+                <span className="text-[#cc785c]">📍</span>
+                <span>{order.shipping_address}</span>
+              </p>
             </div>
             <a
               href={directWaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#136329] border border-[#25D366]/30 text-xs font-medium transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
             >
               <MessageCircle className="size-3.5" />
-              <span>Chat Pembeli via WA</span>
+              <span>Chat Pembeli WA</span>
             </a>
           </div>
 
           {/* Items Table Snapshot */}
-          <div className="pt-2 border-t border-hairline/60">
-            <span className="text-[10px] uppercase font-mono tracking-wider text-muted block mb-1.5">
-              Rincian Barang
+          <div className="pt-2.5 border-t border-[#e8e2d9]/60">
+            <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c867b] block mb-1.5">
+              Rincian Barang Pesanan
             </span>
-            <div className="flex flex-col divide-y divide-hairline/40 text-xs">
+            <div className="flex flex-col divide-y divide-[#e8e2d9]/40 text-xs">
               {order.items_snapshot.map((item, idx) => (
-                <div key={idx} className="py-1.5 flex justify-between">
+                <div key={idx} className="py-1.5 flex justify-between items-center">
                   <div className="truncate pr-2">
-                    <span className="font-medium text-ink">
+                    <span className="font-medium text-[#141413]">
                       {item.quantity}x {item.product_name}
                     </span>
                     {item.variants && Object.keys(item.variants).length > 0 && (
-                      <span className="text-muted ml-1">
+                      <span className="text-[#8c867b] ml-1">
                         ({Object.entries(item.variants).map(([k, v]) => `${k}: ${v}`).join(', ')})
                       </span>
                     )}
                   </div>
-                  <span className="font-mono text-ink shrink-0">{formatIDR(item.subtotal)}</span>
+                  <span className="font-mono text-xs font-semibold text-[#141413] shrink-0">
+                    {formatIDR(item.subtotal)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -121,7 +126,7 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
 
         {/* Order Lifecycle Status Picker */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium text-ink block">
+          <label className="text-xs font-medium text-[#141413] block">
             Status Progres Pesanan
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -139,14 +144,14 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
                 key={s.id}
                 type="button"
                 onClick={() => setStatus(s.id)}
-                className={`p-2.5 rounded-md border text-xs font-medium text-left transition-all ${
+                className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-all cursor-pointer ${
                   status === s.id
-                    ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary'
-                    : 'border-hairline bg-surface-card text-ink hover:bg-surface-soft'
+                    ? 'border-[#cc785c] bg-[#fae7e0]/60 text-[#cc785c] ring-1 ring-[#cc785c]'
+                    : 'border-[#e8e2d9] bg-white text-[#141413] hover:bg-[#faf8f5]'
                 }`}
               >
                 <Badge status={s.id} className="mb-1 block" />
-                <span className="block text-[11px] text-muted">{s.label}</span>
+                <span className="block text-[11px] text-[#8c867b]">{s.label}</span>
               </button>
             ))}
           </div>
@@ -155,7 +160,7 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
         {/* Shipping & Financial Ledger Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-medium text-ink block mb-1">
+            <label className="text-xs font-medium text-[#141413] block mb-1">
               Ongkos Kirim Disepakati (IDR)
             </label>
             <input
@@ -164,18 +169,18 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
               step="1000"
               value={shippingFee}
               onChange={(e) => setShippingFee(Number(e.target.value) || 0)}
-              className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono"
+              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-ink block mb-1">
+            <label className="text-xs font-medium text-[#141413] block mb-1">
               Metode Pembayaran
             </label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full h-10 px-3 rounded-md bg-canvas border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
             >
               <option value="Transfer BCA">Transfer BCA</option>
               <option value="Transfer Mandiri">Transfer Mandiri</option>
@@ -191,7 +196,7 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
         {/* Courier & Tracking (Resi) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-medium text-ink block mb-1">
+            <label className="text-xs font-medium text-[#141413] block mb-1">
               Nama Kurir
             </label>
             <input
@@ -199,12 +204,12 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
               placeholder="cth. JNE Regular, SiCepat, GoSend"
               value={courierName}
               onChange={(e) => setCourierName(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-ink block mb-1">
+            <label className="text-xs font-medium text-[#141413] block mb-1">
               Nomor Resi Pengiriman
             </label>
             <input
@@ -212,14 +217,14 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
               placeholder="cth. JNE1029384829"
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono"
+              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
             />
           </div>
         </div>
 
         {/* Internal Seller Notes */}
         <div>
-          <label className="text-xs font-medium text-ink block mb-1">
+          <label className="text-xs font-medium text-[#141413] block mb-1">
             Catatan Khusus Penjual (Internal)
           </label>
           <input
@@ -227,15 +232,15 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
             placeholder="Catatan rahasia untuk merchant..."
             value={sellerNote}
             onChange={(e) => setSellerNote(e.target.value)}
-            className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
           />
         </div>
 
         {/* Financial Summary & Save Button */}
-        <div className="pt-3 border-t border-hairline flex items-center justify-between">
+        <div className="pt-4 border-t border-[#e8e2d9] flex items-center justify-between">
           <div>
-            <span className="text-xs text-muted block">Total Akhir Pesanan:</span>
-            <span className="font-serif text-2xl font-medium text-ink tracking-tight">
+            <span className="text-xs text-[#8c867b] block">Total Akhir Pesanan:</span>
+            <span className="font-sans font-bold text-2xl text-[#141413] tracking-tight">
               {formatIDR(calculatedTotal)}
             </span>
           </div>
@@ -244,7 +249,11 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
             <Button type="button" variant="secondary" onClick={onClose}>
               Batal
             </Button>
-            <Button type="submit" disabled={isSaving}>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+            >
               <Save className="size-4" />
               <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
             </Button>
