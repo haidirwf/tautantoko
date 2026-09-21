@@ -6,14 +6,12 @@ import {
   ShoppingBag,
   Users,
   Package,
-  MessageCircle,
   ArrowRight,
   Plus,
   Lock,
   ExternalLink,
   Copy,
   Check,
-  Share2,
 } from 'lucide-react'
 import type { DashboardMetrics, Order } from '@/types'
 import { api } from '@/lib/supabase'
@@ -145,6 +143,25 @@ export function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={copyStoreLink}
+              className="h-9 px-3 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              title="Salin tautan toko publik"
+            >
+              {isLinkCopied ? (
+                <>
+                  <Check className="size-3.5 text-[#137333]" />
+                  <span className="text-[#137333] font-semibold">Tersalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="size-3.5 text-[#706c64]" />
+                  <span>Salin Link</span>
+                </>
+              )}
+            </button>
+
             <a
               href={`/${storeSlug}`}
               target="_blank"
@@ -246,139 +263,68 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Content Split: Pesanan Terbaru (Left) & WhatsApp Hub / Link Widget (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Side: Pesanan Terbaru (8 Cols) */}
-          <div className="lg:col-span-8 flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
-              <div>
-                <h3 className="font-sans text-lg font-bold tracking-tight text-[#141413]">
-                  Pesanan Terbaru
-                </h3>
-              </div>
-              <Link
-                to="/orders"
-                className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1 group"
-              >
-                <span>Lihat semua pesanan</span>
-                <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-
-            <div className="mt-3 flex flex-col divide-y divide-[#e8e2d9] bg-white rounded-2xl border border-[#e8e2d9] overflow-hidden shadow-2xs">
-              {recentOrders.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#8c867b]">
-                  Belum ada pesanan masuk.
-                </div>
-              ) : (
-                recentOrders.map((order, idx) => (
-                  <motion.div
-                    key={order.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.05 + idx * 0.03 }}
-                    onClick={() => navigate('/orders')}
-                    className="p-4 sm:px-5 hover:bg-[#faf8f5]/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-[#141413] group-hover:text-[#cc785c] transition-colors">
-                          {order.buyer_name}
-                        </span>
-                        <span className="font-mono text-xs text-[#8c867b]">
-                          {order.order_code}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#706c64] mt-0.5 line-clamp-1">
-                        {order.items_snapshot.map((i) => `${i.quantity}x ${i.product_name}`).join(', ')}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                      <Badge status={order.status} />
-                      <span className="font-sans font-bold text-sm text-[#141413]">
-                        {formatIDR(order.total_amount || order.subtotal)}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Right Side: Clean WhatsApp Hub & Store Link Widget (4 Cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-4">
-            {/* Card 1: WhatsApp Action Callout (Harmonized, Clean White) */}
-            <div className="rounded-2xl bg-white border border-[#e8e2d9] p-5 sm:p-6 shadow-2xs flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="size-10 rounded-full bg-[#e6f4ea] border border-[#ceead6] flex items-center justify-center text-[#137333]">
-                    <MessageCircle className="size-5" />
-                  </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#137333] font-semibold bg-[#e6f4ea] px-2 py-0.5 rounded-full border border-[#ceead6]">
-                    WhatsApp Hub
-                  </span>
-                </div>
-
-                <h4 className="font-sans text-xl font-bold tracking-tight text-[#141413] leading-snug">
-                  {metrics.pending_orders_count} pesanan menunggu chat
-                </h4>
-
-                <p className="text-xs text-[#706c64] mt-2 leading-relaxed">
-                  Buka daftar pesanan untuk menindaklanjuti calon pembeli, menyepakati ongkos kirim, dan mengonfirmasi bukti transfer.
-                </p>
-              </div>
-
-              <div className="mt-6">
-                <Link to="/orders">
-                  <button
-                    type="button"
-                    className="w-full h-10 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs cursor-pointer"
-                  >
-                    <MessageCircle className="size-4" />
-                    <span>Tinjau Pesanan WhatsApp</span>
-                  </button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Card 2: Store Link Sharing Card */}
-            <div className="rounded-2xl bg-white border border-[#e8e2d9] p-5 shadow-2xs flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Share2 className="size-4 text-[#cc785c]" />
-                  <span className="text-xs font-semibold text-[#141413]">Tautan Toko Publik</span>
-                </div>
-                <span className="size-2 rounded-full bg-[#137333]" title="Toko Aktif" />
-              </div>
-
-              <div className="p-2 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-between gap-2">
-                <span className="font-mono text-xs text-[#5c5850] truncate select-all pl-1">
-                  {storeUrl}
-                </span>
-                <button
-                  type="button"
-                  onClick={copyStoreLink}
-                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#efe9de] border border-[#e8e2d9] text-xs font-medium text-[#141413] flex items-center gap-1 transition-colors shrink-0 shadow-2xs cursor-pointer"
-                >
-                  {isLinkCopied ? (
-                    <>
-                      <Check className="size-3 text-[#137333]" />
-                      <span className="text-[11px] text-[#137333] font-semibold">Tersalin!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="size-3 text-[#706c64]" />
-                      <span className="text-[11px]">Salin</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <p className="text-[11px] text-[#8c867b]">
-                Tempel link ini di bio Instagram, TikTok, atau status WhatsApp tokomu.
+        {/* Full-width Pesanan Terbaru Section */}
+        <div className="flex flex-col">
+          <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
+            <div>
+              <h3 className="font-sans text-lg font-bold tracking-tight text-[#141413]">
+                Pesanan Terbaru
+              </h3>
+              <p className="text-xs text-[#706c64] mt-0.5">
+                Aktivitas pesanan masuk langsung dari checkout etalase WhatsApp
               </p>
             </div>
+            <Link
+              to="/orders"
+              className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1 group"
+            >
+              <span>Lihat semua pesanan</span>
+              <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="mt-3 flex flex-col divide-y divide-[#e8e2d9] bg-white rounded-2xl border border-[#e8e2d9] overflow-hidden shadow-2xs">
+            {recentOrders.length === 0 ? (
+              <div className="p-8 text-center text-xs text-[#8c867b]">
+                Belum ada pesanan masuk.
+              </div>
+            ) : (
+              recentOrders.map((order, idx) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.05 + idx * 0.03 }}
+                  onClick={() => navigate('/orders')}
+                  className="p-4 sm:px-6 hover:bg-[#faf8f5]/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-semibold text-sm text-[#141413] group-hover:text-[#cc785c] transition-colors">
+                        {order.buyer_name}
+                      </span>
+                      <span className="font-mono text-xs text-[#8c867b]">
+                        {order.order_code}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#706c64] mt-1 line-clamp-1">
+                      {order.items_snapshot.map((i) => `${i.quantity}x ${i.product_name}`).join(', ')}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-5 shrink-0">
+                    <Badge status={order.status} />
+                    <span className="font-sans font-bold text-sm text-[#141413] min-w-[100px] text-right">
+                      {formatIDR(order.total_amount || order.subtotal)}
+                    </span>
+                    <span className="text-xs text-[#8c867b] group-hover:text-[#cc785c] flex items-center gap-1 font-medium">
+                      <span>Kelola</span>
+                      <ArrowRight className="size-3" />
+                    </span>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </div>
