@@ -1,0 +1,71 @@
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import type { Order, Store } from '@/types'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+export function formatIDR(amount: number): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount || 0)
+}
+
+export function sanitizeWhatsApp(phone: string): string {
+  let cleaned = phone.replace(/[^0-9]/g, '')
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.slice(1)
+  } else if (cleaned.startsWith('8')) {
+    cleaned = '62' + cleaned
+  } else if (cleaned.startsWith('+62')) {
+    cleaned = cleaned.slice(1)
+  }
+  return cleaned
+}
+
+export function generateOrderCode(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const randomHex = Math.floor(1000 + Math.random() * 9000).toString(10)
+  return `#ORD-${year}${month}${day}-${randomHex}`
+}
+
+export function buildWhatsAppOrderMessage(
+  order: Pick<Order, 'order_code' | 'buyer_name' | 'buyer_phone' | 'shipping_address' | 'order_notes' | 'items_snapshot' | 'subtotal'>,
+  store: Store
+): string {
+  const itemsText = order.items_snapshot
+    .map((item) => {
+      const variantDesc = item.variants && Object.keys(item.variants).length > 0
+        ? ` (${Object.entries(item.variants).map(([k, v]) => `${k}: ${v}`).join(', ')})`
+        : ''
+      return `• ${item.quantity}x ${item.product_name}${variantDesc} — ${formatIDR(item.subtotal)}`
+    })
+    .join('\n')
+
+  const notesText = order.order_notes?.trim()
+    ? `\n📝 *Catatan*: ${order.order_notes.trim()}\n`
+    : ''
+
+  return [
+    `Halo kak ${store.name}, saya ingin memesan:`,
+    ``,
+    `📦 *Pesanan*: ${order.order_code}`,
+    `👤 *Nama*: ${order.buyer_name}`,
+    `📱 *No. WA*: ${order.buyer_phone}`,
+    `📍 *Alamat*: ${order.shipping_address}`,
+    ``,
+    `🛒 *Rincian Barang*:`,
+    itemsText,
+    ``,
+    `💰 *Subtotal*: ${formatIDR(order.subtotal)}`,
+    notesText,
+    `Mohon info rekening untuk pembayaran dan estimasi ongkirnya ya kak. Terima kasih!`
+  ].filter(line => line !== undefined).join('\n')
+}
