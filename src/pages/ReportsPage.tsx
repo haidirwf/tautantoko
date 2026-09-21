@@ -43,23 +43,23 @@ export function ReportsPage() {
         ) : (
           <div className="flex flex-col gap-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-xl border border-[#e8e2d9] bg-white">
-                <span className="text-xs text-muted">Total Omzet Terverifikasi</span>
-                <div className="font-serif text-2xl sm:text-3xl text-ink font-medium mt-2">
+              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
+                <span className="text-xs text-[#8c867b] font-medium">Total Omzet Terverifikasi</span>
+                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] tracking-tight mt-2">
                   {formatIDR(metrics.total_settled_revenue)}
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl border border-[#e8e2d9] bg-white">
-                <span className="text-xs text-muted">Potensi Pipeline WhatsApp</span>
-                <div className="font-serif text-2xl sm:text-3xl text-[#cc785c] font-medium mt-2">
+              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
+                <span className="text-xs text-[#8c867b] font-medium">Potensi Pipeline WhatsApp</span>
+                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#cc785c] tracking-tight mt-2">
                   {formatIDR(metrics.pending_revenue)}
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl border border-[#e8e2d9] bg-white">
-                <span className="text-xs text-muted">Rata-rata Order (AOV)</span>
-                <div className="font-serif text-2xl sm:text-3xl text-ink font-medium mt-2">
+              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
+                <span className="text-xs text-[#8c867b] font-medium">Rata-rata Order (AOV)</span>
+                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] tracking-tight mt-2">
                   {formatIDR(metrics.aov)}
                 </div>
               </div>

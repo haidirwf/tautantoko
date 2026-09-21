@@ -41,23 +41,23 @@ export function CustomersPage() {
         {isLoading ? (
           <div className="py-20 text-center text-sm text-muted">Memuat data pelanggan...</div>
         ) : (
-          <div className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs divide-y divide-[#e8e2d9]/60">
+          <div className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs divide-y divide-[#e8e2d9]/60">
             {orders.map((o) => (
-              <div key={o.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div key={o.id} className="p-4 sm:p-5 hover:bg-[#faf8f5]/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-serif text-sm font-semibold text-[#cc785c]">
+                  <div className="size-10 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-serif text-sm font-bold text-[#cc785c]">
                     {o.buyer_name.charAt(0)}
                   </div>
                   <div>
-                    <h3 className="font-medium text-sm text-[#141413]">{o.buyer_name}</h3>
-                    <p className="text-xs text-muted font-mono">{o.buyer_phone}</p>
-                    <p className="text-xs text-muted mt-0.5 line-clamp-1">{o.shipping_address}</p>
+                    <h3 className="font-semibold text-sm text-[#141413]">{o.buyer_name}</h3>
+                    <p className="text-xs text-[#8c867b] font-mono">{o.buyer_phone}</p>
+                    <p className="text-xs text-[#5c5850] mt-0.5 line-clamp-1">📍 {o.shipping_address}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between sm:justify-end gap-3">
+                <div className="flex items-center justify-between sm:justify-end gap-4">
                   <div className="text-right">
-                    <span className="font-serif text-sm font-medium text-[#141413] block">
+                    <span className="font-sans font-bold text-base text-[#141413] block">
                       {formatIDR(o.total_amount || o.subtotal)}
                     </span>
                     <Badge status={o.status} className="mt-0.5" />
@@ -67,10 +67,11 @@ export function CustomersPage() {
                     href={`https://wa.me/${o.buyer_phone.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-md bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#156d30] transition-colors"
+                    className="h-8 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
                     title="Chat Pelanggan di WhatsApp"
                   >
-                    <MessageCircle className="size-4" />
+                    <MessageCircle className="size-3.5" />
+                    <span>Chat WA</span>
                   </a>
                 </div>
               </div>

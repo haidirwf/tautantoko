@@ -66,7 +66,7 @@ export function DashboardPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#faf8f5] flex flex-col items-center justify-center p-4 text-center">
-        <div className="max-w-md w-full p-8 rounded-2xl bg-[#efe9de] border border-[#e8e2d9] shadow-xs">
+        <div className="max-w-md w-full p-8 rounded-2xl bg-white border border-[#e8e2d9] shadow-xs">
           <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
             <Lock className="size-5" />
           </div>
