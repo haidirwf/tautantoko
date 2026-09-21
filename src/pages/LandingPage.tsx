@@ -65,251 +65,263 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/20 selection:text-[#141413] overflow-x-hidden">
-      {/* 1. HERO SECTION */}
-      <section className="relative px-4 sm:px-6 pt-16 sm:pt-24 pb-16 sm:pb-24 max-w-5xl mx-auto text-left sm:text-center">
-        {/* Brand pill badge with entrance motion */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="inline-flex items-center gap-2 rounded-full border border-[#e8e2d9] bg-[#efe9de]/80 px-4 py-1.5 text-xs text-[#5c5850] mb-8 shadow-2xs"
-        >
-          <Sparkles className="size-3.5 text-[#cc785c] animate-spin-slow" />
-          <span>Etalase Belanja Ringkas & Checkout WhatsApp</span>
-        </motion.div>
-
-        {/* Display Headline with staggered entrance */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal tracking-tight text-[#141413] leading-[1.05] max-w-4xl mx-auto"
-        >
-          Ubah Pengunjung Media Sosial <br className="hidden sm:inline" />
-          Menjadi <span className="italic font-normal text-[#cc785c]">Pembeli Pasti.</span>
-        </motion.h1>
-
-        {/* Subtitle with fade up */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 text-base sm:text-lg text-[#5c5850] max-w-2xl mx-auto leading-relaxed"
-        >
-          Tampilkan seluruh produk dan tautan bisnismu dalam satu link elegan. Pembeli memilih varian, mengisi alamat, dan pesanan terkirim rapi ke WhatsApp Anda tanpa potongan biaya transaksi.
-        </motion.p>
-
-        {/* Action Buttons with spring scale */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-9 flex flex-wrap items-center sm:justify-center gap-3.5"
-        >
-          <motion.button
-            whileHover={{ scale: 1.03, y: -1 }}
-            whileTap={{ scale: 0.97 }}
-            type="button"
-            onClick={() => setIsAuthOpen(true)}
-            className="group inline-flex items-center gap-3 rounded-full bg-[#141413] px-6 py-3.5 text-sm font-medium text-[#faf8f5] hover:bg-[#252523] transition-all shadow-sm active:scale-[0.98]"
-          >
-            <span>Buka Toko Gratis</span>
-            <span className="grid size-6 place-items-center rounded-full bg-[#cc785c] text-white font-semibold text-xs group-hover:scale-110 transition-transform">
-              ↗
-            </span>
-          </motion.button>
-
-          <motion.div whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}>
-            <Link
-              to="/batik-nusantara"
-              className="rounded-full border border-[#e8e2d9] bg-white hover:bg-[#efe9de] px-6 py-3.5 text-sm font-medium text-[#141413] transition-all inline-block shadow-2xs"
+      {/* 1. HERO SECTION (2-COLUMN: TEXT ON LEFT, PHONE ON RIGHT) */}
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16 lg:pt-20 pb-16 sm:pb-24 max-w-6xl lg:max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Text, CTAs, Claim Bar (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            {/* Brand pill badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="inline-flex items-center gap-2 rounded-full border border-[#e8e2d9] bg-white px-3.5 py-1.5 text-xs text-[#5c5850] mb-6 shadow-2xs"
             >
-              Jelajahi Demo Etalase
-            </Link>
-          </motion.div>
-        </motion.div>
+              <Sparkles className="size-3.5 text-[#cc785c]" />
+              <span>Etalase Belanja Ringkas & Checkout WhatsApp</span>
+            </motion.div>
 
-        {/* Quick Slug Claim Input */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
-          className="mt-14 max-w-md mx-auto"
-        >
-          <form
-            onSubmit={handleClaimSubmit}
-            className="p-1.5 rounded-full border border-[#e8e2d9] bg-white shadow-sm flex items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
-          >
-            <div className="flex items-center pl-4 text-xs sm:text-sm text-[#706c64] font-mono select-none">
-              tautan.site/
-            </div>
-            <input
-              type="text"
-              required
-              placeholder="namatokomu"
-              value={claimSlug}
-              onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-              className="w-full h-9 bg-transparent text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium"
-            />
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="px-4 sm:px-5 h-9 rounded-full bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold whitespace-nowrap transition-colors shrink-0 shadow-2xs"
+            {/* Display Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#141413] leading-[1.08]"
             >
-              Klaim Tautan
-            </motion.button>
-          </form>
-          <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-[#706c64]">
-            <span className="flex items-center gap-1">
-              <Check className="size-3 text-status-success" />
-              0% Potongan Komisi
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <Check className="size-3 text-status-success" />
-              Siap dalam 30 Detik
-            </span>
+              Ubah Pengunjung Media Sosial <br className="hidden sm:inline" />
+              Menjadi <span className="italic font-normal text-[#cc785c]">Pembeli Pasti.</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-5 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed"
+            >
+              Tampilkan seluruh produk dan tautan bisnismu dalam satu link elegan. Pembeli memilih varian, mengisi alamat, dan pesanan terkirim rapi ke WhatsApp Anda tanpa potongan biaya transaksi.
+            </motion.p>
+
+            {/* Quick Slug Claim Input */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+              className="mt-8 w-full max-w-md"
+            >
+              <form
+                onSubmit={handleClaimSubmit}
+                className="p-1.5 rounded-full border border-[#e8e2d9] bg-white shadow-2xs flex items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
+              >
+                <div className="flex items-center pl-4 text-xs sm:text-sm text-[#706c64] font-mono select-none">
+                  tautan.site/
+                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="namatokomu"
+                  value={claimSlug}
+                  onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  className="w-full h-9 bg-transparent text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium"
+                />
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="px-4 sm:px-6 h-9 rounded-full bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold whitespace-nowrap transition-colors shrink-0 shadow-2xs cursor-pointer"
+                >
+                  Klaim Tautan
+                </motion.button>
+              </form>
+              <div className="flex items-center gap-3 sm:gap-4 mt-3 text-[11px] text-[#706c64] flex-wrap">
+                <span className="flex items-center gap-1">
+                  <Check className="size-3 text-[#137333]" />
+                  0% Potongan Komisi
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Check className="size-3 text-[#137333]" />
+                  Siap dalam 30 Detik
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Check className="size-3 text-[#137333]" />
+                  Tanpa Kartu Kredit
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-8 flex flex-wrap items-center gap-3.5"
+            >
+              <motion.button
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={() => setIsAuthOpen(true)}
+                className="group inline-flex items-center gap-3 rounded-full bg-[#141413] px-6 py-3.5 text-sm font-medium text-[#faf8f5] hover:bg-[#252523] transition-all shadow-xs cursor-pointer"
+              >
+                <span>Buka Toko Gratis</span>
+                <span className="grid size-6 place-items-center rounded-full bg-[#cc785c] text-white font-semibold text-xs group-hover:scale-110 transition-transform">
+                  ↗
+                </span>
+              </motion.button>
+
+              <motion.div whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  to="/batik-nusantara"
+                  className="rounded-full border border-[#e8e2d9] bg-white hover:bg-[#faf8f5] px-6 py-3.5 text-sm font-medium text-[#141413] transition-all inline-block shadow-2xs"
+                >
+                  Jelajahi Demo Etalase
+                </Link>
+              </motion.div>
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* Smartphone Storefront Showcase & Authentic WhatsApp Bubble */}
-        <div className="relative mt-14 max-w-xl mx-auto flex flex-col items-center">
-          {/* Smartphone Frame (iPhone aesthetic) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[320px] sm:max-w-[340px] rounded-[44px] border-[7px] border-[#181715] bg-[#faf8f5] shadow-2xl overflow-hidden relative"
-          >
-            {/* Dynamic Island / Notch & Status Bar */}
-            <div className="pt-2 pb-1 bg-[#faf8f5] flex items-center justify-between px-6 text-[10px] text-[#141413] font-medium select-none">
-              <span>9:41</span>
-              <div className="w-20 h-4 bg-[#181715] rounded-full flex items-center justify-end px-1.5">
-                <span className="size-1.5 rounded-full bg-[#252523]" />
-              </div>
-              <div className="flex items-center gap-1 text-[#141413]">
-                <Wifi className="size-3" />
-                <Battery className="size-3" />
-              </div>
-            </div>
-
-            {/* Screen Content: Authentic Buyer View */}
-            <div className="p-4 flex flex-col gap-3">
-              {/* Store Avatar & Info */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
-                <div className="flex items-center gap-2.5">
-                  <div className="size-9 rounded-full bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center font-serif text-sm font-semibold text-[#cc785c]">
-                    BN
+          {/* Right Column: Smartphone Storefront & Floating WhatsApp Bubble (5 cols) */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+            <div className="relative w-full max-w-[310px] sm:max-w-[330px]">
+              {/* Smartphone Frame (iPhone aesthetic) */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full rounded-[44px] border-[7px] border-[#181715] bg-[#faf8f5] shadow-2xl overflow-hidden relative"
+              >
+                {/* Dynamic Island / Notch & Status Bar */}
+                <div className="pt-2 pb-1 bg-[#faf8f5] flex items-center justify-between px-6 text-[10px] text-[#141413] font-medium select-none">
+                  <span>9:41</span>
+                  <div className="w-20 h-4 bg-[#181715] rounded-full flex items-center justify-end px-1.5">
+                    <span className="size-1.5 rounded-full bg-[#252523]" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium text-xs text-[#141413]">Batik Nusantara</span>
-                      <span className="size-1.5 rounded-full bg-[#5db872]" />
+                  <div className="flex items-center gap-1 text-[#141413]">
+                    <Wifi className="size-3" />
+                    <Battery className="size-3" />
+                  </div>
+                </div>
+
+                {/* Screen Content: Authentic Buyer View */}
+                <div className="p-4 flex flex-col gap-3">
+                  {/* Store Avatar & Info */}
+                  <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="size-9 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-serif text-sm font-bold text-[#cc785c]">
+                        BN
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-xs text-[#141413]">Batik Nusantara</span>
+                          <span className="size-1.5 rounded-full bg-[#137333]" />
+                        </div>
+                        <p className="text-[10px] text-[#706c64] line-clamp-1">Koleksi busana etnik katun primisima</p>
+                      </div>
                     </div>
-                    <p className="text-[10px] text-[#706c64] line-clamp-1">Koleksi busana etnik katun primisima</p>
+                    <Link
+                      to="/batik-nusantara"
+                      className="p-1 rounded-full text-[#cc785c] hover:bg-[#faf8f5] transition-colors"
+                      title="Buka Toko"
+                    >
+                      <ExternalLink className="size-3.5" />
+                    </Link>
                   </div>
-                </div>
-                <Link
-                  to="/batik-nusantara"
-                  className="p-1 rounded-full text-[#cc785c] hover:bg-[#efe9de] transition-colors"
-                  title="Buka Toko"
-                >
-                  <ExternalLink className="size-3.5" />
-                </Link>
-              </div>
 
-              {/* 2 Clean Product Cards */}
-              <div className="flex flex-col gap-2.5">
-                <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
-                  <img
-                    src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&auto=format&fit=crop&q=80"
-                    alt="Kemeja Batik"
-                    className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <span className="font-medium text-xs text-[#141413] block truncate">
-                      Kemeja Batik Parang
-                    </span>
-                    <span className="font-serif text-sm font-medium text-[#141413] block">
-                      {formatIDR(245000)}
-                    </span>
-                    <span className="text-[9px] text-[#706c64] font-mono">Pilihan: S, M, L, XL</span>
+                  {/* 2 Clean Product Cards */}
+                  <div className="flex flex-col gap-2.5">
+                    <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
+                      <img
+                        src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&auto=format&fit=crop&q=80"
+                        alt="Kemeja Batik"
+                        className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-xs text-[#141413] block truncate">
+                          Kemeja Batik Parang
+                        </span>
+                        <span className="font-sans font-bold text-xs text-[#141413] block mt-0.5">
+                          {formatIDR(245000)}
+                        </span>
+                        <span className="text-[9px] text-[#706c64] font-mono">Pilihan: S, M, L, XL</span>
+                      </div>
+                      <Link
+                        to="/batik-nusantara"
+                        className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
+                      >
+                        + Beli
+                      </Link>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
+                      <img
+                        src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80"
+                        alt="Dress Tenun"
+                        className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-xs text-[#141413] block truncate">
+                          Dress Tenun Ikat Jepara
+                        </span>
+                        <span className="font-sans font-bold text-xs text-[#141413] block mt-0.5">
+                          {formatIDR(320000)}
+                        </span>
+                        <span className="text-[9px] text-[#706c64] font-mono">Pilihan: All Size</span>
+                      </div>
+                      <Link
+                        to="/batik-nusantara"
+                        className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
+                      >
+                        + Beli
+                      </Link>
+                    </div>
                   </div>
-                  <Link
-                    to="/batik-nusantara"
-                    className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
-                  >
-                    + Beli
-                  </Link>
-                </div>
 
-                <div className="p-2 rounded-xl bg-white border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
-                  <img
-                    src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80"
-                    alt="Dress Tenun"
-                    className="size-14 rounded-lg object-cover border border-[#e8e2d9] shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <span className="font-medium text-xs text-[#141413] block truncate">
-                      Dress Tenun Ikat Jepara
-                    </span>
-                    <span className="font-serif text-sm font-medium text-[#141413] block">
-                      {formatIDR(320000)}
-                    </span>
-                    <span className="text-[9px] text-[#706c64] font-mono">Pilihan: All Size</span>
+                  {/* Bottom Bar inside Smartphone */}
+                  <div className="p-2.5 rounded-xl bg-[#141413] text-[#faf8f5] flex items-center justify-between mt-1 shadow-xs">
+                    <div className="text-left pl-1">
+                      <span className="text-[10px] text-[#faf8f5]/70 block leading-none">Keranjang Siap</span>
+                      <span className="font-sans text-xs font-bold text-[#faf8f5] mt-0.5 block">1 Barang • {formatIDR(245000)}</span>
+                    </div>
+                    <Link
+                      to="/batik-nusantara"
+                      className="px-3 py-1.5 rounded-lg bg-[#cc785c] text-white text-[10px] font-semibold flex items-center gap-1 hover:bg-[#a9583e] transition-colors"
+                    >
+                      <span>Checkout WA</span>
+                      <ArrowRight className="size-2.5" />
+                    </Link>
                   </div>
-                  <Link
-                    to="/batik-nusantara"
-                    className="px-2.5 py-1 rounded-md bg-[#cc785c] text-white text-[11px] font-medium shrink-0 shadow-2xs hover:bg-[#a9583e] transition-colors"
-                  >
-                    + Beli
-                  </Link>
+
+                  {/* Home Indicator */}
+                  <div className="w-24 h-1 bg-[#181715]/30 rounded-full mx-auto mt-2" />
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Bottom Bar inside Smartphone */}
-              <div className="p-2.5 rounded-xl bg-[#141413] text-[#faf8f5] flex items-center justify-between mt-1 shadow-xs">
-                <div className="text-left pl-1">
-                  <span className="text-[10px] text-[#faf8f5]/70 block leading-none">Keranjang Siap</span>
-                  <span className="font-serif text-xs font-medium text-[#faf8f5] mt-0.5 block">1 Barang • {formatIDR(245000)}</span>
+              {/* Authentic WhatsApp Message Bubble */}
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.65, duration: 0.5, type: 'spring', bounce: 0.2 }}
+                className="w-full max-w-[280px] sm:max-w-[300px] absolute -bottom-6 -left-6 sm:-left-10 p-3.5 rounded-2xl rounded-tr-xs bg-[#d9fdd3] border border-[#b4e6ad] text-[#111b21] shadow-xl text-left z-20"
+              >
+                <div className="flex items-center gap-2 mb-1.5 pb-1 border-b border-[#b4e6ad]/60">
+                  <MessageCircle className="size-4 text-[#25D366]" />
+                  <span className="text-[11px] font-semibold text-[#128C7E]">Format Order Otomatis di WhatsApp</span>
                 </div>
-                <Link
-                  to="/batik-nusantara"
-                  className="px-3 py-1.5 rounded-lg bg-[#cc785c] text-white text-[10px] font-semibold flex items-center gap-1 hover:bg-[#a9583e] transition-colors"
-                >
-                  <span>Checkout WA</span>
-                  <ArrowRight className="size-2.5" />
-                </Link>
-              </div>
-
-              {/* Home Indicator */}
-              <div className="w-24 h-1 bg-[#181715]/30 rounded-full mx-auto mt-2" />
+                <p className="text-[11px] text-[#111b21] leading-relaxed font-sans">
+                  Halo <strong>Batik Nusantara</strong>, saya mau pesan:
+                  <br />• 1x Kemeja Batik Parang (Ukuran: L)
+                  <br />• Total: <strong>Rp 245.000</strong>
+                  <br /><span className="text-[10px] text-[#4a5568]">📍 Kirim ke: Budi Santoso, Jakarta Selatan</span>
+                </p>
+                <div className="flex items-center justify-end gap-1 text-[9px] text-[#667781] mt-1 font-mono">
+                  <span>10:42</span>
+                  <span className="text-[#53bdeb] font-bold">✓✓</span>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
-
-          {/* Authentic WhatsApp Message Bubble (Beside / Floating near the phone) */}
-          <motion.div
-            initial={{ opacity: 0, y: 15, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.7, duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="w-full max-w-[310px] sm:max-w-[330px] lg:absolute lg:-right-12 lg:top-1/3 mt-6 lg:mt-0 p-3.5 rounded-2xl rounded-tr-xs bg-[#d9fdd3] border border-[#b4e6ad] text-[#111b21] shadow-lg text-left"
-          >
-            <div className="flex items-center gap-2 mb-1.5 pb-1 border-b border-[#b4e6ad]/60">
-              <MessageCircle className="size-4 text-[#25D366]" />
-              <span className="text-[11px] font-semibold text-[#128C7E]">Format Order Otomatis di WhatsApp</span>
-            </div>
-            <p className="text-[11px] text-[#111b21] leading-relaxed font-sans">
-              Halo <strong>Batik Nusantara</strong>, saya mau pesan:
-              <br />• 1x Kemeja Batik Parang (Ukuran: L)
-              <br />• Total: <strong>Rp 245.000</strong>
-              <br /><span className="text-[10px] text-[#4a5568]">📍 Kirim ke: Budi Santoso, Jakarta Selatan</span>
-            </p>
-            <div className="flex items-center justify-end gap-1 text-[9px] text-[#667781] mt-1 font-mono">
-              <span>10:42</span>
-              <span className="text-[#53bdeb] font-bold">✓✓</span>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
