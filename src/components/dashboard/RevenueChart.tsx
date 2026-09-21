@@ -18,13 +18,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
   )
 
   return (
-    <div className="p-6 rounded-xl bg-surface-dark border border-[#2b2824] shadow-md text-on-dark flex flex-col justify-between">
+    <div className="p-6 rounded-2xl bg-surface-card border border-hairline shadow-2xs text-ink flex flex-col justify-between">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
         <div>
-          <h3 className="font-serif text-xl font-normal tracking-tight text-on-dark">
+          <h3 className="font-serif text-xl font-normal tracking-tight text-ink">
             Tren Pendapatan Harian
           </h3>
-          <p className="text-xs text-on-dark-soft mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             Komparasi Pendapatan Terverifikasi vs Potensi Pipeline WhatsApp
           </p>
         </div>
@@ -33,11 +33,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-xs bg-primary" />
-            <span className="text-on-dark-soft">Terverifikasi (Settled)</span>
+            <span className="text-muted font-medium">Terverifikasi (Settled)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-xs bg-[#e8a55a]/60" />
-            <span className="text-on-dark-soft">Pending WA</span>
+            <span className="size-2.5 rounded-xs bg-status-amber" />
+            <span className="text-muted font-medium">Pending WA</span>
           </div>
         </div>
       </div>
@@ -59,12 +59,12 @@ export function RevenueChart({ data }: RevenueChartProps) {
               >
                 {/* Tooltip */}
                 {isHovered && (
-                  <div className="absolute -top-14 z-20 px-3 py-1.5 rounded-md bg-[#252320] border border-[#3f3b35] text-[11px] shadow-lg pointer-events-none whitespace-nowrap animate-in fade-in zoom-in-95">
-                    <span className="font-medium text-on-dark block">{item.date}</span>
-                    <span className="text-primary block font-mono">
+                  <div className="absolute -top-14 z-20 px-3 py-1.5 rounded-lg bg-canvas border border-hairline text-[11px] text-ink shadow-md pointer-events-none whitespace-nowrap animate-in fade-in zoom-in-95">
+                    <span className="font-medium text-ink block">{item.date}</span>
+                    <span className="text-primary font-medium block font-mono">
                       Settled: {formatIDR(item.settled)}
                     </span>
-                    <span className="text-status-amber block font-mono">
+                    <span className="text-[#a8651a] block font-mono">
                       Pending: {formatIDR(item.pending)}
                     </span>
                   </div>
@@ -76,20 +76,20 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   <div
                     style={{ height: `${settledHeight}%` }}
                     className={`w-1/2 rounded-t-xs bg-primary transition-all duration-300 ${
-                      isHovered ? 'brightness-110' : 'opacity-90'
+                      isHovered ? 'brightness-105' : 'opacity-90'
                     }`}
                   />
                   {/* Pending Bar */}
                   <div
                     style={{ height: `${pendingHeight}%` }}
-                    className={`w-1/2 rounded-t-xs bg-status-amber/60 transition-all duration-300 ${
-                      isHovered ? 'bg-status-amber/90' : 'opacity-80'
+                    className={`w-1/2 rounded-t-xs bg-status-amber transition-all duration-300 ${
+                      isHovered ? 'brightness-105' : 'opacity-75'
                     }`}
                   />
                 </div>
 
                 {/* Date Label */}
-                <span className="text-[11px] font-mono text-on-dark-soft mt-3 group-hover:text-on-dark transition-colors">
+                <span className="text-[11px] font-mono text-muted mt-3 group-hover:text-ink transition-colors">
                   {item.date}
                 </span>
               </div>

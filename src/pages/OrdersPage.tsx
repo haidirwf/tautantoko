@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Search, MessageCircle, SlidersHorizontal, Package, RefreshCw } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Search, MessageCircle, SlidersHorizontal, Package, RefreshCw, Lock } from 'lucide-react'
 import type { Order, OrderStatus } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR, sanitizeWhatsApp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { OrderEditModal } from '@/components/dashboard/OrderEditModal'
+import { useAuthStore } from '@/store/useAuthStore'
+import { AuthModal } from '@/components/auth/AuthModal'
 
 export function OrdersPage() {
+  const { isAuthenticated } = useAuthStore()
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const storeId = 'store-batik-01'
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
@@ -17,6 +22,10 @@ export function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   const loadOrders = async () => {
+    if (!isAuthenticated) {
+      setIsLoading(false)
+      return
+    }
     setIsLoading(true)
     try {
       const data = await api.getOrders(storeId)
@@ -68,6 +77,34 @@ export function OrdersPage() {
 
     return matchesStatus && matchesSearch
   })
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[80vh] bg-canvas flex flex-col items-center justify-center p-4 text-center">
+        <div className="max-w-md p-8 rounded-2xl bg-surface-card border border-hairline shadow-xs">
+          <div className="size-12 rounded-full bg-canvas border border-hairline flex items-center justify-center text-primary mx-auto mb-4">
+            <Lock className="size-5" />
+          </div>
+          <h2 className="font-serif text-3xl font-medium text-ink">Pesanan Toko Bersifat Privat</h2>
+          <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
+            Hanya pemilik toko yang terautentikasi yang dapat melihat dan memperbarui status pesanan WhatsApp pembeli.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+            <Button onClick={() => setIsAuthModalOpen(true)} className="w-full sm:w-auto">
+              Masuk ke Akun Toko
+            </Button>
+            <Link to="/" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">
+                Kembali ke Beranda
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode="login" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-canvas text-ink pb-20">

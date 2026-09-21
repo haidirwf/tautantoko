@@ -10,30 +10,32 @@ interface PaymentBreakdownProps {
 
 export function PaymentBreakdown({ distribution }: PaymentBreakdownProps) {
   return (
-    <div className="p-6 rounded-xl bg-surface-dark border border-[#2b2824] shadow-md text-on-dark flex flex-col justify-between">
+    <div className="p-6 rounded-2xl bg-surface-card border border-hairline shadow-2xs text-ink flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-serif text-xl font-normal tracking-tight text-on-dark">
+          <h3 className="font-serif text-xl font-normal tracking-tight text-ink">
             Metode Pembayaran
           </h3>
-          <p className="text-xs text-on-dark-soft mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             Sebaran metode transfer manual & QRIS
           </p>
         </div>
-        <Wallet className="size-5 text-primary" />
+        <div className="size-9 rounded-lg bg-canvas border border-hairline flex items-center justify-center text-primary shrink-0">
+          <Wallet className="size-4" />
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 mt-2">
         {distribution.map((item) => (
           <div key={item.method} className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-on-dark font-medium">{item.method}</span>
-              <span className="text-on-dark-soft font-mono">
+              <span className="text-ink font-medium">{item.method}</span>
+              <span className="text-muted font-mono">
                 {item.count} pesanan ({item.percentage}%)
               </span>
             </div>
             {/* Progress Track */}
-            <div className="h-2 w-full rounded-full bg-surface-dark-elevated overflow-hidden border border-[#38342f]">
+            <div className="h-2 w-full rounded-full bg-canvas overflow-hidden border border-hairline">
               <div
                 style={{ width: `${item.percentage}%` }}
                 className="h-full rounded-full bg-primary transition-all duration-500"
@@ -43,7 +45,7 @@ export function PaymentBreakdown({ distribution }: PaymentBreakdownProps) {
         ))}
 
         {distribution.length === 0 && (
-          <p className="text-xs text-on-dark-soft py-4 text-center">
+          <p className="text-xs text-muted py-4 text-center">
             Belum ada transaksi pembayaran tercatat.
           </p>
         )}

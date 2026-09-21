@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { DollarSign, Clock, CheckCircle2, TrendingUp, ArrowUpRight, ListOrdered } from 'lucide-react'
+import { DollarSign, Clock, CheckCircle2, TrendingUp, ArrowUpRight, ListOrdered, Lock, ExternalLink } from 'lucide-react'
 import type { DashboardMetrics, Order } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR } from '@/lib/utils'
@@ -9,8 +9,12 @@ import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { PaymentBreakdown } from '@/components/dashboard/PaymentBreakdown'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/store/useAuthStore'
+import { AuthModal } from '@/components/auth/AuthModal'
 
 export function DashboardPage() {
+  const { user, isAuthenticated } = useAuthStore()
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const storeId = 'store-batik-01'
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
@@ -18,6 +22,10 @@ export function DashboardPage() {
 
   useEffect(() => {
     async function loadDashboard() {
+      if (!isAuthenticated) {
+        setIsLoading(false)
+        return
+      }
       setIsLoading(true)
       try {
         const [metricData, ordersData] = await Promise.all([
@@ -33,7 +41,36 @@ export function DashboardPage() {
       }
     }
     loadDashboard()
-  }, [])
+  }, [isAuthenticated])
+
+  // If merchant is not authenticated, protect their privacy
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[80vh] bg-canvas flex flex-col items-center justify-center p-4 text-center">
+        <div className="max-w-md p-8 rounded-2xl bg-surface-card border border-hairline shadow-xs">
+          <div className="size-12 rounded-full bg-canvas border border-hairline flex items-center justify-center text-primary mx-auto mb-4">
+            <Lock className="size-5" />
+          </div>
+          <h2 className="font-serif text-3xl font-medium text-ink">Area Privat Penjual</h2>
+          <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
+            Data keuangan, analitik omzet, dan rincian pesanan hanya dapat diakses oleh pemilik toko yang terautentikasi.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+            <Button onClick={() => setIsAuthModalOpen(true)} className="w-full sm:w-auto">
+              Masuk / Buka Akun Toko
+            </Button>
+            <Link to="/" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">
+                Kembali ke Beranda
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode="login" />
+      </div>
+    )
+  }
 
   if (isLoading || !metrics) {
     return (
@@ -53,7 +90,7 @@ export function DashboardPage() {
             <div className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-status-success animate-pulse" />
               <span className="text-xs font-mono uppercase tracking-wider text-muted">
-                Fintech Command Center
+                Toko: {user?.storeSlug || 'batik-nusantara'}
               </span>
             </div>
             <h1 className="font-serif text-3xl sm:text-4xl font-normal text-ink tracking-tight mt-1">
@@ -65,6 +102,16 @@ export function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <Link
+              to={`/${user?.storeSlug || 'batik-nusantara'}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-surface-card border border-hairline text-xs font-medium text-ink hover:bg-surface-soft transition-colors"
+            >
+              <span>Lihat Etalase Publik</span>
+              <ExternalLink className="size-3 text-muted" />
+            </Link>
+
             <Link to="/orders">
               <Button className="h-10 text-xs sm:text-sm">
                 <ListOrdered className="size-4" />
@@ -74,7 +121,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Top 4 Financial Metric Cards */}
+        {/* Top 4 Financial Metric Cards in harmonious cream/canvas style */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           {/* Settled Revenue */}
           <MetricCard
@@ -82,7 +129,7 @@ export function DashboardPage() {
             value={formatIDR(metrics.total_settled_revenue)}
             trend={{ text: '+24.8% bln ini', isPositive: true }}
             subtext="Status: Paid & Fulfilled"
-            icon={<DollarSign className="size-5" />}
+            icon={<DollarSign className="size-5 text-primary" />}
           />
 
           {/* Pending Pipeline */}
@@ -108,7 +155,7 @@ export function DashboardPage() {
             label="Rata-rata Nilai Pesanan (AOV)"
             value={formatIDR(metrics.aov)}
             subtext="Berdasarkan pesanan berhasil"
-            icon={<CheckCircle2 className="size-5" />}
+            icon={<CheckCircle2 className="size-5 text-status-success" />}
           />
         </div>
 
@@ -123,7 +170,7 @@ export function DashboardPage() {
         </div>
 
         {/* Recent Transactions Feed */}
-        <div className="mt-8 rounded-xl bg-surface-card border border-hairline overflow-hidden shadow-xs">
+        <div className="mt-8 rounded-2xl bg-surface-card border border-hairline overflow-hidden shadow-2xs">
           <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between">
             <div>
               <h3 className="font-serif text-xl font-medium tracking-tight text-ink">

@@ -128,7 +128,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
               setStep('cart')
               setCartOpen(true)
             }}
-            className="pointer-events-auto w-full max-w-md flex items-center justify-between p-3.5 pl-5 rounded-full bg-surface-dark text-on-dark border border-[#38342f] shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all group"
+            className="pointer-events-auto w-full max-w-md flex items-center justify-between p-3.5 pl-5 rounded-full bg-ink text-canvas border border-hairline shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all group"
           >
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -138,10 +138,10 @@ export function CartDrawer({ store }: CartDrawerProps) {
                 </span>
               </div>
               <div className="text-left">
-                <span className="text-xs text-on-dark-soft block leading-none">
+                <span className="text-xs text-canvas/70 block leading-none">
                   {itemCount} Produk dalam keranjang
                 </span>
-                <span className="font-serif text-base font-medium text-on-dark tracking-tight">
+                <span className="font-serif text-base font-medium text-canvas tracking-tight">
                   {formatIDR(subtotal)}
                 </span>
               </div>
