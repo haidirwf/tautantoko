@@ -5,7 +5,6 @@ import {
   Check,
   ShoppingBag,
   MessageCircle,
-  Sparkles,
   ChevronDown,
   Layers,
   SendHorizontal,
@@ -70,16 +69,6 @@ export function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Text, CTAs, Claim Bar (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Brand pill badge */}
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="inline-flex items-center gap-2 rounded-full border border-[#e8e2d9] bg-white px-3.5 py-1.5 text-xs text-[#5c5850] mb-6 shadow-2xs"
-            >
-              <Sparkles className="size-3.5 text-[#cc785c]" />
-              <span>Etalase Belanja Ringkas & Checkout WhatsApp</span>
-            </motion.div>
 
             {/* Display Headline */}
             <motion.h1

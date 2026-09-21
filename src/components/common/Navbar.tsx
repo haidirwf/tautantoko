@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { LayoutDashboard, ListOrdered, ExternalLink, LogOut, ArrowRight, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ListOrdered, LogOut, ArrowRight, Menu, X } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
@@ -84,15 +84,6 @@ export function Navbar() {
           <div className="flex items-center gap-2.5">
             {isAuthenticated && user ? (
               <div className="flex items-center gap-2">
-                <Link
-                  to={`/${user.storeSlug || 'batik-nusantara'}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#efe9de] border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#e4dcce] transition-colors"
-                >
-                  <span>Lihat Toko</span>
-                  <ExternalLink className="size-3 text-[#706c64]" />
-                </Link>
 
                 {isMerchantArea ? (
                   <motion.button

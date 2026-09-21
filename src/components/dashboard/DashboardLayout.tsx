@@ -8,7 +8,6 @@ import {
   Users,
   BarChart3,
   Settings,
-  ExternalLink,
   Bell,
   LogOut,
   Menu,
@@ -182,17 +181,7 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar for Desktop */}
-        <header className="h-16 px-6 sm:px-8 border-b border-[#e8e2d9] flex items-center justify-end gap-3.5 bg-[#faf8f5]/80 backdrop-blur-xs sticky top-0 z-30">
-          <a
-            href={`/${storeSlug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md border border-[#e8e2d9] bg-[#faf8f5] hover:bg-[#efe9de] text-xs font-medium text-[#141413] transition-colors shadow-2xs"
-          >
-            <span>Lihat tokomu</span>
-            <ExternalLink className="size-3 text-muted" />
-          </a>
-
+        <header className="h-16 px-6 sm:px-8 border-b border-[#e8e2d9] flex items-center justify-end gap-3 bg-[#faf8f5]/80 backdrop-blur-xs sticky top-0 z-30">
           <button
             type="button"
             className="p-2 rounded-md text-[#7c7569] hover:bg-[#efe9de] transition-colors"

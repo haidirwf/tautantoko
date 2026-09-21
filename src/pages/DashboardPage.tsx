@@ -9,7 +9,6 @@ import {
   ArrowRight,
   Plus,
   Lock,
-  ExternalLink,
   Copy,
   Check,
 } from 'lucide-react'
@@ -161,16 +160,6 @@ export function DashboardPage() {
                 </>
               )}
             </button>
-
-            <a
-              href={`/${storeSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-9 px-3.5 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors"
-            >
-              <span>Lihat Toko</span>
-              <ExternalLink className="size-3 text-[#706c64]" />
-            </a>
 
             <button
               type="button"
