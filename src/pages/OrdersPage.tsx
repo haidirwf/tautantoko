@@ -214,107 +214,205 @@ export function OrdersPage() {
             </p>
           </div>
         ) : (
-          <div className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs divide-y divide-[#e8e2d9]">
-            {/* Desktop Table Header */}
-            <div className="hidden md:grid md:grid-cols-12 px-5 py-3 bg-[#faf8f5] text-[11px] font-mono uppercase tracking-wider text-[#8c867b] font-medium border-b border-[#e8e2d9]">
-              <div className="col-span-3">Pesanan</div>
-              <div className="col-span-3">Pembeli</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-2 text-right">Total</div>
-              <div className="col-span-2 text-right">Aksi</div>
+          <div className="rounded-xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs">
+            {/* Mobile & Tablet Card Layout (< lg) */}
+            <div className="block lg:hidden divide-y divide-[#e8e2d9]">
+              {filteredOrders.map((order, idx) => {
+                const buyerWaClean = sanitizeWhatsApp(order.buyer_phone)
+                const directWaUrl = `https://wa.me/${buyerWaClean}?text=${encodeURIComponent(
+                  `Halo kak ${order.buyer_name}, perihal pesanan ${order.order_code}...`
+                )}`
+
+                return (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.15, delay: idx * 0.02 }}
+                    className="p-4 flex flex-col gap-3 hover:bg-[#faf8f5]/60 transition-colors"
+                  >
+                    {/* Header Row: Order Code + Status Badge + Date */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-mono text-xs font-semibold text-[#141413] bg-[#faf8f5] px-2 py-0.5 rounded border border-[#e8e2d9] shrink-0">
+                          {order.order_code}
+                        </span>
+                        <Badge status={order.status} />
+                      </div>
+                      <span className="text-[11px] text-[#8c867b] font-mono shrink-0">
+                        {new Date(order.created_at).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+
+                    {/* Buyer & Items Section */}
+                    <div className="bg-[#faf8f5]/70 rounded-xl p-3 border border-[#e8e2d9]/60">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="font-semibold text-xs sm:text-sm text-[#141413] truncate">
+                          {order.buyer_name}
+                        </span>
+                        <span className="text-[11px] text-[#8c867b] font-mono shrink-0">
+                          {order.buyer_phone}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#706c64] mt-1 line-clamp-2">
+                        {order.items_snapshot.map((item) => `${item.quantity}x ${item.product_name}`).join(', ')}
+                      </p>
+                    </div>
+
+                    {/* Bottom Row: Total & Action Buttons */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                      <div>
+                        <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c867b] block">
+                          Total Tagihan
+                        </span>
+                        <span className="font-sans font-bold text-sm sm:text-base text-[#141413] block">
+                          {formatIDR(order.total_amount || order.subtotal)}
+                        </span>
+                        <span className="text-[10px] text-[#8c867b] block">
+                          {order.shipping_fee > 0 ? (
+                            `Termasuk ongkir ${formatIDR(order.shipping_fee)}`
+                          ) : (
+                            <span className="text-[#b45309]">Ongkir belum diset</span>
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={directWaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 sm:flex-initial justify-center h-8 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs"
+                          title="Chat pembeli di WhatsApp"
+                        >
+                          <MessageCircle className="size-3.5" />
+                          <span>Chat WA</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(order)}
+                          className="flex-1 sm:flex-initial justify-center h-8 px-3 rounded-lg bg-white hover:bg-[#faf8f5] text-[#5c5850] hover:text-[#141413] border border-[#e8e2d9] text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                          title="Kelola status pesanan"
+                        >
+                          <SlidersHorizontal className="size-3" />
+                          <span>Kelola</span>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
 
-            {/* Rows */}
-            {filteredOrders.map((order, idx) => {
-              const buyerWaClean = sanitizeWhatsApp(order.buyer_phone)
-              const directWaUrl = `https://wa.me/${buyerWaClean}?text=${encodeURIComponent(
-                `Halo kak ${order.buyer_name}, perihal pesanan ${order.order_code}...`
-              )}`
+            {/* Desktop Table Layout (>= lg) */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[850px]">
+                <thead>
+                  <tr className="bg-[#faf8f5] border-b border-[#e8e2d9] text-[11px] font-mono uppercase tracking-wider text-[#8c867b]">
+                    <th className="py-3 px-5 font-semibold">Pesanan</th>
+                    <th className="py-3 px-5 font-semibold">Pembeli & Produk</th>
+                    <th className="py-3 px-5 font-semibold">Status</th>
+                    <th className="py-3 px-5 font-semibold text-right">Total Tagihan</th>
+                    <th className="py-3 px-5 font-semibold text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e8e2d9]">
+                  {filteredOrders.map((order, idx) => {
+                    const buyerWaClean = sanitizeWhatsApp(order.buyer_phone)
+                    const directWaUrl = `https://wa.me/${buyerWaClean}?text=${encodeURIComponent(
+                      `Halo kak ${order.buyer_name}, perihal pesanan ${order.order_code}...`
+                    )}`
 
-              return (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.15, delay: idx * 0.02 }}
-                  className="p-3.5 sm:p-4 md:px-5 md:py-3.5 hover:bg-[#faf8f5]/60 transition-colors flex flex-col md:grid md:grid-cols-12 md:items-center gap-3 md:gap-0"
-                >
-                  {/* Col 1: Order Code & Date (3 cols) */}
-                  <div className="md:col-span-3 min-w-0 flex items-center justify-between md:block">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-[#141413] bg-[#faf8f5] md:bg-transparent px-1.5 py-0.5 md:p-0 rounded border md:border-0 border-[#e8e2d9]/80">
-                        {order.order_code}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-[#8c867b] block md:mt-0.5">
-                      {new Date(order.created_at).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
+                    return (
+                      <motion.tr
+                        key={order.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.15, delay: idx * 0.02 }}
+                        className="hover:bg-[#faf8f5]/60 transition-colors"
+                      >
+                        {/* 1. Pesanan */}
+                        <td className="py-3.5 px-5 align-middle">
+                          <span className="font-mono text-xs font-semibold text-[#141413] block">
+                            {order.order_code}
+                          </span>
+                          <span className="text-[11px] text-[#8c867b] block mt-0.5 font-mono">
+                            {new Date(order.created_at).toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </td>
 
-                  {/* Col 2: Buyer & Items (3 cols) */}
-                  <div className="md:col-span-3 min-w-0">
-                    <div className="text-xs font-medium text-[#141413] truncate">
-                      {order.buyer_name}
-                      <span className="font-mono text-[#8c867b] ml-1.5 font-normal">({order.buyer_phone})</span>
-                    </div>
-                    <div className="text-[11px] text-[#706c64] truncate mt-0.5">
-                      {order.items_snapshot.map((item) => `${item.quantity}x ${item.product_name}`).join(', ')}
-                    </div>
-                  </div>
+                        {/* 2. Pembeli & Produk */}
+                        <td className="py-3.5 px-5 align-middle max-w-xs">
+                          <div className="text-xs font-medium text-[#141413] truncate">
+                            {order.buyer_name}
+                            <span className="font-mono text-[#8c867b] ml-1.5 font-normal">({order.buyer_phone})</span>
+                          </div>
+                          <div className="text-[11px] text-[#706c64] truncate mt-0.5">
+                            {order.items_snapshot.map((item) => `${item.quantity}x ${item.product_name}`).join(', ')}
+                          </div>
+                        </td>
 
-                  {/* Mobile Row: Status & Total */}
-                  <div className="flex items-center justify-between md:contents pt-2 md:pt-0 border-t md:border-t-0 border-[#f0ece5]">
-                    {/* Col 3: Status (2 cols) */}
-                    <div className="md:col-span-2">
-                      <Badge status={order.status} />
-                    </div>
+                        {/* 3. Status */}
+                        <td className="py-3.5 px-5 align-middle whitespace-nowrap">
+                          <Badge status={order.status} />
+                        </td>
 
-                    {/* Col 4: Total & Ongkir (2 cols) */}
-                    <div className="md:col-span-2 text-right">
-                      <span className="font-sans font-semibold text-sm text-[#141413] block">
-                        {formatIDR(order.total_amount || order.subtotal)}
-                      </span>
-                      <span className="text-[10px] text-[#8c867b] block">
-                        {order.shipping_fee > 0 ? (
-                          `Ongkir ${formatIDR(order.shipping_fee)}`
-                        ) : (
-                          <span className="text-[#b45309]">Ongkir belum diset</span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
+                        {/* 4. Total & Ongkir */}
+                        <td className="py-3.5 px-5 align-middle text-right whitespace-nowrap">
+                          <span className="font-sans font-semibold text-sm text-[#141413] block">
+                            {formatIDR(order.total_amount || order.subtotal)}
+                          </span>
+                          <span className="text-[10px] text-[#8c867b] block">
+                            {order.shipping_fee > 0 ? (
+                              `Ongkir ${formatIDR(order.shipping_fee)}`
+                            ) : (
+                              <span className="text-[#b45309]">Ongkir belum diset</span>
+                            )}
+                          </span>
+                        </td>
 
-                  {/* Col 5: Actions (2 cols) */}
-                  <div className="md:col-span-2 flex items-center justify-end gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-[#f0ece5]">
-                    <a
-                      href={directWaUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 md:flex-initial justify-center h-8 px-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs"
-                      title="Chat pembeli di WhatsApp"
-                    >
-                      <MessageCircle className="size-3.5" />
-                      <span>Chat</span>
-                    </a>
+                        {/* 5. Aksi */}
+                        <td className="py-3.5 px-5 align-middle text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={directWaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="h-8 px-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs"
+                              title="Chat pembeli di WhatsApp"
+                            >
+                              <MessageCircle className="size-3.5" />
+                              <span>Chat</span>
+                            </a>
 
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(order)}
-                      className="flex-1 md:flex-initial justify-center h-8 px-2.5 rounded-lg bg-white hover:bg-[#faf8f5] text-[#5c5850] hover:text-[#141413] border border-[#e8e2d9] text-xs font-medium flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-                      title="Kelola status pesanan"
-                    >
-                      <SlidersHorizontal className="size-3" />
-                      <span>Kelola</span>
-                    </button>
-                  </div>
-                </motion.div>
-              )
-            })}
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(order)}
+                              className="h-8 px-2.5 rounded-lg bg-white hover:bg-[#faf8f5] text-[#5c5850] hover:text-[#141413] border border-[#e8e2d9] text-xs font-medium flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                              title="Kelola status pesanan"
+                            >
+                              <SlidersHorizontal className="size-3" />
+                              <span>Kelola</span>
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

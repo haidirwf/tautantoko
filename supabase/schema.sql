@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT DEFAULT '',
   base_price INT NOT NULL, -- In IDR (Rupiah)
   image_url TEXT DEFAULT '',
+  stock INT DEFAULT NULL, -- NULL means unlimited/always available, number means tracked physical stock
   is_digital BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   sort_order INT DEFAULT 0,

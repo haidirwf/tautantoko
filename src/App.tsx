@@ -13,6 +13,7 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { ReviewsPage } from '@/pages/ReviewsPage'
 import { AuthPage } from '@/pages/AuthPage'
 import { useAuthStore } from '@/store/useAuthStore'
+import { Toaster } from '@/components/ui/Toaster'
 
 function AppContent() {
   const location = useLocation()
@@ -35,6 +36,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans">
+      <Toaster />
       {!isDashboardRoute && <Navbar />}
       <div className="flex-1 flex flex-col">
         <AnimatePresence mode="wait">

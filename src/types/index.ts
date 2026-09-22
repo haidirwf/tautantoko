@@ -60,6 +60,7 @@ export interface Product {
   is_digital: boolean
   is_active: boolean
   sort_order: number
+  stock?: number | null // null or undefined means unlimited / selalu tersedia
   variant_groups?: VariantGroup[]
 }
 

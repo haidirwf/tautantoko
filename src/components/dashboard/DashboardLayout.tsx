@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
@@ -18,6 +18,7 @@ import {
 import { useAuthStore } from '@/store/useAuthStore'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/store/useToastStore'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -32,16 +33,61 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false)
 
+
+  // Navigation transition & top edge loader state
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [navProgress, setNavProgress] = useState(0)
+  const prevPathRef = useRef(path)
+  const navTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  const clearNavTimers = () => {
+    navTimersRef.current.forEach((t) => clearTimeout(t))
+    navTimersRef.current = []
+  }
+
+  const startNavAnimation = () => {
+    clearNavTimers()
+    setIsNavigating(true)
+    setNavProgress(25)
+
+    const t1 = setTimeout(() => {
+      setNavProgress(65)
+    }, 90)
+
+    const t2 = setTimeout(() => {
+      setNavProgress(90)
+    }, 200)
+
+    const t3 = setTimeout(() => {
+      setNavProgress(100)
+    }, 350)
+
+    const t4 = setTimeout(() => {
+      setIsNavigating(false)
+      setNavProgress(0)
+    }, 520)
+
+    navTimersRef.current = [t1, t2, t3, t4]
+  }
+
+  useEffect(() => {
+    if (prevPathRef.current !== path) {
+      prevPathRef.current = path
+      startNavAnimation()
+    }
+    return () => clearNavTimers()
+  }, [path])
+
   const storeName = user?.name || 'Batik Nusantara'
   const storeSlug = user?.storeSlug || 'batik-nusantara'
 
   const navItems = [
     { label: 'Ringkasan', href: '/dashboard', icon: LayoutGrid, active: path === '/dashboard' },
-    { label: 'Pesanan', href: '/dashboard/orders', icon: ShoppingBag, active: path === '/dashboard/orders' || path === '/orders' },
     { label: 'Katalog', href: '/dashboard/katalog', icon: Package, active: path === '/dashboard/katalog' || path === '/katalog' },
+    { label: 'Pesanan', href: '/dashboard/orders', icon: ShoppingBag, active: path === '/dashboard/orders' || path === '/orders' },
     { label: 'Pelanggan', href: '/dashboard/pelanggan', icon: Users, active: path === '/dashboard/pelanggan' || path === '/pelanggan' },
-    { label: 'Ulasan', href: '/dashboard/ulasan', icon: Star, active: path === '/dashboard/ulasan' || path === '/ulasan' },
     { label: 'Laporan', href: '/dashboard/laporan', icon: BarChart3, active: path === '/dashboard/laporan' || path === '/laporan' },
+    { label: 'Ulasan', href: '/dashboard/ulasan', icon: Star, active: path === '/dashboard/ulasan' || path === '/ulasan' },
     { label: 'Pengaturan', href: '/dashboard/pengaturan', icon: Settings, active: path === '/dashboard/pengaturan' || path === '/pengaturan' },
   ]
 
@@ -59,9 +105,27 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col md:flex-row">
-      {/* Mobile Top Header */}
-      <div className="md:hidden flex items-center justify-between p-3.5 px-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
+    <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col lg:flex-row relative">
+      {/* Top Edge Brown/Terracotta Progress Bar Loader */}
+      <div
+        className={`fixed top-0 left-0 right-0 h-[3px] z-[9999] pointer-events-none transition-opacity duration-200 ${
+          isNavigating ? 'opacity-100' : 'opacity-0'
+        }`}
+        aria-hidden="true"
+      >
+        <div
+          className="h-full bg-gradient-to-r from-[#d97c5e] via-[#cc785c] to-[#99462e] transition-all duration-200 ease-out relative"
+          style={{
+            width: `${navProgress}%`,
+            boxShadow: '0 0 10px rgba(204, 120, 92, 0.85), 0 0 4px rgba(204, 120, 92, 0.6)',
+          }}
+        >
+          {/* Glowing head tip */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-[5px] bg-white/80 blur-[0.5px] rounded-full shadow-[0_0_6px_#ffffff]" />
+        </div>
+      </div>
+      {/* Mobile & Tablet Top Header */}
+      <div className="lg:hidden flex items-center justify-between p-3.5 px-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -96,9 +160,9 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
         </div>
       </div>
 
-      {/* Left Sidebar (Desktop & Mobile Drawer) */}
+      {/* Left Sidebar (Desktop permanent & Mobile/Tablet Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#faf8f5] border-r border-[#e8e2d9] flex flex-col justify-between transition-transform duration-200 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#faf8f5] border-r border-[#e8e2d9] flex flex-col justify-between transition-transform duration-200 lg:static lg:translate-x-0 ${
           isMobileMenuOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full'
         }`}
       >
@@ -147,7 +211,12 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
                 >
                   <Link
                     to={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false)
+                      if (path !== item.href) {
+                        startNavAnimation()
+                      }
+                    }}
                     className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
                       isActive
                         ? 'text-[#cc785c] font-semibold'
@@ -184,8 +253,8 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
           </div>
         </div>
 
-        {/* Bottom Sidebar Action: Logout */}
-        <div className="p-4 border-t border-[#e8e2d9]">
+        {/* Bottom Sidebar Action: Logout (Mobile Only) */}
+        <div className="p-4 border-t border-[#e8e2d9] lg:hidden">
           <button
             type="button"
             onClick={handleLogout}
@@ -197,23 +266,29 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
         </div>
       </aside>
 
-      {/* Mobile Backdrop Overlay */}
+      {/* Mobile & Tablet Backdrop Overlay */}
       {isMobileMenuOpen && (
         <div
           onClick={() => setIsMobileMenuOpen(false)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden transition-opacity"
           aria-hidden="true"
         />
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Clean Desktop Top Utility Bar */}
-        <header className="h-14 px-6 sm:px-8 border-b border-[#e8e2d9] hidden md:flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-30">
-          <div className="flex items-center gap-2.5 text-xs text-[#706c64]">
-            <span className="font-semibold text-[#141413]">{storeName}</span>
-          </div>
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Temporary Page Blur Overlay during navigation */}
+        <div
+          className={`fixed inset-0 pointer-events-none z-25 transition-all duration-300 ease-out ${
+            isNavigating
+              ? 'backdrop-blur-[4px] bg-[#faf8f5]/25 opacity-100'
+              : 'backdrop-blur-none bg-transparent opacity-0 pointer-events-none'
+          }`}
+          aria-hidden="true"
+        />
 
+        {/* Clean Desktop Top Utility Bar */}
+        <header className="h-14 px-6 sm:px-8 border-b border-[#e8e2d9] hidden lg:flex items-center justify-end bg-white/80 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-2.5">
             <a
               href={`/${storeSlug}`}
@@ -237,8 +312,16 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
           </div>
         </header>
 
-        {/* Page Body */}
-        <main className="flex-1 p-4 sm:p-8 lg:p-10 max-w-6xl w-full mx-auto">{children}</main>
+        {/* Page Body with dynamic blur & opacity transition */}
+        <main
+          className={`flex-1 p-4 sm:p-8 lg:p-10 max-w-6xl w-full mx-auto transition-all duration-300 ease-out ${
+            isNavigating
+              ? 'filter blur-[3px] opacity-75 pointer-events-none select-none'
+              : ''
+          }`}
+        >
+          {children}
+        </main>
       </div>
 
       {/* Generic Add Product Modal fallback */}
@@ -256,8 +339,8 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
             <label className="text-xs font-medium block mb-1">Nama Produk</label>
             <input
               type="text"
-              placeholder="cth. Kemeja Batik Solo"
-              className="w-full h-10 px-3.5 rounded-md bg-[#faf8f5] border border-hairline text-sm"
+              placeholder="Kemeja Batik Solo"
+              className="w-full h-10 px-3.5 rounded-md bg-[#faf8f5] border border-hairline text-sm placeholder:text-[#a09a8f]"
             />
           </div>
           <div>
@@ -273,7 +356,7 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
               Batal
             </Button>
             <Button onClick={() => {
-              alert('Produk baru berhasil disimpan ke katalog!')
+              toast.success('Produk Disimpan', 'Produk baru berhasil ditambahkan ke katalog.')
               setIsAddProductModalOpen(false)
             }}>
               Simpan Produk

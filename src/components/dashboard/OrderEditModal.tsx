@@ -5,6 +5,7 @@ import { formatIDR, sanitizeWhatsApp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Modal } from '@/components/ui/modal'
+import { toast } from '@/store/useToastStore'
 
 interface OrderEditModalProps {
   order: Order | null
@@ -50,9 +51,10 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
         seller_internal_note: sellerNote,
       })
       onClose()
+      toast.success('Pesanan Diperbarui', `Rincian pesanan ${order.order_code} berhasil disimpan.`)
     } catch (error) {
       console.error('Error updating order', error)
-      alert('Gagal menyimpan perubahan pesanan.')
+      toast.error('Gagal Memperbarui Pesanan', 'Terjadi kendala saat menyimpan perubahan pesanan.')
     } finally {
       setIsSaving(false)
     }
@@ -69,31 +71,32 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
       onClose={onClose}
       title={`Kelola Pesanan: ${order.order_code}`}
       description={`Dibuat pada ${new Date(order.created_at).toLocaleString('id-ID')}`}
-      maxWidth="lg"
+      maxWidth="2xl"
       surface="canvas"
     >
       <form onSubmit={handleSave} className="flex flex-col gap-5">
         {/* Customer & Items Overview */}
         <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm text-[#141413]">{order.buyer_name}</span>
-                <span className="font-mono text-xs text-[#8c867b]">({order.buyer_phone})</span>
+          <div className="flex flex-row items-center justify-between gap-2.5 sm:gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+                <span className="font-semibold text-xs sm:text-sm text-[#141413] truncate">{order.buyer_name}</span>
+                <span className="font-mono text-[11px] sm:text-xs text-[#8c867b]">({order.buyer_phone})</span>
               </div>
-              <p className="text-xs text-[#5c5850] mt-0.5 flex items-center gap-1">
+              <p className="text-[11px] sm:text-xs text-[#5c5850] mt-0.5 flex items-center gap-1">
                 <MapPin className="size-3 text-[#cc785c] shrink-0" />
-                <span>{order.shipping_address}</span>
+                <span className="line-clamp-1 sm:line-clamp-none">{order.shipping_address}</span>
               </p>
             </div>
             <a
               href={directWaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
+              title="Chat Pembeli WA"
+              className="size-8 sm:size-auto sm:h-8 flex sm:inline-flex items-center justify-center sm:gap-1.5 px-0 sm:px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold shadow-xs transition-all shrink-0 active:scale-95 cursor-pointer"
             >
-              <MessageCircle className="size-3.5" />
-              <span>Chat Pembeli WA</span>
+              <MessageCircle className="size-4 sm:size-3.5 shrink-0" />
+              <span className="hidden sm:inline">Chat Pembeli WA</span>
             </a>
           </div>
 
@@ -150,18 +153,19 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
                     : 'border-[#e8e2d9] bg-white text-[#141413] hover:bg-[#faf8f5]'
                 }`}
               >
-                <Badge status={s.id} className="mb-1 block" />
+                <Badge status={s.id} className="mb-1.5" />
                 <span className="block text-[11px] text-[#8c867b]">{s.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Shipping & Financial Ledger Inputs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Shipping & Financial Ledger Inputs: 2-column grid on both mobile & desktop */}
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              Ongkos Kirim Disepakati (IDR)
+            <label className="text-[11px] sm:text-xs font-medium text-[#141413] block mb-1 truncate" title="Ongkos Kirim Disepakati (IDR)">
+              <span className="sm:hidden">Ongkir (IDR)</span>
+              <span className="hidden sm:inline">Ongkos Kirim Disepakati (IDR)</span>
             </label>
             <input
               type="number"
@@ -169,18 +173,18 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
               step="1000"
               value={shippingFee}
               onChange={(e) => setShippingFee(Number(e.target.value) || 0)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
+              className="w-full h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-[11px] sm:text-xs font-medium text-[#141413] block mb-1 truncate">
               Metode Pembayaran
             </label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+              className="w-full h-9 sm:h-10 px-2 sm:px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
             >
               <option value="Transfer BCA">Transfer BCA</option>
               <option value="Transfer Mandiri">Transfer Mandiri</option>
@@ -191,40 +195,38 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
               <option value="Lainnya">Lainnya</option>
             </select>
           </div>
-        </div>
 
-        {/* Courier & Tracking (Resi) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-[11px] sm:text-xs font-medium text-[#141413] block mb-1 truncate">
               Nama Kurir
             </label>
             <input
               type="text"
-              placeholder="cth. JNE Regular, SiCepat, GoSend"
+              placeholder="JNE, SiCepat, dll"
               value={courierName}
               onChange={(e) => setCourierName(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+              className="w-full h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              Nomor Resi Pengiriman
+            <label className="text-[11px] sm:text-xs font-medium text-[#141413] block mb-1 truncate">
+              <span className="sm:hidden">Nomor Resi</span>
+              <span className="hidden sm:inline">Nomor Resi Pengiriman</span>
             </label>
             <input
               type="text"
-              placeholder="cth. JNE1029384829"
+              placeholder="JNE1029384829"
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
+              className="w-full h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] font-mono shadow-2xs"
             />
           </div>
         </div>
 
-        {/* Internal Seller Notes */}
+        {/* Internal Seller Notes (full width) */}
         <div>
-          <label className="text-xs font-medium text-[#141413] block mb-1">
+          <label className="text-[11px] sm:text-xs font-medium text-[#141413] block mb-1">
             Catatan Khusus Penjual (Internal)
           </label>
           <input
@@ -232,30 +234,30 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
             placeholder="Catatan rahasia untuk merchant..."
             value={sellerNote}
             onChange={(e) => setSellerNote(e.target.value)}
-            className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+            className="w-full h-9 sm:h-10 px-3 sm:px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
           />
         </div>
 
         {/* Financial Summary & Save Button */}
-        <div className="pt-4 border-t border-[#e8e2d9] flex items-center justify-between">
+        <div className="pt-4 border-t border-[#e8e2d9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span className="text-xs text-[#8c867b] block">Total Akhir Pesanan:</span>
-            <span className="font-sans font-bold text-2xl text-[#141413] tracking-tight">
+            <span className="font-sans font-bold text-xl sm:text-2xl text-[#141413] tracking-tight">
               {formatIDR(calculatedTotal)}
             </span>
           </div>
 
-          <div className="flex gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button type="button" variant="secondary" onClick={onClose} className="flex-1 sm:flex-initial justify-center">
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSaving}
-              className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+              className="flex-1 sm:flex-initial justify-center bg-[#cc785c] hover:bg-[#a9583e] text-white"
             >
               <Save className="size-4" />
-              <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
+              <span>{isSaving ? 'Menyimpan...' : 'Simpan'}</span>
             </Button>
           </div>
         </div>

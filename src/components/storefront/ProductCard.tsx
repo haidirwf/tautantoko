@@ -57,6 +57,9 @@ export function ProductCard({ product }: ProductCardProps) {
     0
   )
 
+  const isOutOfStock = product.stock !== undefined && product.stock !== null && product.stock <= 0
+  const isLimitedStock = product.stock !== undefined && product.stock !== null && product.stock > 0
+
   return (
     <>
       <motion.div
@@ -72,11 +75,22 @@ export function ProductCard({ product }: ProductCardProps) {
             loading="lazy"
             className="size-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
           />
-          {hasVariants && (
-            <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-canvas/90 backdrop-blur-xs text-ink border border-hairline shadow-2xs">
-              Ada Varian
-            </span>
-          )}
+          <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
+            {isOutOfStock ? (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-600 text-white shadow-2xs">
+                Stok Habis
+              </span>
+            ) : isLimitedStock && product.stock! <= 5 ? (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-100 text-amber-900 border border-amber-300/80 shadow-2xs">
+                Sisa {product.stock}
+              </span>
+            ) : null}
+            {hasVariants && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-canvas/90 backdrop-blur-xs text-ink border border-hairline shadow-2xs">
+                Ada Varian
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Product Info */}
@@ -103,42 +117,49 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={isOutOfStock ? undefined : { scale: 1.05 }}
+              whileTap={isOutOfStock ? undefined : { scale: 0.95 }}
               type="button"
-              onClick={handleOpenVariantModal}
-              className={`h-7 sm:h-8 px-2.5 sm:px-3 rounded-md text-[11px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-colors shadow-2xs shrink-0 cursor-pointer ${
-                addedAnimation
+              disabled={isOutOfStock}
+              onClick={isOutOfStock ? undefined : handleOpenVariantModal}
+              className={`h-7 sm:h-8 px-2.5 sm:px-3 rounded-md text-[11px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-colors shadow-2xs shrink-0 ${
+                isOutOfStock
+                  ? 'bg-[#eae5dd] text-[#8c867b] cursor-not-allowed'
+                  : addedAnimation
                   ? 'bg-status-success/15 text-status-success border border-status-success/30'
-                  : 'bg-primary hover:bg-primary-active text-white'
+                  : 'bg-primary hover:bg-primary-active text-white cursor-pointer'
               }`}
-              aria-label={`Tambah ${product.name} ke keranjang`}
+              aria-label={isOutOfStock ? `${product.name} stok habis` : `Tambah ${product.name} ke keranjang`}
             >
-              <AnimatePresence mode="wait" initial={false}>
-                {addedAnimation ? (
-                  <motion.span
-                    key="added"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="flex items-center gap-1"
-                  >
-                    <Check className="size-3 sm:size-3.5" />
-                    <span>Masuk</span>
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="normal"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="flex items-center gap-1"
-                  >
-                    <Plus className="size-3 sm:size-3.5" />
-                    <span>Tambah</span>
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOutOfStock ? (
+                <span>Habis</span>
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  {addedAnimation ? (
+                    <motion.span
+                      key="added"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      className="flex items-center gap-1"
+                    >
+                      <Check className="size-3 sm:size-3.5" />
+                      <span>Masuk</span>
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="normal"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      className="flex items-center gap-1"
+                    >
+                      <Plus className="size-3 sm:size-3.5" />
+                      <span>Tambah</span>
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              )}
             </motion.button>
           </div>
         </div>

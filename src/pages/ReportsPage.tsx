@@ -49,9 +49,9 @@ export function ReportsPage() {
         ) : (
           <div className="flex flex-col gap-6">
             {/* Connected Metric Bar */}
-            <div className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#e8e2d9]">
+            <div className="rounded-2xl border border-[#e8e2d9] bg-[#e8e2d9] overflow-hidden shadow-2xs grid grid-cols-1 lg:grid-cols-3 gap-px">
               {/* 1. Omzet Terverifikasi */}
-              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+              <div className="p-4 sm:p-5 flex flex-col justify-between bg-white hover:bg-[#faf8f5]/60 transition-colors min-w-0">
                 <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
                   <span className="font-medium truncate">Omzet Terverifikasi (Settled)</span>
                   <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-emerald-600 shrink-0">
@@ -71,7 +71,7 @@ export function ReportsPage() {
               </div>
 
               {/* 2. Pipeline WA */}
-              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+              <div className="p-4 sm:p-5 flex flex-col justify-between bg-white hover:bg-[#faf8f5]/60 transition-colors min-w-0">
                 <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
                   <span className="font-medium truncate">Potensi Pipeline WhatsApp</span>
                   <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] shrink-0">
@@ -91,7 +91,7 @@ export function ReportsPage() {
               </div>
 
               {/* 3. AOV */}
-              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+              <div className="p-4 sm:p-5 flex flex-col justify-between bg-white hover:bg-[#faf8f5]/60 transition-colors min-w-0">
                 <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
                   <span className="font-medium truncate">Rata-rata Order (AOV)</span>
                   <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#141413] shrink-0">

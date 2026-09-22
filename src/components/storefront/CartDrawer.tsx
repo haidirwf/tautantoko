@@ -348,7 +348,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <input
                     type="text"
                     required
-                    placeholder="cth. Budi Santoso"
+                    placeholder="Budi Santoso"
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({ name: e.target.value })}
                     className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
@@ -366,7 +366,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <input
                     type="tel"
                     required
-                    placeholder="cth. 081234567890"
+                    placeholder="081234567890"
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({ phone: e.target.value })}
                     className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
@@ -401,7 +401,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   </label>
                   <input
                     type="text"
-                    placeholder="cth. Mohon bungkus bubble wrap tebal"
+                    placeholder="Mohon bungkus bubble wrap tebal"
                     value={customerInfo.notes}
                     onChange={(e) => setCustomerInfo({ notes: e.target.value })}
                     className="w-full h-10 px-3.5 rounded-md bg-canvas border border-hairline text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"

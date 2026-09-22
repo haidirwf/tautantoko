@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
 import { api } from '@/lib/supabase'
 import { Check, Store, Phone, Globe, FileText } from 'lucide-react'
+import { toast } from '@/store/useToastStore'
 
 export function SettingsPage() {
   const { user } = useAuthStore()
@@ -36,10 +37,11 @@ export function SettingsPage() {
         })
       }
       setSaved(true)
+      toast.success('Pengaturan Disimpan', 'Profil dan konfigurasi toko berhasil diperbarui.')
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
       console.error('Failed to update store settings', err)
-      alert('Gagal menyimpan pengaturan toko ke Supabase.')
+      toast.error('Gagal Menyimpan Pengaturan', 'Terjadi kesalahan saat menyimpan pengaturan toko.')
     } finally {
       setIsSaving(false)
     }

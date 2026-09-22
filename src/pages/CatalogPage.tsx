@@ -3,12 +3,19 @@ import { motion } from 'motion/react'
 import { Plus, Search, Tag, Package, ExternalLink, X, Pencil, Trash2 } from 'lucide-react'
 import type { Product } from '@/types'
 import { api } from '@/lib/supabase'
-import { formatIDR } from '@/lib/utils'
+import { formatIDR, cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { useAuthStore } from '@/store/useAuthStore'
 import { ProductImageUploader } from '@/components/common/ProductImageUploader'
+import {
+  ProductStockAndVariants,
+  draftToVariantGroups,
+  variantGroupsToDraft,
+  type VariantGroupDraft,
+} from '@/components/dashboard/ProductStockAndVariants'
+import { toast } from '@/store/useToastStore'
 
 export function CatalogPage() {
   const { user } = useAuthStore()
@@ -27,6 +34,10 @@ export function CatalogPage() {
   const [description, setDescription] = useState('')
   const [categoryName, setCategoryName] = useState('Kemeja Pria')
   const [imageUrl, setImageUrl] = useState('')
+  const [manageStock, setManageStock] = useState(false)
+  const [stockQuantity, setStockQuantity] = useState('10')
+  const [hasVariants, setHasVariants] = useState(false)
+  const [variantGroups, setVariantGroups] = useState<VariantGroupDraft[]>([])
 
   // Edit product states
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -37,6 +48,10 @@ export function CatalogPage() {
   const [editCategory, setEditCategory] = useState('Kemeja Pria')
   const [editImageUrl, setEditImageUrl] = useState('')
   const [editIsActive, setEditIsActive] = useState(true)
+  const [editManageStock, setEditManageStock] = useState(false)
+  const [editStockQuantity, setEditStockQuantity] = useState('10')
+  const [editHasVariants, setEditHasVariants] = useState(false)
+  const [editVariantGroups, setEditVariantGroups] = useState<VariantGroupDraft[]>([])
 
   useEffect(() => {
     async function load() {
@@ -68,6 +83,8 @@ export function CatalogPage() {
         is_digital: false,
         is_active: true,
         sort_order: products.length + 1,
+        stock: manageStock ? (parseInt(stockQuantity, 10) >= 0 ? parseInt(stockQuantity, 10) : 0) : null,
+        variant_groups: hasVariants ? draftToVariantGroups(variantGroups) : undefined,
       })
 
       setProducts([created, ...products])
@@ -75,10 +92,15 @@ export function CatalogPage() {
       setPrice('')
       setDescription('')
       setImageUrl('')
+      setManageStock(false)
+      setStockQuantity('10')
+      setHasVariants(false)
+      setVariantGroups([])
       setIsAddModalOpen(false)
+      toast.success('Produk Ditambahkan', `"${created.name}" berhasil disimpan ke katalog tokomu.`)
     } catch (err) {
       console.error('Error adding product', err)
-      alert('Gagal menambahkan produk. Silakan coba lagi.')
+      toast.error('Gagal Menambahkan Produk', 'Silakan coba beberapa saat lagi.')
     } finally {
       setIsSubmitting(false)
     }
@@ -91,6 +113,15 @@ export function CatalogPage() {
     setEditDesc(prod.description || '')
     setEditImageUrl(prod.image_url || '')
     setEditIsActive(prod.is_active)
+
+    const isTrackingStock = prod.stock !== undefined && prod.stock !== null
+    setEditManageStock(isTrackingStock)
+    setEditStockQuantity(isTrackingStock ? String(prod.stock) : '10')
+
+    const hasV = Boolean(prod.variant_groups && prod.variant_groups.length > 0)
+    setEditHasVariants(hasV)
+    setEditVariantGroups(variantGroupsToDraft(prod.variant_groups))
+
     setIsEditModalOpen(true)
   }
 
@@ -106,6 +137,8 @@ export function CatalogPage() {
         description: editDesc.trim(),
         image_url: editImageUrl.trim() || editingProduct.image_url,
         is_active: editIsActive,
+        stock: editManageStock ? (parseInt(editStockQuantity, 10) >= 0 ? parseInt(editStockQuantity, 10) : 0) : null,
+        variant_groups: editHasVariants ? draftToVariantGroups(editVariantGroups, editingProduct.id) : [],
       })
 
       setProducts((prev) =>
@@ -113,9 +146,10 @@ export function CatalogPage() {
       )
       setIsEditModalOpen(false)
       setEditingProduct(null)
+      toast.success('Perubahan Disimpan', `Rincian produk "${updated.name}" berhasil diperbarui.`)
     } catch (err) {
       console.error('Error updating product', err)
-      alert('Gagal menyimpan perubahan. Silakan coba lagi.')
+      toast.error('Gagal Menyimpan Perubahan', 'Silakan coba beberapa saat lagi.')
     } finally {
       setIsSubmitting(false)
     }
@@ -129,9 +163,10 @@ export function CatalogPage() {
       setProducts((prev) => prev.filter((p) => p.id !== productId))
       setIsEditModalOpen(false)
       setEditingProduct(null)
+      toast.success('Produk Dihapus', 'Produk berhasil dihapus dari katalog tokomu.')
     } catch (err) {
       console.error('Error deleting product', err)
-      alert('Gagal menghapus produk.')
+      toast.error('Gagal Menghapus Produk', 'Tidak dapat menghapus produk saat ini.')
     }
   }
 
@@ -278,70 +313,100 @@ export function CatalogPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
             {filtered.map((prod, idx) => (
               <motion.div
                 key={prod.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: idx * 0.03 }}
-                className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#cc785c]/40 transition-all flex flex-col justify-between group"
+                className="rounded-xl sm:rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#cc785c]/40 transition-all flex flex-col justify-between group"
               >
                 <div>
                   {/* Clean Image Container */}
-                  <div className="aspect-video relative overflow-hidden bg-[#faf8f5] border-b border-[#e8e2d9]">
+                  <div className="aspect-square sm:aspect-video relative overflow-hidden bg-[#faf8f5] border-b border-[#e8e2d9]">
                     <img
                       src={prod.image_url}
                       alt={prod.name}
-                      className="size-full object-cover group-hover:scale-102 transition-transform duration-300"
-                    />
-                    <div className="absolute top-2.5 right-2.5">
-                      {prod.is_active ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
-                          <span>Aktif</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#faf8f5] text-[#706c64] border border-[#e8e2d9] shadow-2xs">
-                          <span>Nonaktif</span>
-                        </span>
+                      className={cn(
+                        "size-full object-cover group-hover:scale-102 transition-all duration-300",
+                        !prod.is_active && "opacity-65 grayscale-[35%]"
                       )}
-                    </div>
+                    />
+
+                    {/* Subtle status tag ONLY when inactive or out of stock (clean image otherwise) */}
+                    {!prod.is_active && (
+                      <div className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#141413]/75 backdrop-blur-xs text-[#faf8f5] text-[10px] font-medium tracking-wide shadow-2xs">
+                          Nonaktif
+                        </span>
+                      </div>
+                    )}
+
+                    {prod.stock !== undefined && prod.stock !== null && prod.stock <= 0 && (
+                      <div className="absolute top-2 sm:top-2.5 right-2 sm:right-2.5">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#141413]/80 backdrop-blur-xs text-rose-300 border border-rose-500/20 text-[10px] font-medium tracking-wide shadow-2xs">
+                          Habis
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Content */}
-                  <div className="p-4 sm:p-5">
-                    <h3 className="font-semibold text-sm text-[#141413] truncate group-hover:text-[#cc785c] transition-colors">
+                  <div className="p-2.5 sm:p-4 lg:p-5">
+                    <h3 className="font-semibold text-xs sm:text-sm text-[#141413] truncate group-hover:text-[#cc785c] transition-colors">
                       {prod.name}
                     </h3>
                     {prod.description && (
-                      <p className="text-xs text-[#706c64] mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] sm:text-xs text-[#706c64] mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed">
                         {prod.description}
                       </p>
                     )}
 
-                    {prod.variant_groups && prod.variant_groups.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {prod.variant_groups.map((vg) => (
-                          <span
-                            key={vg.id}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] bg-[#faf8f5] border border-[#e8e2d9] text-[#706c64] font-medium"
-                          >
-                            <Tag className="size-2.5 text-[#cc785c]" />
-                            <span>{vg.name}: {vg.options.length} opsi</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-1 sm:gap-1.5">
+                      {!prod.is_active && (
+                        <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] bg-[#f2eee9] border border-[#e8e2d9] text-[#8c867b] font-medium">
+                          Draft
+                        </span>
+                      )}
+                      {prod.stock !== undefined && prod.stock !== null && (
+                        <span
+                          className={cn(
+                            'inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-medium border',
+                            prod.stock <= 0
+                              ? 'bg-rose-50/70 text-rose-700 border-rose-200/60'
+                              : 'bg-white text-[#706c64] border-[#e8e2d9]'
+                          )}
+                        >
+                          <Package
+                            className={cn(
+                              'size-2 sm:size-2.5',
+                              prod.stock <= 0 ? 'text-rose-500' : 'text-[#cc785c]'
+                            )}
+                          />
+                          <span>{prod.stock > 0 ? `${prod.stock} pcs` : 'Stok habis'}</span>
+                        </span>
+                      )}
+                      {prod.variant_groups && prod.variant_groups.length > 0 && prod.variant_groups.map((vg) => (
+                        <span
+                          key={vg.id}
+                          className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] bg-[#faf8f5] border border-[#e8e2d9] text-[#706c64] font-medium"
+                        >
+                          <Tag className="size-2 sm:size-2.5 text-[#cc785c]" />
+                          <span>{vg.name} ({vg.options.length})</span>
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Footer: Price & Edit Action Button */}
-                <div className="p-4 sm:px-5 py-3 border-t border-[#e8e2d9]/60 flex items-center justify-between bg-[#faf8f5]/40">
-                  <div>
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c867b] block leading-none">
-                      Harga Dasar
+                <div className="p-2.5 sm:px-5 sm:py-3 border-t border-[#e8e2d9]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-0 bg-[#faf8f5]/40">
+                  <div className="min-w-0">
+                    <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider text-[#8c867b] block leading-none">
+                      Harga
                     </span>
-                    <span className="font-sans font-bold text-base text-[#141413] tracking-tight block mt-0.5">
+                    <span className="font-sans font-bold text-xs sm:text-base text-[#141413] tracking-tight block mt-0.5 truncate">
                       {formatIDR(prod.base_price)}
                     </span>
                   </div>
@@ -349,7 +414,7 @@ export function CatalogPage() {
                   <button
                     type="button"
                     onClick={() => handleOpenEdit(prod)}
-                    className="h-8 px-3 rounded-lg bg-white hover:bg-[#faf8f5] border border-[#e8e2d9] text-xs font-medium text-[#141413] flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                    className="w-full sm:w-auto justify-center h-7 sm:h-8 px-2 sm:px-3 rounded-lg bg-white hover:bg-[#faf8f5] border border-[#e8e2d9] text-[11px] sm:text-xs font-medium text-[#141413] flex items-center gap-1 sm:gap-1.5 transition-colors shadow-2xs cursor-pointer shrink-0"
                     title="Edit rincian dan harga produk"
                   >
                     <Pencil className="size-3 text-[#cc785c]" />
@@ -367,87 +432,109 @@ export function CatalogPage() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Tambah Produk Baru"
+        maxWidth="5xl"
         surface="canvas"
-      >
-        <form onSubmit={handleAddProduct} className="flex flex-col gap-4 py-1 text-sm max-h-[75vh] overflow-y-auto pr-1">
-          {/* Product Image Uploader */}
-          <ProductImageUploader
-            value={imageUrl}
-            onChange={(url) => setImageUrl(url)}
-            label="Foto Produk"
-            required={false}
-          />
-
-          <div>
-            <label className="text-xs font-semibold text-[#141413] block mb-1">
-              Nama Produk <span className="text-[#cc785c]">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="cth. Kemeja Batik Parang Klasik"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-[#141413] block mb-1">
-                Harga (IDR) <span className="text-[#cc785c]">*</span>
-              </label>
-              <input
-                type="number"
-                required
-                placeholder="250000"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#141413] block mb-1">
-                Kategori
-              </label>
-              <select
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
-              >
-                <option value="Kemeja Pria">Kemeja Pria</option>
-                <option value="Dress Wanita">Dress Wanita</option>
-                <option value="Aksesoris & Tas">Aksesoris & Tas</option>
-                <option value="Kuliner & F&B">Kuliner & F&B</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-[#141413] block mb-1">
-              Deskripsi Produk
-            </label>
-            <textarea
-              rows={2}
-              placeholder="Bahan katun adem, jahitan rapi, motif parang klasik..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2 pt-3 border-t border-[#e8e2d9]">
+        footer={
+          <div className="flex items-center justify-end gap-2.5 w-full">
             <Button type="button" variant="secondary" onClick={() => setIsAddModalOpen(false)}>
               Batal
             </Button>
             <Button
               type="submit"
+              form="addCatalogProductForm"
               disabled={isSubmitting}
-              className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+              className="bg-[#cc785c] hover:bg-[#a9583e] text-white cursor-pointer"
             >
               {isSubmitting ? 'Menyimpan...' : 'Simpan ke Katalog'}
             </Button>
+          </div>
+        }
+      >
+        <form id="addCatalogProductForm" onSubmit={handleAddProduct} className="flex flex-col gap-6 text-sm">
+          {/* 2-Column Responsive Layout on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left Column: Media & Core Fields (6 cols) */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              <ProductImageUploader
+                value={imageUrl}
+                onChange={(url) => setImageUrl(url)}
+                label="Foto Produk"
+                required={false}
+              />
+
+              <div>
+                <label className="text-xs font-semibold text-[#141413] block mb-1">
+                  Nama Produk <span className="text-[#cc785c]">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Kemeja Batik Parang Klasik"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#141413] block mb-1">
+                    Harga (IDR) <span className="text-[#cc785c]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="250000"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#141413] block mb-1">
+                    Kategori
+                  </label>
+                  <select
+                    value={categoryName}
+                    onChange={(e) => setCategoryName(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
+                  >
+                    <option value="Kemeja Pria">Kemeja Pria</option>
+                    <option value="Dress Wanita">Dress Wanita</option>
+                    <option value="Aksesoris & Tas">Aksesoris & Tas</option>
+                    <option value="Kuliner & F&B">Kuliner & F&B</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#141413] block mb-1">
+                  Deskripsi Produk
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Bahan katun adem, jahitan rapi, motif parang klasik..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Stok & Varian Produk (6 cols) */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              <ProductStockAndVariants
+                manageStock={manageStock}
+                onManageStockChange={setManageStock}
+                stockQuantity={stockQuantity}
+                onStockQuantityChange={setStockQuantity}
+                hasVariants={hasVariants}
+                onHasVariantsChange={setHasVariants}
+                variantGroups={variantGroups}
+                onVariantGroupsChange={setVariantGroups}
+              />
+            </div>
           </div>
         </form>
       </Modal>
@@ -460,99 +547,22 @@ export function CatalogPage() {
           setEditingProduct(null)
         }}
         title={`Edit Produk: ${editingProduct?.name || ''}`}
+        maxWidth="5xl"
         surface="canvas"
-      >
-        <form onSubmit={handleSaveEdit} className="flex flex-col gap-4 py-1 text-sm max-h-[75vh] overflow-y-auto pr-1">
-          {/* Product Image Uploader for Edit */}
-          <ProductImageUploader
-            value={editImageUrl}
-            onChange={(url) => setEditImageUrl(url)}
-            label="Foto Produk"
-            required={false}
-          />
-
-          <div>
-            <label className="text-xs font-semibold text-[#141413] block mb-1">
-              Nama Produk <span className="text-[#cc785c]">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-[#141413] block mb-1">
-                Harga Dasar (IDR) <span className="text-[#cc785c]">*</span>
-              </label>
-              <input
-                type="number"
-                required
-                value={editPrice}
-                onChange={(e) => setEditPrice(e.target.value)}
-                className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#141413] block mb-1">
-                Kategori
-              </label>
-              <select
-                value={editCategory}
-                onChange={(e) => setEditCategory(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
-              >
-                <option value="Kemeja Pria">Kemeja Pria</option>
-                <option value="Dress Wanita">Dress Wanita</option>
-                <option value="Aksesoris & Tas">Aksesoris & Tas</option>
-                <option value="Kuliner & F&B">Kuliner & F&B</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-[#141413] block mb-1">
-              Deskripsi Produk
-            </label>
-            <textarea
-              rows={2}
-              value={editDesc}
-              onChange={(e) => setEditDesc(e.target.value)}
-              className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="editIsActive"
-              checked={editIsActive}
-              onChange={(e) => setEditIsActive(e.target.checked)}
-              className="size-4 rounded accent-[#cc785c] cursor-pointer"
-            />
-            <label htmlFor="editIsActive" className="text-xs text-[#141413] font-medium cursor-pointer">
-              Tampilkan produk ini di etalase toko (Aktif)
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between pt-3 border-t border-[#e8e2d9] mt-2">
-            {editingProduct && (
+        footer={
+          <div className="flex items-center justify-between w-full">
+            {editingProduct ? (
               <button
                 type="button"
                 onClick={() => handleDeleteProduct(editingProduct.id)}
-                className="text-xs text-[#c5221f] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs text-[#c5221f] hover:text-red-700 hover:underline flex items-center gap-1.5 cursor-pointer font-medium px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="size-3.5" />
                 <span>Hapus Produk</span>
               </button>
-            )}
+            ) : <div />}
 
-            <div className="flex gap-2 ml-auto">
+            <div className="flex items-center gap-2.5">
               <Button
                 type="button"
                 variant="secondary"
@@ -565,11 +575,110 @@ export function CatalogPage() {
               </Button>
               <Button
                 type="submit"
+                form="editCatalogProductForm"
                 disabled={isSubmitting}
-                className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white cursor-pointer"
               >
                 {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
               </Button>
+            </div>
+          </div>
+        }
+      >
+        <form id="editCatalogProductForm" onSubmit={handleSaveEdit} className="flex flex-col gap-6 text-sm">
+          {/* 2-Column Responsive Layout on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left Column: Media & Core Fields (6 cols) */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              <ProductImageUploader
+                value={editImageUrl}
+                onChange={(url) => setEditImageUrl(url)}
+                label="Foto Produk"
+                required={false}
+              />
+
+              <div className="p-3 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">
+                <input
+                  type="checkbox"
+                  id="editIsActive"
+                  checked={editIsActive}
+                  onChange={(e) => setEditIsActive(e.target.checked)}
+                  className="size-4 rounded accent-[#cc785c] cursor-pointer"
+                />
+                <label htmlFor="editIsActive" className="text-xs text-[#141413] font-medium cursor-pointer select-none">
+                  Tampilkan produk ini di etalase toko (Aktif)
+                </label>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#141413] block mb-1">
+                  Nama Produk <span className="text-[#cc785c]">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#141413] block mb-1">
+                    Harga Dasar (IDR) <span className="text-[#cc785c]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#141413] block mb-1">
+                    Kategori
+                  </label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
+                  >
+                    <option value="Kemeja Pria">Kemeja Pria</option>
+                    <option value="Dress Wanita">Dress Wanita</option>
+                    <option value="Aksesoris & Tas">Aksesoris & Tas</option>
+                    <option value="Kuliner & F&B">Kuliner & F&B</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#141413] block mb-1">
+                  Deskripsi Produk
+                </label>
+                <textarea
+                  rows={3}
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Stok & Varian Produk (6 cols) */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              <ProductStockAndVariants
+                manageStock={editManageStock}
+                onManageStockChange={setEditManageStock}
+                stockQuantity={editStockQuantity}
+                onStockQuantityChange={setEditStockQuantity}
+                hasVariants={editHasVariants}
+                onHasVariantsChange={setEditHasVariants}
+                variantGroups={editVariantGroups}
+                onVariantGroupsChange={setEditVariantGroups}
+              />
             </div>
           </div>
         </form>
