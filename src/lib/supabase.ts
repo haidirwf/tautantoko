@@ -297,6 +297,24 @@ function saveStoredOrders(orders: Order[]) {
   }
 }
 
+function getStoredProducts(): Product[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.PRODUCTS)
+    if (saved) return JSON.parse(saved)
+  } catch (e) {
+    console.error('Error reading localStorage products', e)
+  }
+  return INITIAL_PRODUCTS
+}
+
+function saveStoredProducts(products: Product[]) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products))
+  } catch (e) {
+    console.error('Error saving localStorage products', e)
+  }
+}
+
 // Data Access Service (Dual-Mode: Supabase / Mock Local)
 export const api = {
   async getStoreBySlug(slug: string): Promise<Store | null> {
@@ -314,6 +332,23 @@ export const api = {
       return INITIAL_STORE
     }
     return INITIAL_STORE
+  },
+
+  async updateStore(storeId: string, updates: Partial<Store>): Promise<Store> {
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('stores')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', storeId)
+        .select()
+        .single()
+      if (error) throw error
+      return data
+    }
+    return { ...INITIAL_STORE, ...updates }
   },
 
   async getStoreLinks(storeId: string): Promise<StoreLink[]> {
@@ -350,7 +385,57 @@ export const api = {
         .order('sort_order', { ascending: true })
       return data || []
     }
-    return INITIAL_PRODUCTS
+    return getStoredProducts().filter((p) => p.store_id === storeId || !p.store_id)
+  },
+
+  async createProduct(productInput: Omit<Product, 'id'>): Promise<Product> {
+    const newProd: Product = {
+      ...productInput,
+      id: 'prod-' + Date.now(),
+      is_active: productInput.is_active ?? true,
+      sort_order: productInput.sort_order ?? 1,
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('products')
+        .insert([newProd])
+        .select()
+        .single()
+      if (!error && data) return data
+    }
+
+    const current = getStoredProducts()
+    const updated = [newProd, ...current]
+    saveStoredProducts(updated)
+    return newProd
+  },
+
+  async updateProduct(productId: string, updates: Partial<Product>): Promise<Product> {
+    const current = getStoredProducts()
+    const index = current.findIndex((p) => p.id === productId)
+    if (index !== -1) {
+      const updatedProduct = { ...current[index], ...updates }
+      current[index] = updatedProduct
+      saveStoredProducts(current)
+
+      if (isSupabaseConfigured && supabase) {
+        await supabase.from('products').update(updates).eq('id', productId)
+      }
+
+      return updatedProduct
+    }
+    throw new Error('Product not found')
+  },
+
+  async deleteProduct(productId: string): Promise<void> {
+    const current = getStoredProducts()
+    const filtered = current.filter((p) => p.id !== productId)
+    saveStoredProducts(filtered)
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('products').delete().eq('id', productId)
+    }
   },
 
   async createOrder(orderInput: Omit<Order, 'id' | 'created_at'>): Promise<Order> {

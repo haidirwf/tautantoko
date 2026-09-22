@@ -190,7 +190,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <span className="text-xs text-[#faf8f5]/70 block leading-none">
                     {itemCount} Produk dalam keranjang
                   </span>
-                  <span className="font-serif text-base font-medium text-[#faf8f5] tracking-tight mt-0.5 block">
+                  <span className="font-sans text-base font-bold text-[#faf8f5] tracking-tight mt-0.5 block">
                     {formatIDR(subtotal)}
                   </span>
                 </div>
@@ -233,7 +233,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
               {items.length === 0 ? (
                 <div className="py-12 text-center flex flex-col items-center justify-center">
                   <ShoppingBag className="size-12 text-muted/40 mb-3" />
-                  <p className="font-serif text-lg text-ink font-medium">Keranjang Anda Masih Kosong</p>
+                  <p className="font-sans text-base font-bold text-ink">Keranjang Anda Masih Kosong</p>
                   <p className="text-xs text-muted mt-1 max-w-xs">
                     Pilih produk favorit Anda di katalog lalu klik tombol Tambah.
                   </p>
@@ -263,7 +263,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                                   .join(' • ')}
                               </p>
                             )}
-                            <p className="font-serif text-sm font-medium text-ink mt-1">
+                            <p className="font-sans text-sm font-bold text-ink mt-1">
                               {formatIDR(item.unitPrice)}
                             </p>
                           </div>
@@ -309,7 +309,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <div className="pt-4 border-t border-hairline flex flex-col gap-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted">Subtotal Barang</span>
-                      <span className="font-serif text-xl font-medium text-ink">
+                      <span className="font-sans text-lg font-bold text-ink">
                         {formatIDR(subtotal)}
                       </span>
                     </div>
@@ -413,7 +413,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
               <div className="pt-3 border-t border-hairline flex flex-col gap-3">
                 <div className="flex items-center justify-between text-xs text-muted">
                   <span>Total Belanja ({itemCount} produk):</span>
-                  <span className="font-serif text-lg font-medium text-ink">
+                  <span className="font-sans text-base font-bold text-ink">
                     {formatIDR(subtotal)}
                   </span>
                 </div>
@@ -459,7 +459,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
               </motion.div>
 
               <div>
-                <h4 className="font-serif text-2xl font-medium text-ink">
+                <h4 className="font-sans text-xl font-bold text-ink">
                   Pesanan Berhasil Dibuat!
                 </h4>
                 <p className="font-mono text-xs font-medium text-muted mt-1">
@@ -497,7 +497,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                     <form onSubmit={handleSubmitReview} className="flex flex-col gap-2.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-semibold text-[#141413]">
-                          Beri Ulasan Pembelian ⭐
+                          Beri Ulasan Pembelian
                         </span>
                         <div className="flex items-center gap-1">
                           {[1, 2, 3, 4, 5].map((star) => {

@@ -49,7 +49,7 @@ export function StorefrontPage() {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4">
         <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        <p className="font-serif text-lg text-muted mt-3">Memuat etalase toko...</p>
+        <p className="font-sans text-sm font-medium text-muted mt-3">Memuat etalase toko...</p>
       </div>
     )
   }
@@ -57,7 +57,7 @@ export function StorefrontPage() {
   if (!store) {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4 text-center">
-        <h2 className="font-serif text-3xl font-medium text-ink">Toko Tidak Ditemukan</h2>
+        <h2 className="font-sans text-2xl sm:text-3xl font-bold text-ink">Toko Tidak Ditemukan</h2>
         <p className="text-sm text-muted mt-2">
           Toko dengan slug <code className="font-mono text-primary">{storeSlug}</code> belum terdaftar.
         </p>
@@ -151,7 +151,7 @@ export function StorefrontPage() {
 
         {/* Section Title */}
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="font-serif text-2xl font-normal tracking-tight text-ink">
+          <h2 className="font-sans text-xl font-bold tracking-tight text-ink">
             Katalog Produk
           </h2>
           <span className="text-xs text-muted font-mono">
@@ -162,7 +162,7 @@ export function StorefrontPage() {
         {/* Product Grid */}
         {filteredProducts.length === 0 ? (
           <div className="p-12 text-center rounded-xl bg-surface-card border border-hairline">
-            <p className="font-serif text-xl font-medium text-ink">Tidak ada produk yang cocok</p>
+            <p className="font-sans text-base font-bold text-ink">Tidak ada produk yang cocok</p>
             <p className="text-xs text-muted mt-1">
               Coba kata kunci lain atau pilih kategori yang berbeda.
             </p>
@@ -170,7 +170,7 @@ export function StorefrontPage() {
         ) : (
           <motion.div
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            className="grid grid-cols-2 gap-2.5 sm:gap-4"
           >
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />

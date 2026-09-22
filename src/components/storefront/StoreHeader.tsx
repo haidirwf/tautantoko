@@ -1,13 +1,13 @@
 import React from 'react'
-import { ExternalLink, Share2, Check } from 'lucide-react'
+import { Share2, Check } from 'lucide-react'
 import type { Store, StoreLink } from '@/types'
 
 interface StoreHeaderProps {
   store: Store
-  links: StoreLink[]
+  links?: StoreLink[]
 }
 
-export function StoreHeader({ store, links }: StoreHeaderProps) {
+export function StoreHeader({ store }: StoreHeaderProps) {
   const [copied, setCopied] = React.useState(false)
 
   const handleShare = () => {
@@ -30,7 +30,7 @@ export function StoreHeader({ store, links }: StoreHeaderProps) {
               className="size-full object-cover"
             />
           ) : (
-            <span className="font-serif text-3xl text-ink font-medium">
+            <span className="font-sans text-2xl text-ink font-bold">
               {store.name.charAt(0)}
             </span>
           )}
@@ -45,31 +45,13 @@ export function StoreHeader({ store, links }: StoreHeaderProps) {
       </div>
 
       {/* Store Name & Tagline */}
-      <h1 className="font-serif text-3xl font-medium text-ink tracking-tight sm:text-4xl">
+      <h1 className="font-sans text-2xl sm:text-3xl font-bold text-ink tracking-tight">
         {store.name}
       </h1>
       {store.tagline && (
         <p className="text-sm text-muted mt-2 max-w-sm leading-relaxed">
           {store.tagline}
         </p>
-      )}
-
-      {/* External Social / Bio Links */}
-      {links.length > 0 && (
-        <div className="w-full flex flex-col gap-2.5 mt-5">
-          {links.map((link) => (
-            <a
-              key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-surface-card hover:bg-surface-soft border border-hairline text-ink text-sm font-medium transition-all shadow-2xs group"
-            >
-              <span className="truncate">{link.title}</span>
-              <ExternalLink className="size-3.5 text-muted group-hover:text-primary transition-colors shrink-0 ml-2" />
-            </a>
-          ))}
-        </div>
       )}
     </header>
   )

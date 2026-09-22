@@ -18,33 +18,44 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModal
   const [slug, setSlug] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { login, signup } = useAuthStore()
+  const { login, signup, loginWithGoogle } = useAuthStore()
+  const [authError, setAuthError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setAuthError(null)
 
-    setTimeout(() => {
+    try {
       if (isLogin) {
-        login(email || 'merchant@tautan.site')
+        await login(email || 'merchant@tautan.site', password)
       } else {
         const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '') || 'tokoku'
-        signup(email || 'merchant@tautan.site', cleanSlug)
+        await signup(email || 'merchant@tautan.site', password, cleanSlug)
       }
-      setLoading(false)
       onClose()
       navigate('/dashboard')
-    }, 400)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kendala saat autentikasi.'
+      setAuthError(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setLoading(true)
-    setTimeout(() => {
-      login('penjual.umkm@gmail.com')
-      setLoading(false)
+    setAuthError(null)
+    try {
+      await loginWithGoogle()
       onClose()
       navigate('/dashboard')
-    }, 400)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal masuk dengan Google.'
+      setAuthError(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -62,7 +73,7 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModal
             <span>30 Detik • Tanpa Kartu Kredit</span>
           </span>
 
-          <h2 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-ink">
+          <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             {isLogin ? 'Masuk ke Dashboard Toko' : 'Buat Toko Online Kamu'}
           </h2>
           <p className="text-xs text-muted mt-1 max-w-xs mx-auto">
@@ -109,6 +120,11 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModal
 
         {/* Credentials Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          {authError && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600 font-medium leading-relaxed">
+              {authError}
+            </div>
+          )}
           {!isLogin && (
             <div>
               <label className="text-xs font-medium text-ink block mb-1">

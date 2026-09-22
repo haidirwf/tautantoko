@@ -13,7 +13,7 @@ export function PaymentBreakdown({ distribution }: PaymentBreakdownProps) {
     <div className="p-6 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs text-[#141413] flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-serif text-xl font-normal tracking-tight text-[#141413]">
+          <h3 className="font-sans text-lg font-bold tracking-tight text-[#141413]">
             Metode Pembayaran
           </h3>
           <p className="text-xs text-[#706c64] mt-0.5">

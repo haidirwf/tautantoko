@@ -19,7 +19,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
 
   return (
     <div className="p-6 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs text-[#141413] flex flex-col justify-between">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h3 className="font-sans text-base sm:text-lg font-bold tracking-tight text-[#141413]">
             Tren Pendapatan Harian
@@ -30,13 +30,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center flex-wrap gap-3 sm:gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-xs bg-primary" />
+            <span className="size-2.5 rounded-xs bg-primary shrink-0" />
             <span className="text-muted font-medium">Terverifikasi (Settled)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-xs bg-status-amber" />
+            <span className="size-2.5 rounded-xs bg-status-amber shrink-0" />
             <span className="text-muted font-medium">Pending WA</span>
           </div>
         </div>

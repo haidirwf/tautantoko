@@ -8,11 +8,12 @@ import {
   Users,
   BarChart3,
   Settings,
-  Bell,
+  Star,
   LogOut,
   Menu,
   X,
   Plus,
+  ExternalLink,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { Modal } from '@/components/ui/modal'
@@ -36,11 +37,12 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
 
   const navItems = [
     { label: 'Ringkasan', href: '/dashboard', icon: LayoutGrid, active: path === '/dashboard' },
-    { label: 'Pesanan', href: '/orders', icon: ShoppingBag, active: path === '/orders' },
-    { label: 'Katalog', href: '/katalog', icon: Package, active: path === '/katalog' },
-    { label: 'Pelanggan', href: '/pelanggan', icon: Users, active: path === '/pelanggan' },
-    { label: 'Laporan', href: '/laporan', icon: BarChart3, active: path === '/laporan' },
-    { label: 'Pengaturan', href: '/pengaturan', icon: Settings, active: path === '/pengaturan' },
+    { label: 'Pesanan', href: '/dashboard/orders', icon: ShoppingBag, active: path === '/dashboard/orders' || path === '/orders' },
+    { label: 'Katalog', href: '/dashboard/katalog', icon: Package, active: path === '/dashboard/katalog' || path === '/katalog' },
+    { label: 'Pelanggan', href: '/dashboard/pelanggan', icon: Users, active: path === '/dashboard/pelanggan' || path === '/pelanggan' },
+    { label: 'Ulasan', href: '/dashboard/ulasan', icon: Star, active: path === '/dashboard/ulasan' || path === '/ulasan' },
+    { label: 'Laporan', href: '/dashboard/laporan', icon: BarChart3, active: path === '/dashboard/laporan' || path === '/laporan' },
+    { label: 'Pengaturan', href: '/dashboard/pengaturan', icon: Settings, active: path === '/dashboard/pengaturan' || path === '/pengaturan' },
   ]
 
   const handleLogout = () => {
@@ -59,22 +61,39 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col md:flex-row">
       {/* Mobile Top Header */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
+      <div className="md:hidden flex items-center justify-between p-3.5 px-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
-          <div className="size-8 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-sans text-base font-bold shadow-2xs">
-            T
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-1.5 rounded-lg hover:bg-[#efe9de] text-[#141413] border border-[#e8e2d9] bg-white shadow-2xs"
+            aria-label={isMobileMenuOpen ? 'Tutup menu' : 'Buka menu navigasi'}
+          >
+            {isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
+
+          <div className="flex items-center gap-2">
+            <div className="size-7 rounded-md bg-[#cc785c] flex items-center justify-center text-white font-sans text-sm font-bold shadow-2xs">
+              T
+            </div>
+            <span className="font-sans text-lg font-bold tracking-tight text-ink">
+              tautan<span className="text-[#cc785c] font-sans text-xs">.site</span>
+            </span>
           </div>
-          <span className="font-sans text-xl font-bold tracking-tight text-ink">
-            tautan<span className="text-[#cc785c] font-sans text-sm">.site</span>
-          </span>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md hover:bg-[#efe9de] text-[#141413]"
-        >
-          {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+
+        <div className="flex items-center">
+          <a
+            href={`/${storeSlug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-8 px-2.5 rounded-lg border border-[#e8e2d9] bg-white text-xs font-medium text-[#141413] flex items-center gap-1 shadow-2xs"
+            title="Lihat Toko Publik"
+          >
+            <span>Toko</span>
+            <ExternalLink className="size-3 text-[#cc785c]" />
+          </a>
+        </div>
       </div>
 
       {/* Left Sidebar (Desktop & Mobile Drawer) */}
@@ -178,30 +197,48 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
         </div>
       </aside>
 
+      {/* Mobile Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          aria-hidden="true"
+        />
+      )}
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar for Desktop */}
-        <header className="h-16 px-6 sm:px-8 border-b border-[#e8e2d9] flex items-center justify-end gap-3 bg-[#faf8f5]/80 backdrop-blur-xs sticky top-0 z-30">
-          <button
-            type="button"
-            className="p-2 rounded-md text-[#7c7569] hover:bg-[#efe9de] transition-colors"
-            title="Pemberitahuan"
-          >
-            <Bell className="size-4" />
-          </button>
+        {/* Clean Desktop Top Utility Bar */}
+        <header className="h-14 px-6 sm:px-8 border-b border-[#e8e2d9] hidden md:flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-30">
+          <div className="flex items-center gap-2.5 text-xs text-[#706c64]">
+            <span className="font-semibold text-[#141413]">{storeName}</span>
+          </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="p-2 rounded-md text-[#7c7569] hover:bg-[#efe9de] hover:text-[#c64545] transition-colors"
-            title="Keluar"
-          >
-            <LogOut className="size-4" />
-          </button>
+          <div className="flex items-center gap-2.5">
+            <a
+              href={`/${storeSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-8 px-3 rounded-lg border border-[#e8e2d9] bg-white hover:bg-[#faf8f5] text-xs font-medium text-[#141413] flex items-center gap-1.5 shadow-2xs transition-colors"
+            >
+              <span>Lihat Toko Publik</span>
+              <ExternalLink className="size-3 text-[#cc785c]" />
+            </a>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="h-8 px-3 rounded-lg text-xs font-medium text-[#706c64] hover:text-[#c64545] hover:bg-red-50 transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Keluar"
+            >
+              <LogOut className="size-3.5" />
+              <span>Keluar</span>
+            </button>
+          </div>
         </header>
 
         {/* Page Body */}
-        <main className="flex-1 p-6 sm:p-8 lg:p-10 max-w-6xl w-full mx-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-8 lg:p-10 max-w-6xl w-full mx-auto">{children}</main>
       </div>
 
       {/* Generic Add Product Modal fallback */}

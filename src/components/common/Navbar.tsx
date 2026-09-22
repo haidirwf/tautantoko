@@ -24,9 +24,9 @@ export function Navbar() {
             <motion.span
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="font-serif text-2xl font-medium tracking-tight text-[#141413] flex items-center"
+              className="font-sans text-xl font-bold tracking-tight text-[#141413] flex items-center"
             >
-              tautan<span className="text-[#cc785c] font-sans text-base font-normal">.site</span>
+              tautan<span className="text-[#cc785c] text-sm font-semibold">.site</span>
             </motion.span>
           </Link>
 
@@ -61,9 +61,9 @@ export function Navbar() {
               </Link>
 
               <Link
-                to="/orders"
+                to="/dashboard/orders"
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
-                  path === '/orders'
+                  path === '/dashboard/orders' || path === '/orders'
                     ? 'bg-[#efe9de] text-[#141413] border border-[#e8e2d9] font-semibold'
                     : 'text-[#706c64] hover:text-[#141413]'
                 }`}

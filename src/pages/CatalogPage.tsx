@@ -8,16 +8,18 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { useAuthStore } from '@/store/useAuthStore'
+import { ProductImageUploader } from '@/components/common/ProductImageUploader'
 
 export function CatalogPage() {
   const { user } = useAuthStore()
-  const storeId = 'store-batik-01'
+  const storeId = user?.storeId || 'store-batik-01'
   const storeSlug = user?.storeSlug || 'batik-nusantara'
   const [products, setProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('ALL')
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // New product inputs
   const [name, setName] = useState('')
@@ -49,30 +51,37 @@ export function CatalogPage() {
     load()
   }, [])
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !price) return
 
-    const newProd: Product = {
-      id: 'prod-' + Date.now(),
-      store_id: storeId,
-      name,
-      description,
-      base_price: Number(price),
-      image_url:
-        imageUrl.trim() ||
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
-      is_digital: false,
-      is_active: true,
-      sort_order: products.length + 1,
-    }
+    setIsSubmitting(true)
+    try {
+      const created = await api.createProduct({
+        store_id: storeId,
+        name: name.trim(),
+        description: description.trim(),
+        base_price: Number(price),
+        image_url:
+          imageUrl.trim() ||
+          'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80',
+        is_digital: false,
+        is_active: true,
+        sort_order: products.length + 1,
+      })
 
-    setProducts([newProd, ...products])
-    setName('')
-    setPrice('')
-    setDescription('')
-    setImageUrl('')
-    setIsAddModalOpen(false)
+      setProducts([created, ...products])
+      setName('')
+      setPrice('')
+      setDescription('')
+      setImageUrl('')
+      setIsAddModalOpen(false)
+    } catch (err) {
+      console.error('Error adding product', err)
+      alert('Gagal menambahkan produk. Silakan coba lagi.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleOpenEdit = (prod: Product) => {
@@ -85,34 +94,44 @@ export function CatalogPage() {
     setIsEditModalOpen(true)
   }
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingProduct || !editName.trim() || !editPrice) return
 
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === editingProduct.id
-          ? {
-              ...p,
-              name: editName,
-              base_price: Number(editPrice),
-              description: editDesc,
-              image_url: editImageUrl.trim() || p.image_url,
-              is_active: editIsActive,
-            }
-          : p
-      )
-    )
+    setIsSubmitting(true)
+    try {
+      const updated = await api.updateProduct(editingProduct.id, {
+        name: editName.trim(),
+        base_price: Number(editPrice),
+        description: editDesc.trim(),
+        image_url: editImageUrl.trim() || editingProduct.image_url,
+        is_active: editIsActive,
+      })
 
-    setIsEditModalOpen(false)
-    setEditingProduct(null)
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editingProduct.id ? updated : p))
+      )
+      setIsEditModalOpen(false)
+      setEditingProduct(null)
+    } catch (err) {
+      console.error('Error updating product', err)
+      alert('Gagal menyimpan perubahan. Silakan coba lagi.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  const handleDeleteProduct = (productId: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus produk ini dari katalog?')) {
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus produk ini dari katalog?')) return
+
+    try {
+      await api.deleteProduct(productId)
       setProducts((prev) => prev.filter((p) => p.id !== productId))
       setIsEditModalOpen(false)
       setEditingProduct(null)
+    } catch (err) {
+      console.error('Error deleting product', err)
+      alert('Gagal menghapus produk.')
     }
   }
 
@@ -136,25 +155,20 @@ export function CatalogPage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#e8e2d9]">
           <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[11px] font-mono tracking-widest text-[#cc785c] font-semibold uppercase">
-                KATALOG ETALASE
-              </span>
-            </div>
             <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
-              Daftar Produk & Varian
+              Katalog Produk
             </h1>
             <p className="text-xs sm:text-sm text-[#706c64] mt-0.5">
               {products.length} produk siap dipesan pembeli melalui etalase tokomu.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <a
               href={`/${storeSlug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-9 px-3.5 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors"
+              className="flex-1 sm:flex-initial justify-center h-9 px-3.5 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors"
             >
               <span>Lihat di Etalase</span>
               <ExternalLink className="size-3 text-[#706c64]" />
@@ -163,7 +177,7 @@ export function CatalogPage() {
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className="h-9 px-4 rounded-lg bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              className="flex-1 sm:flex-initial justify-center h-9 px-4 rounded-lg bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
             >
               <Plus className="size-3.5" />
               <span>Tambah Produk</span>
@@ -283,12 +297,11 @@ export function CatalogPage() {
                     />
                     <div className="absolute top-2.5 right-2.5">
                       {prod.is_active ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-xs text-[#137333] border border-[#ceead6] shadow-2xs">
-                          <span className="size-1.5 rounded-full bg-[#137333]" />
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
                           <span>Aktif</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-xs text-[#706c64] border border-[#e8e2d9] shadow-2xs">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#faf8f5] text-[#706c64] border border-[#e8e2d9] shadow-2xs">
                           <span>Nonaktif</span>
                         </span>
                       )}
@@ -356,9 +369,17 @@ export function CatalogPage() {
         title="Tambah Produk Baru"
         surface="canvas"
       >
-        <form onSubmit={handleAddProduct} className="flex flex-col gap-4 py-1 text-sm">
+        <form onSubmit={handleAddProduct} className="flex flex-col gap-4 py-1 text-sm max-h-[75vh] overflow-y-auto pr-1">
+          {/* Product Image Uploader */}
+          <ProductImageUploader
+            value={imageUrl}
+            onChange={(url) => setImageUrl(url)}
+            label="Foto Produk"
+            required={false}
+          />
+
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
               Nama Produk <span className="text-[#cc785c]">*</span>
             </label>
             <input
@@ -373,7 +394,7 @@ export function CatalogPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-[#141413] block mb-1">
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
                 Harga (IDR) <span className="text-[#cc785c]">*</span>
               </label>
               <input
@@ -387,13 +408,13 @@ export function CatalogPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#141413] block mb-1">
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
                 Kategori
               </label>
               <select
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
               >
                 <option value="Kemeja Pria">Kemeja Pria</option>
                 <option value="Dress Wanita">Dress Wanita</option>
@@ -404,20 +425,7 @@ export function CatalogPage() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              URL Foto Produk (Opsional)
-            </label>
-            <input
-              type="url"
-              placeholder="https://images.unsplash.com/..."
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
               Deskripsi Produk
             </label>
             <textarea
@@ -433,8 +441,12 @@ export function CatalogPage() {
             <Button type="button" variant="secondary" onClick={() => setIsAddModalOpen(false)}>
               Batal
             </Button>
-            <Button type="submit" className="bg-[#cc785c] hover:bg-[#a9583e] text-white">
-              Simpan ke Katalog
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+            >
+              {isSubmitting ? 'Menyimpan...' : 'Simpan ke Katalog'}
             </Button>
           </div>
         </form>
@@ -450,9 +462,17 @@ export function CatalogPage() {
         title={`Edit Produk: ${editingProduct?.name || ''}`}
         surface="canvas"
       >
-        <form onSubmit={handleSaveEdit} className="flex flex-col gap-4 py-1 text-sm">
+        <form onSubmit={handleSaveEdit} className="flex flex-col gap-4 py-1 text-sm max-h-[75vh] overflow-y-auto pr-1">
+          {/* Product Image Uploader for Edit */}
+          <ProductImageUploader
+            value={editImageUrl}
+            onChange={(url) => setEditImageUrl(url)}
+            label="Foto Produk"
+            required={false}
+          />
+
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
               Nama Produk <span className="text-[#cc785c]">*</span>
             </label>
             <input
@@ -466,7 +486,7 @@ export function CatalogPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-[#141413] block mb-1">
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
                 Harga Dasar (IDR) <span className="text-[#cc785c]">*</span>
               </label>
               <input
@@ -479,13 +499,13 @@ export function CatalogPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#141413] block mb-1">
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
                 Kategori
               </label>
               <select
                 value={editCategory}
                 onChange={(e) => setEditCategory(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
               >
                 <option value="Kemeja Pria">Kemeja Pria</option>
                 <option value="Dress Wanita">Dress Wanita</option>
@@ -496,19 +516,7 @@ export function CatalogPage() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              URL Foto Produk
-            </label>
-            <input
-              type="url"
-              value={editImageUrl}
-              onChange={(e) => setEditImageUrl(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
               Deskripsi Produk
             </label>
             <textarea
@@ -555,8 +563,12 @@ export function CatalogPage() {
               >
                 Batal
               </Button>
-              <Button type="submit" className="bg-[#cc785c] hover:bg-[#a9583e] text-white">
-                Simpan Perubahan
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+              >
+                {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
               </Button>
             </div>
           </div>

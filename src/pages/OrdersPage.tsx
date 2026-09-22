@@ -21,9 +21,9 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 
 export function OrdersPage() {
-  const { isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated } = useAuthStore()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const storeId = 'store-batik-01'
+  const storeId = user?.storeId || 'store-batik-01'
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
@@ -237,16 +237,16 @@ export function OrdersPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.15, delay: idx * 0.02 }}
-                  className="p-4 md:px-5 md:py-3.5 hover:bg-[#faf8f5]/60 transition-colors flex flex-col md:grid md:grid-cols-12 md:items-center gap-3 md:gap-0"
+                  className="p-3.5 sm:p-4 md:px-5 md:py-3.5 hover:bg-[#faf8f5]/60 transition-colors flex flex-col md:grid md:grid-cols-12 md:items-center gap-3 md:gap-0"
                 >
                   {/* Col 1: Order Code & Date (3 cols) */}
-                  <div className="md:col-span-3 min-w-0">
+                  <div className="md:col-span-3 min-w-0 flex items-center justify-between md:block">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-[#141413]">
+                      <span className="font-mono text-xs font-semibold text-[#141413] bg-[#faf8f5] md:bg-transparent px-1.5 py-0.5 md:p-0 rounded border md:border-0 border-[#e8e2d9]/80">
                         {order.order_code}
                       </span>
                     </div>
-                    <span className="text-[11px] text-[#8c867b] block mt-0.5">
+                    <span className="text-[11px] text-[#8c867b] block md:mt-0.5">
                       {new Date(order.created_at).toLocaleDateString('id-ID', {
                         day: 'numeric',
                         month: 'short',
@@ -267,32 +267,35 @@ export function OrdersPage() {
                     </div>
                   </div>
 
-                  {/* Col 3: Status (2 cols) */}
-                  <div className="md:col-span-2">
-                    <Badge status={order.status} />
-                  </div>
+                  {/* Mobile Row: Status & Total */}
+                  <div className="flex items-center justify-between md:contents pt-2 md:pt-0 border-t md:border-t-0 border-[#f0ece5]">
+                    {/* Col 3: Status (2 cols) */}
+                    <div className="md:col-span-2">
+                      <Badge status={order.status} />
+                    </div>
 
-                  {/* Col 4: Total & Ongkir (2 cols) */}
-                  <div className="md:col-span-2 md:text-right">
-                    <span className="font-sans font-semibold text-sm text-[#141413] block">
-                      {formatIDR(order.total_amount || order.subtotal)}
-                    </span>
-                    <span className="text-[10px] text-[#8c867b] block">
-                      {order.shipping_fee > 0 ? (
-                        `Ongkir ${formatIDR(order.shipping_fee)}`
-                      ) : (
-                        <span className="text-[#b45309]">Ongkir belum diset</span>
-                      )}
-                    </span>
+                    {/* Col 4: Total & Ongkir (2 cols) */}
+                    <div className="md:col-span-2 text-right">
+                      <span className="font-sans font-semibold text-sm text-[#141413] block">
+                        {formatIDR(order.total_amount || order.subtotal)}
+                      </span>
+                      <span className="text-[10px] text-[#8c867b] block">
+                        {order.shipping_fee > 0 ? (
+                          `Ongkir ${formatIDR(order.shipping_fee)}`
+                        ) : (
+                          <span className="text-[#b45309]">Ongkir belum diset</span>
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Col 5: Actions (2 cols) */}
-                  <div className="md:col-span-2 flex items-center justify-start md:justify-end gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-[#e8e2d9]/60">
+                  <div className="md:col-span-2 flex items-center justify-end gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-[#f0ece5]">
                     <a
                       href={directWaUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-8 px-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs"
+                      className="flex-1 md:flex-initial justify-center h-8 px-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs"
                       title="Chat pembeli di WhatsApp"
                     >
                       <MessageCircle className="size-3.5" />
@@ -302,7 +305,7 @@ export function OrdersPage() {
                     <button
                       type="button"
                       onClick={() => openEditModal(order)}
-                      className="h-8 px-2.5 rounded-lg bg-white hover:bg-[#faf8f5] text-[#5c5850] hover:text-[#141413] border border-[#e8e2d9] text-xs font-medium flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                      className="flex-1 md:flex-initial justify-center h-8 px-2.5 rounded-lg bg-white hover:bg-[#faf8f5] text-[#5c5850] hover:text-[#141413] border border-[#e8e2d9] text-xs font-medium flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
                       title="Kelola status pesanan"
                     >
                       <SlidersHorizontal className="size-3" />

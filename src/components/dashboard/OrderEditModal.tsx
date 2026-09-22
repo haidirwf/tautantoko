@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { MessageCircle, Save } from 'lucide-react'
+import { MessageCircle, Save, MapPin } from 'lucide-react'
 import type { Order, OrderStatus } from '@/types'
 import { formatIDR, sanitizeWhatsApp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -82,7 +82,7 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
                 <span className="font-mono text-xs text-[#8c867b]">({order.buyer_phone})</span>
               </div>
               <p className="text-xs text-[#5c5850] mt-0.5 flex items-center gap-1">
-                <span className="text-[#cc785c]">📍</span>
+                <MapPin className="size-3 text-[#cc785c] shrink-0" />
                 <span>{order.shipping_address}</span>
               </p>
             </div>

@@ -5,12 +5,12 @@ import {
   DollarSign,
   ShoppingBag,
   Users,
-  Package,
   ArrowRight,
   Plus,
   Lock,
   Copy,
   Check,
+  Star,
 } from 'lucide-react'
 import type { DashboardMetrics, Order } from '@/types'
 import { api } from '@/lib/supabase'
@@ -22,6 +22,7 @@ import { Modal } from '@/components/ui/modal'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { ProductImageUploader } from '@/components/common/ProductImageUploader'
 
 export function DashboardPage() {
   const { user, isAuthenticated } = useAuthStore()
@@ -37,8 +38,11 @@ export function DashboardPage() {
   const [newProdName, setNewProdName] = useState('')
   const [newProdPrice, setNewProdPrice] = useState('')
   const [newProdDesc, setNewProdDesc] = useState('')
+  const [newProdImage, setNewProdImage] = useState('')
+  const [newProdCategory, setNewProdCategory] = useState('Kemeja Pria')
+  const [isSavingProduct, setIsSavingProduct] = useState(false)
 
-  const storeId = 'store-batik-01'
+  const storeId = user?.storeId || 'store-batik-01'
   const storeName = user?.name || 'Batik Nusantara'
   const storeSlug = user?.storeSlug || 'batik-nusantara'
   const storeUrl = `tautan.site/${storeSlug}`
@@ -112,40 +116,63 @@ export function DashboardPage() {
     )
   }
 
-  const handleSaveNewProduct = (e: React.FormEvent) => {
+  const handleSaveNewProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newProdName.trim() || !newProdPrice) return
-    alert(`Produk "${newProdName}" seharga ${formatIDR(Number(newProdPrice))} berhasil ditambahkan ke etalase toko Anda!`)
-    setNewProdName('')
-    setNewProdPrice('')
-    setNewProdDesc('')
-    setIsAddProductOpen(false)
+
+    setIsSavingProduct(true)
+    try {
+      const created = await api.createProduct({
+        store_id: storeId,
+        name: newProdName.trim(),
+        base_price: Number(newProdPrice),
+        description: newProdDesc.trim(),
+        image_url:
+          newProdImage.trim() ||
+          'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80',
+        is_digital: false,
+        is_active: true,
+        sort_order: 1,
+      })
+
+      alert(`Produk "${created.name}" seharga ${formatIDR(created.base_price)} berhasil ditambahkan ke etalase toko Anda!`)
+      setNewProdName('')
+      setNewProdPrice('')
+      setNewProdDesc('')
+      setNewProdImage('')
+      setIsAddProductOpen(false)
+    } catch (err) {
+      console.error('Gagal menambahkan produk', err)
+      alert('Terjadi kendala saat menyimpan produk. Silakan coba lagi.')
+    } finally {
+      setIsSavingProduct(false)
+    }
   }
 
   return (
     <DashboardLayout onAddProductClick={() => setIsAddProductOpen(true)}>
       <div className="flex flex-col gap-6 sm:gap-7">
-        {/* Header Title Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#e8e2d9]">
+        {/* Clean Header Title Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 pb-4 sm:pb-5 border-b border-[#e8e2d9]">
           <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[11px] font-mono tracking-widest text-[#cc785c] font-semibold uppercase">
-                RINGKASAN TOKO
+            <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+              <h1 className="font-sans text-xl sm:text-3xl font-bold tracking-tight text-[#141413]">
+                {storeName}
+              </h1>
+              <span className="text-[11px] sm:text-xs text-[#8c867b] font-mono">
+                tautan.site/{storeSlug}
               </span>
             </div>
-            <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">
-              Selamat datang di {storeName}
-            </h1>
-            <p className="text-xs sm:text-sm text-[#706c64] mt-0.5">
+            <p className="text-xs sm:text-sm text-[#706c64] mt-0.5 sm:mt-1">
               Pantau performa penjualan harian dan kelola pesanan WhatsApp masuk.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={copyStoreLink}
-              className="h-9 px-3 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              className="flex-1 sm:flex-initial h-9 px-3 sm:px-3.5 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#141413] hover:bg-[#faf8f5] flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
               title="Salin tautan toko publik"
             >
               {isLinkCopied ? (
@@ -164,7 +191,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={() => setIsAddProductOpen(true)}
-              className="h-9 px-4 rounded-lg bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              className="flex-1 sm:flex-initial h-9 px-3.5 sm:px-4 rounded-lg bg-[#cc785c] hover:bg-[#a9583e] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98 shrink-0"
             >
               <Plus className="size-3.5" />
               <span>Tambah Produk</span>
@@ -172,87 +199,88 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* 4-Metric Connected Bar - Clean, Crisp White & Tabular Font */}
-        <div className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#e8e2d9]">
+        {/* 4-Metric Connected Bar - Clean, Uniform & Tabular Numbers */}
+        <div className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#e8e2d9]">
           {/* 1. Pendapatan selesai */}
-          <div className="p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors">
+          <div className="p-3.5 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors border-r border-[#e8e2d9] sm:border-r-0">
             <div className="flex items-center justify-between text-xs text-[#706c64]">
-              <span className="font-medium">Pendapatan selesai</span>
-              <div className="size-7 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#706c64]">
-                <DollarSign className="size-3.5" />
+              <span className="font-medium text-[11px] sm:text-xs">Pendapatan Selesai</span>
+              <div className="size-7 sm:size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#141413] shrink-0">
+                <DollarSign className="size-3.5 sm:size-4" />
               </div>
             </div>
-            <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] mt-3 tracking-tight">
+            <div className="font-sans font-bold text-lg sm:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight truncate">
               <AnimatedCounter
                 value={metrics.total_settled_revenue}
                 formatter={formatIDR}
                 duration={1200}
               />
             </div>
-            <span className="text-[11px] text-[#8c867b] mt-1 block">
+            <span className="text-[10px] sm:text-[11px] text-[#8c867b] mt-0.5 sm:mt-1 block truncate">
               Transaksi berhasil
             </span>
           </div>
 
           {/* 2. Pesanan aktif */}
-          <div className="p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors">
+          <div className="p-3.5 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors">
             <div className="flex items-center justify-between text-xs text-[#706c64]">
-              <span className="font-medium">Pesanan aktif</span>
-              <div className="size-7 rounded-lg bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center text-[#cc785c]">
-                <ShoppingBag className="size-3.5" />
+              <span className="font-medium text-[11px] sm:text-xs">Pesanan Aktif</span>
+              <div className="size-7 sm:size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#141413] shrink-0">
+                <ShoppingBag className="size-3.5 sm:size-4" />
               </div>
             </div>
-            <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] mt-3 tracking-tight">
+            <div className="font-sans font-bold text-lg sm:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight">
               <AnimatedCounter
                 value={metrics.pending_orders_count + 1}
                 duration={800}
               />
             </div>
-            <span className="text-[11px] text-[#cc785c] font-medium mt-1 block">
-              Perlu diproses / dikirim
+            <span className="text-[10px] sm:text-[11px] text-[#8c867b] mt-0.5 sm:mt-1 block truncate">
+              Perlu diproses / kirim
             </span>
           </div>
 
           {/* 3. Pelanggan */}
-          <div className="p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors">
+          <div className="p-3.5 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors border-r border-[#e8e2d9] sm:border-r-0">
             <div className="flex items-center justify-between text-xs text-[#706c64]">
-              <span className="font-medium">Pelanggan</span>
-              <div className="size-7 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#706c64]">
-                <Users className="size-3.5" />
+              <span className="font-medium text-[11px] sm:text-xs">Total Pelanggan</span>
+              <div className="size-7 sm:size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#141413] shrink-0">
+                <Users className="size-3.5 sm:size-4" />
               </div>
             </div>
-            <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] mt-3 tracking-tight">
+            <div className="font-sans font-bold text-lg sm:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight">
               <AnimatedCounter
                 value={recentOrders.length}
                 duration={900}
               />
             </div>
-            <span className="text-[11px] text-[#8c867b] mt-1 block">
+            <span className="text-[10px] sm:text-[11px] text-[#8c867b] mt-0.5 sm:mt-1 block truncate">
               Kontak WhatsApp
             </span>
           </div>
 
-          {/* 4. Stok menipis / Katalog */}
-          <div className="p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors">
+          {/* 4. Rating & Ulasan Toko */}
+          <Link
+            to="/ulasan"
+            className="p-3.5 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors group cursor-pointer"
+          >
             <div className="flex items-center justify-between text-xs text-[#706c64]">
-              <span className="font-medium">Stok menipis</span>
-              <div className="size-7 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#706c64]">
-                <Package className="size-3.5" />
+              <span className="font-medium text-[11px] sm:text-xs group-hover:text-[#cc785c] transition-colors">Ulasan Pembeli</span>
+              <div className="size-7 sm:size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-amber-500 group-hover:border-[#cc785c]/40 transition-colors shrink-0">
+                <Star className="size-3.5 sm:size-4 fill-amber-500" />
               </div>
             </div>
-            <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] mt-3 tracking-tight">
-              <AnimatedCounter
-                value={1}
-                duration={600}
-              />
+            <div className="font-sans font-bold text-lg sm:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight flex items-baseline gap-1">
+              <span>{metrics.average_rating || '5.0'}</span>
+              <span className="text-xs text-[#8c867b] font-normal">/ 5.0</span>
             </div>
-            <span className="text-[11px] text-[#8c867b] mt-1 block">
-              Perlu ditambah stok
+            <span className="text-[10px] sm:text-[11px] text-[#8c867b] mt-0.5 sm:mt-1 block truncate">
+              {metrics.total_reviews || 2} ulasan &rarr;
             </span>
-          </div>
+          </Link>
         </div>
 
-        {/* Full-width Pesanan Terbaru Section */}
+        {/* Full-width Pesanan Terbaru Section with Clean Data Table */}
         <div className="flex flex-col">
           <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
             <div>
@@ -264,55 +292,72 @@ export function DashboardPage() {
               </p>
             </div>
             <Link
-              to="/orders"
+              to="/dashboard/orders"
               className="text-xs text-[#706c64] hover:text-[#cc785c] transition-colors font-medium flex items-center gap-1 group"
             >
-              <span>Lihat semua pesanan</span>
+              <span>Buka semua pesanan</span>
               <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
 
-          <div className="mt-3 flex flex-col divide-y divide-[#e8e2d9] bg-white rounded-2xl border border-[#e8e2d9] overflow-hidden shadow-2xs">
+          <div className="mt-3 bg-white rounded-2xl border border-[#e8e2d9] overflow-hidden shadow-2xs">
+            {/* Clean Desktop Table Header */}
+            <div className="hidden sm:grid sm:grid-cols-12 gap-4 px-6 py-2.5 bg-[#faf8f5]/80 border-b border-[#e8e2d9] text-[11px] font-semibold text-[#706c64] uppercase tracking-wider">
+              <span className="col-span-5">Pemesan & Rincian</span>
+              <span className="col-span-3">Status Transaksi</span>
+              <span className="col-span-3 text-right">Total Tagihan</span>
+              <span className="col-span-1 text-right">Kelola</span>
+            </div>
+
             {recentOrders.length === 0 ? (
               <div className="p-8 text-center text-xs text-[#8c867b]">
                 Belum ada pesanan masuk.
               </div>
             ) : (
-              recentOrders.map((order, idx) => (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.05 + idx * 0.03 }}
-                  onClick={() => navigate('/orders')}
-                  className="p-4 sm:px-6 hover:bg-[#faf8f5]/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2.5">
-                      <span className="font-semibold text-sm text-[#141413] group-hover:text-[#cc785c] transition-colors">
-                        {order.buyer_name}
-                      </span>
-                      <span className="font-mono text-xs text-[#8c867b]">
-                        {order.order_code}
+              <div className="divide-y divide-[#e8e2d9]">
+                {recentOrders.map((order, idx) => (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.05 + idx * 0.03 }}
+                    onClick={() => navigate('/dashboard/orders')}
+                    className="p-3.5 sm:p-4 sm:px-6 hover:bg-[#faf8f5]/70 transition-colors flex flex-col sm:grid sm:grid-cols-12 gap-2.5 sm:gap-3 sm:items-center cursor-pointer group"
+                  >
+                    <div className="min-w-0 sm:col-span-5">
+                      <div className="flex items-center justify-between sm:justify-start gap-2">
+                        <span className="font-semibold text-sm text-[#141413] group-hover:text-[#cc785c] transition-colors truncate">
+                          {order.buyer_name}
+                        </span>
+                        <span className="font-mono text-[11px] text-[#8c867b] shrink-0 bg-[#faf8f5] px-1.5 py-0.5 rounded border border-[#e8e2d9]/60">
+                          {order.order_code}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#706c64] mt-0.5 line-clamp-1">
+                        {order.items_snapshot.map((i) => `${i.quantity}x ${i.product_name}`).join(', ')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:col-span-6 sm:grid sm:grid-cols-6 gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#f2eee9]">
+                      <div className="sm:col-span-3 flex items-center">
+                        <Badge status={order.status} />
+                      </div>
+
+                      <div className="sm:col-span-3 sm:text-right">
+                        <span className="font-sans font-bold text-sm text-[#141413]">
+                          {formatIDR(order.total_amount || order.subtotal)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="hidden sm:flex sm:col-span-1 items-center justify-end">
+                      <span className="text-xs text-[#8c867b] group-hover:text-[#cc785c] flex items-center gap-1 font-medium transition-colors">
+                        <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </span>
                     </div>
-                    <p className="text-xs text-[#706c64] mt-1 line-clamp-1">
-                      {order.items_snapshot.map((i) => `${i.quantity}x ${i.product_name}`).join(', ')}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-5 shrink-0">
-                    <Badge status={order.status} />
-                    <span className="font-sans font-bold text-sm text-[#141413] min-w-[100px] text-right">
-                      {formatIDR(order.total_amount || order.subtotal)}
-                    </span>
-                    <span className="text-xs text-[#8c867b] group-hover:text-[#cc785c] flex items-center gap-1 font-medium">
-                      <span>Kelola</span>
-                      <ArrowRight className="size-3" />
-                    </span>
-                  </div>
-                </motion.div>
-              ))
+                  </motion.div>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -325,42 +370,68 @@ export function DashboardPage() {
         title="Tambah Produk Baru"
         surface="canvas"
       >
-        <form onSubmit={handleSaveNewProduct} className="flex flex-col gap-4 py-2 text-sm">
+        <form onSubmit={handleSaveNewProduct} className="flex flex-col gap-4 py-1 text-sm max-h-[75vh] overflow-y-auto pr-1">
+          {/* Product Image Uploader */}
+          <ProductImageUploader
+            value={newProdImage}
+            onChange={(url) => setNewProdImage(url)}
+            label="Foto Produk"
+            required={false}
+          />
+
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
               Nama Produk <span className="text-[#cc785c]">*</span>
             </label>
             <input
               type="text"
               required
-              placeholder="cth. Kemeja Tenun Parang"
+              placeholder="cth. Kemeja Batik Parang Modern"
               value={newProdName}
               onChange={(e) => setNewProdName(e.target.value)}
               className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
             />
           </div>
 
-          <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              Harga Satuan (IDR) <span className="text-[#cc785c]">*</span>
-            </label>
-            <input
-              type="number"
-              required
-              placeholder="250000"
-              value={newProdPrice}
-              onChange={(e) => setNewProdPrice(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
+                Harga Satuan (IDR) <span className="text-[#cc785c]">*</span>
+              </label>
+              <input
+                type="number"
+                required
+                placeholder="250000"
+                value={newProdPrice}
+                onChange={(e) => setNewProdPrice(e.target.value)}
+                className="w-full h-10 px-3.5 rounded-xl bg-white border border-[#e8e2d9] text-sm font-mono text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-[#141413] block mb-1">
+                Kategori
+              </label>
+              <select
+                value={newProdCategory}
+                onChange={(e) => setNewProdCategory(e.target.value)}
+                className="w-full h-10 px-3 rounded-xl bg-white border border-[#e8e2d9] text-xs sm:text-sm text-[#141413] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs cursor-pointer"
+              >
+                <option value="Kemeja Pria">Kemeja Pria</option>
+                <option value="Dress Wanita">Dress Wanita</option>
+                <option value="Aksesoris & Tas">Aksesoris & Tas</option>
+                <option value="Kuliner & F&B">Kuliner & F&B</option>
+              </select>
+            </div>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#141413] block mb-1">
-              Deskripsi Singkat
+            <label className="text-xs font-semibold text-[#141413] block mb-1">
+              Deskripsi Singkat (Opsional)
             </label>
             <textarea
               rows={2}
-              placeholder="Bahan katun adem, nyaman dipakai..."
+              placeholder="Bahan katun primisima adem, jahitan halus, nyaman dipakai harian..."
               value={newProdDesc}
               onChange={(e) => setNewProdDesc(e.target.value)}
               className="w-full p-3 rounded-xl bg-white border border-[#e8e2d9] text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs resize-none"
@@ -371,8 +442,12 @@ export function DashboardPage() {
             <Button type="button" variant="secondary" onClick={() => setIsAddProductOpen(false)}>
               Batal
             </Button>
-            <Button type="submit" className="bg-[#cc785c] hover:bg-[#a9583e] text-white">
-              Simpan Produk
+            <Button
+              type="submit"
+              disabled={isSavingProduct}
+              className="bg-[#cc785c] hover:bg-[#a9583e] text-white"
+            >
+              {isSavingProduct ? 'Menyimpan...' : 'Simpan Produk'}
             </Button>
           </div>
         </form>

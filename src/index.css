@@ -25,13 +25,13 @@
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Custom editorial styles based on claude.design.md */
+/* Custom typography styles */
 .font-cormorant {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .tracking-display {

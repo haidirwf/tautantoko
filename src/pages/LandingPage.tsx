@@ -75,10 +75,10 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#141413] leading-[1.08]"
+              className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.1]"
             >
               Ubah Pengunjung Media Sosial <br className="hidden sm:inline" />
-              Menjadi <span className="italic font-normal text-[#cc785c]">Pembeli Pasti.</span>
+              Menjadi <span className="italic font-bold text-[#cc785c]">Pembeli Pasti.</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -198,7 +198,7 @@ export function LandingPage() {
                   {/* Store Avatar & Info */}
                   <div className="flex items-center justify-between pb-3 border-b border-[#e8e2d9]">
                     <div className="flex items-center gap-2.5">
-                      <div className="size-9 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-serif text-sm font-bold text-[#cc785c]">
+                      <div className="size-9 rounded-full bg-[#fae7e0] border border-[#f2cfc2] flex items-center justify-center font-sans text-sm font-bold text-[#cc785c]">
                         BN
                       </div>
                       <div>
@@ -321,7 +321,7 @@ export function LandingPage() {
             Cocok Untuk:
           </span>
           <div className="overflow-hidden flex-1 relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="animate-marquee flex items-center gap-10 text-xs font-serif tracking-wide text-[#141413]">
+            <div className="animate-marquee flex items-center gap-10 text-xs font-sans font-semibold tracking-wide text-[#141413]">
               <span>Kopi & Kuliner</span>
               <span className="text-[#cc785c]">•</span>
               <span>Batik & Fashion</span>
@@ -362,7 +362,7 @@ export function LandingPage() {
           <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-semibold">
             01 — Fitur Utama
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#141413] mt-2">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold tracking-tight text-[#141413] mt-2">
             Segala yang kamu butuhkan untuk jualan online, <em className="italic text-[#cc785c] font-normal">tanpa kerumitan.</em>
           </h2>
           <p className="text-xs sm:text-sm text-[#5c5850] mt-2 max-w-xl">
@@ -384,7 +384,7 @@ export function LandingPage() {
               <div className="size-10 rounded-lg bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mb-6 group-hover:scale-110 group-hover:bg-[#fae7e0] transition-transform duration-300">
                 <Layers className="size-5" />
               </div>
-              <h3 className="font-serif text-2xl font-normal text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
+              <h3 className="font-sans text-xl font-bold text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
                 All-in-One Link Bio
               </h3>
               <p className="text-xs sm:text-sm text-[#5c5850] mt-3 leading-relaxed">
@@ -410,7 +410,7 @@ export function LandingPage() {
               <div className="size-10 rounded-lg bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mb-6 group-hover:scale-110 group-hover:bg-[#fae7e0] transition-transform duration-300">
                 <ShoppingBag className="size-5" />
               </div>
-              <h3 className="font-serif text-2xl font-normal text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
+              <h3 className="font-sans text-xl font-bold text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
                 Katalog Mikro & Varian
               </h3>
               <p className="text-xs sm:text-sm text-[#5c5850] mt-3 leading-relaxed">
@@ -436,7 +436,7 @@ export function LandingPage() {
               <div className="size-10 rounded-lg bg-[#efe9de] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mb-6 group-hover:scale-110 group-hover:bg-[#fae7e0] transition-transform duration-300">
                 <SendHorizontal className="size-5" />
               </div>
-              <h3 className="font-serif text-2xl font-normal text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
+              <h3 className="font-sans text-xl font-bold text-[#141413] tracking-tight group-hover:text-[#cc785c] transition-colors">
                 Checkout Cepat ke WhatsApp
               </h3>
               <p className="text-xs sm:text-sm text-[#5c5850] mt-3 leading-relaxed">
@@ -463,7 +463,7 @@ export function LandingPage() {
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-semibold">
               02 — Solusi Bisnis
             </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#141413] mt-2">
+            <h2 className="font-sans text-2xl sm:text-4xl font-bold tracking-tight text-[#141413] mt-2">
               Didesain untuk berbagai kategori jualanmu.
             </h2>
           </motion.div>
@@ -490,7 +490,7 @@ export function LandingPage() {
                     <Icon className="size-5" />
                   </div>
                   <div>
-                    <h4 className="font-serif text-xl font-normal text-[#141413] group-hover:text-[#cc785c] transition-colors">{cat.label}</h4>
+                    <h4 className="font-sans text-base font-bold text-[#141413] group-hover:text-[#cc785c] transition-colors">{cat.label}</h4>
                     <p className="text-xs text-muted mt-1">{cat.desc}</p>
                   </div>
                 </motion.div>
@@ -511,7 +511,7 @@ export function LandingPage() {
           <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-semibold">
             03 — Alur Kerja
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#141413] mt-2">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold tracking-tight text-[#141413] mt-2">
             Mulai berjualan dalam <em className="italic text-[#cc785c] font-normal">tiga langkah ringkas.</em>
           </h2>
           <p className="text-xs sm:text-sm text-[#5c5850] mt-2">
@@ -547,10 +547,10 @@ export function LandingPage() {
               className="flex flex-col p-4 rounded-xl hover:bg-white/60 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <span className="font-serif text-5xl font-light text-[#cc785c] transition-transform hover:scale-105">{item.step}</span>
+                <span className="font-sans text-4xl sm:text-5xl font-extrabold text-[#cc785c] transition-transform hover:scale-105 tracking-tight">{item.step}</span>
                 <div className="h-px flex-1 bg-[#e8e2d9]" />
               </div>
-              <h3 className="font-serif text-2xl font-normal text-[#141413] mt-4">
+              <h3 className="font-sans text-xl font-bold text-[#141413] mt-4">
                 {item.title}
               </h3>
               <p className="text-xs sm:text-sm text-[#5c5850] mt-2 leading-relaxed">
@@ -573,7 +573,7 @@ export function LandingPage() {
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-semibold">
               04 — Pertanyaan Umum
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#141413] mt-2">
+            <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413] mt-2">
               Hal yang sering ditanyakan.
             </h2>
             <p className="text-xs text-[#5c5850] mt-2 leading-relaxed">
@@ -635,7 +635,7 @@ export function LandingPage() {
           className="p-8 sm:p-14 rounded-2xl bg-white border border-[#e8e2d9] flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-2xs"
         >
           <div className="max-w-xl">
-            <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#141413]">
+            <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">
               Mulai buat etalase tokomu hari ini.
             </h2>
             <p className="text-xs sm:text-sm text-[#5c5850] mt-2 leading-relaxed">
@@ -662,7 +662,7 @@ export function LandingPage() {
       <footer className="border-t border-[#e8e2d9] bg-[#efe9de]/40 py-10 px-4 sm:px-6 text-[#5c5850] text-xs">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-serif text-lg font-medium text-[#141413]">tautan.site</span>
+            <span className="font-sans text-base font-bold text-[#141413]">tautan.site</span>
             <span>— Platform Etalase Mikro & Checkout WhatsApp</span>
           </div>
           <div className="flex items-center gap-5">

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { Navbar } from '@/components/common/Navbar'
@@ -9,15 +10,22 @@ import { CatalogPage } from '@/pages/CatalogPage'
 import { CustomersPage } from '@/pages/CustomersPage'
 import { ReportsPage } from '@/pages/ReportsPage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { ReviewsPage } from '@/pages/ReviewsPage'
 import { AuthPage } from '@/pages/AuthPage'
+import { useAuthStore } from '@/store/useAuthStore'
 
 function AppContent() {
   const location = useLocation()
-  const isDashboardRoute = [
-    '/dashboard',
+  const initializeAuth = useAuthStore((s) => s.initialize)
+
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
+  const isDashboardRoute = location.pathname.startsWith('/dashboard') || [
     '/orders',
     '/katalog',
     '/pelanggan',
+    '/ulasan',
     '/laporan',
     '/pengaturan',
   ].some((r) => location.pathname.startsWith(r))
@@ -42,12 +50,24 @@ function AppContent() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/login" element={<AuthPage />} />
+              
+              {/* Dashboard Sub-routes */}
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/dashboard/orders" element={<OrdersPage />} />
+              <Route path="/dashboard/katalog" element={<CatalogPage />} />
+              <Route path="/dashboard/pelanggan" element={<CustomersPage />} />
+              <Route path="/dashboard/ulasan" element={<ReviewsPage />} />
+              <Route path="/dashboard/laporan" element={<ReportsPage />} />
+              <Route path="/dashboard/pengaturan" element={<SettingsPage />} />
+
+              {/* Backward compatibility aliases */}
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/katalog" element={<CatalogPage />} />
               <Route path="/pelanggan" element={<CustomersPage />} />
+              <Route path="/ulasan" element={<ReviewsPage />} />
               <Route path="/laporan" element={<ReportsPage />} />
               <Route path="/pengaturan" element={<SettingsPage />} />
+
               <Route path="/:slug" element={<StorefrontPage />} />
             </Routes>
           </motion.div>

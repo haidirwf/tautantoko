@@ -4,9 +4,14 @@ import { formatIDR } from '@/lib/utils'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { PaymentBreakdown } from '@/components/dashboard/PaymentBreakdown'
+import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
+import { useAuthStore } from '@/store/useAuthStore'
+import { CheckCircle2, Clock, TrendingUp } from 'lucide-react'
 import type { DashboardMetrics } from '@/types'
 
 export function ReportsPage() {
+  const { user } = useAuthStore()
+  const storeId = user?.storeId || 'store-batik-01'
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -14,7 +19,7 @@ export function ReportsPage() {
     async function load() {
       setIsLoading(true)
       try {
-        const data = await api.getDashboardMetrics('store-batik-01')
+        const data = await api.getDashboardMetrics(storeId)
         setMetrics(data)
       } finally {
         setIsLoading(false)
@@ -26,45 +31,87 @@ export function ReportsPage() {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        <div className="pb-6 border-b border-[#e8e2d9]">
-          <span className="text-xs font-mono uppercase tracking-wider text-[#cc785c] font-semibold">
-            Finansial & Tren
-          </span>
-          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight mt-1">
-            Laporan Penjualan
+        {/* Clean Header */}
+        <div className="pb-4 border-b border-[#e8e2d9]">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
+            Laporan Finansial & Penjualan
           </h1>
-          <p className="text-xs sm:text-sm text-muted mt-1">
-            Analisis transaksi settled, pipeline WhatsApp, dan metode transfer pembeli.
+          <p className="text-xs sm:text-sm text-[#706c64] mt-0.5">
+            Ringkasan omzet terverifikasi, pipeline checkout WhatsApp, dan metode transfer pelanggan.
           </p>
         </div>
 
         {isLoading || !metrics ? (
-          <div className="py-20 text-center text-sm text-muted">Menghitung laporan keuangan...</div>
+          <div className="py-20 flex flex-col items-center justify-center bg-white rounded-2xl border border-[#e8e2d9] shadow-2xs">
+            <div className="size-7 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin" />
+            <p className="text-xs text-[#706c64] mt-3">Menghitung analitik toko...</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
-                <span className="text-xs text-[#8c867b] font-medium">Total Omzet Terverifikasi</span>
-                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] tracking-tight mt-2">
-                  {formatIDR(metrics.total_settled_revenue)}
+            {/* Connected Metric Bar */}
+            <div className="rounded-2xl border border-[#e8e2d9] bg-white overflow-hidden shadow-2xs grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#e8e2d9]">
+              {/* 1. Omzet Terverifikasi */}
+              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+                <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
+                  <span className="font-medium truncate">Omzet Terverifikasi (Settled)</span>
+                  <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-emerald-600 shrink-0">
+                    <CheckCircle2 className="size-4" />
+                  </div>
                 </div>
+                <div className="font-sans font-bold text-xl sm:text-2xl lg:text-3xl text-[#141413] mt-3 tracking-tight truncate">
+                  <AnimatedCounter
+                    value={metrics.total_settled_revenue}
+                    formatter={formatIDR}
+                    duration={1000}
+                  />
+                </div>
+                <span className="text-[11px] text-[#8c867b] mt-1 block truncate">
+                  Dana masuk rekening terkonfirmasi
+                </span>
               </div>
 
-              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
-                <span className="text-xs text-[#8c867b] font-medium">Potensi Pipeline WhatsApp</span>
-                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#cc785c] tracking-tight mt-2">
-                  {formatIDR(metrics.pending_revenue)}
+              {/* 2. Pipeline WA */}
+              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+                <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
+                  <span className="font-medium truncate">Potensi Pipeline WhatsApp</span>
+                  <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] shrink-0">
+                    <Clock className="size-4" />
+                  </div>
                 </div>
+                <div className="font-sans font-bold text-xl sm:text-2xl lg:text-3xl text-[#cc785c] mt-3 tracking-tight truncate">
+                  <AnimatedCounter
+                    value={metrics.pending_revenue}
+                    formatter={formatIDR}
+                    duration={1100}
+                  />
+                </div>
+                <span className="text-[11px] text-[#8c867b] mt-1 block truncate">
+                  Pesanan menunggu konfirmasi
+                </span>
               </div>
 
-              <div className="p-5 rounded-2xl border border-[#e8e2d9] bg-white shadow-2xs">
-                <span className="text-xs text-[#8c867b] font-medium">Rata-rata Order (AOV)</span>
-                <div className="font-sans font-bold text-2xl sm:text-3xl text-[#141413] tracking-tight mt-2">
-                  {formatIDR(metrics.aov)}
+              {/* 3. AOV */}
+              <div className="p-4 sm:p-5 flex flex-col justify-between hover:bg-[#faf8f5]/60 transition-colors min-w-0">
+                <div className="flex items-center justify-between text-xs text-[#706c64] gap-2">
+                  <span className="font-medium truncate">Rata-rata Order (AOV)</span>
+                  <div className="size-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#141413] shrink-0">
+                    <TrendingUp className="size-4" />
+                  </div>
                 </div>
+                <div className="font-sans font-bold text-xl sm:text-2xl lg:text-3xl text-[#141413] mt-3 tracking-tight truncate">
+                  <AnimatedCounter
+                    value={metrics.aov}
+                    formatter={formatIDR}
+                    duration={1200}
+                  />
+                </div>
+                <span className="text-[11px] text-[#8c867b] mt-1 block truncate">
+                  Nilai transaksi rata-rata per pembeli
+                </span>
               </div>
             </div>
 
+            {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <RevenueChart data={metrics.revenue_trends} />
@@ -79,3 +126,4 @@ export function ReportsPage() {
     </DashboardLayout>
   )
 }
+

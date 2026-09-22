@@ -80,24 +80,24 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Product Info */}
-        <div className="p-4 flex flex-col flex-1 justify-between gap-3">
+        <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between gap-2 sm:gap-3">
           <div>
-            <h3 className="font-medium text-base text-ink line-clamp-1 group-hover:text-primary transition-colors">
+            <h3 className="font-semibold text-xs sm:text-base text-ink line-clamp-1 group-hover:text-primary transition-colors">
               {product.name}
             </h3>
             {product.description && (
-              <p className="text-xs text-muted mt-1 line-clamp-2 leading-relaxed">
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed">
                 {product.description}
               </p>
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-1 border-t border-hairline/60">
-            <div>
-              <span className="text-[10px] text-muted block uppercase tracking-wider font-mono">
+          <div className="flex items-center justify-between pt-1 border-t border-hairline/60 gap-1">
+            <div className="min-w-0">
+              <span className="text-[9px] sm:text-[10px] text-muted block uppercase tracking-wider font-mono">
                 Harga
               </span>
-              <span className="font-serif text-lg font-medium text-ink tracking-tight">
+              <span className="font-sans text-xs sm:text-base font-bold text-ink tracking-tight truncate block">
                 {formatIDR(product.base_price)}
               </span>
             </div>
@@ -107,7 +107,7 @@ export function ProductCard({ product }: ProductCardProps) {
               whileTap={{ scale: 0.95 }}
               type="button"
               onClick={handleOpenVariantModal}
-              className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs ${
+              className={`h-7 sm:h-8 px-2.5 sm:px-3 rounded-md text-[11px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-colors shadow-2xs shrink-0 cursor-pointer ${
                 addedAnimation
                   ? 'bg-status-success/15 text-status-success border border-status-success/30'
                   : 'bg-primary hover:bg-primary-active text-white'
@@ -123,7 +123,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     exit={{ opacity: 0, scale: 0.5 }}
                     className="flex items-center gap-1"
                   >
-                    <Check className="size-3.5" />
+                    <Check className="size-3 sm:size-3.5" />
                     <span>Masuk</span>
                   </motion.span>
                 ) : (
@@ -134,7 +134,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     exit={{ opacity: 0, scale: 0.5 }}
                     className="flex items-center gap-1"
                   >
-                    <Plus className="size-3.5" />
+                    <Plus className="size-3 sm:size-3.5" />
                     <span>Tambah</span>
                   </motion.span>
                 )}
@@ -162,7 +162,7 @@ export function ProductCard({ product }: ProductCardProps) {
               />
               <div className="truncate">
                 <h4 className="text-sm font-medium text-ink truncate">{product.name}</h4>
-                <p className="font-serif text-lg text-primary font-medium mt-0.5">
+                <p className="font-sans text-base font-bold text-primary mt-0.5 tracking-tight">
                   {formatIDR(calculatedPrice)}
                 </p>
               </div>
@@ -208,7 +208,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <span className="text-[10px] text-muted block uppercase tracking-wider font-mono">
                   Total
                 </span>
-                <span className="font-serif text-xl font-medium text-ink">
+                <span className="font-sans text-lg font-bold text-ink tracking-tight">
                   {formatIDR(calculatedPrice)}
                 </span>
               </div>
