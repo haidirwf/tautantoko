@@ -23,19 +23,17 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { useAuthStore } from '@/store/useAuthStore'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { ProductImageUploader } from '@/components/common/ProductImageUploader'
-import {
-  ProductStockAndVariants,
-  draftToVariantGroups,
-  type VariantGroupDraft,
-} from '@/components/dashboard/ProductStockAndVariants'
+import { ProductStockAndVariants, draftToVariantGroups, type VariantGroupDraft } from '@/components/dashboard/ProductStockAndVariants'
+import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { toast } from '@/store/useToastStore'
 
 export function DashboardPage() {
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
+  const [totalCustomers, setTotalCustomers] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isLinkCopied, setIsLinkCopied] = useState(false)
   const navigate = useNavigate()
@@ -52,12 +50,19 @@ export function DashboardPage() {
   const [newProdVariantGroups, setNewProdVariantGroups] = useState<VariantGroupDraft[]>([])
   const [isSavingProduct, setIsSavingProduct] = useState(false)
 
-  const storeId = user?.storeId || 'store-batik-01'
-  const storeName = user?.name || 'Batik Nusantara'
-  const storeSlug = user?.storeSlug || 'batik-nusantara'
-  const storeUrl = `tautan.site/${storeSlug}`
+  const storeId = user?.storeId || ''
+  const storeName = user?.name || 'Toko Saya'
+  const storeSlug = user?.storeSlug || ''
+  const storeUrl = storeSlug ? `tautan.site/${storeSlug}` : 'tautan.site'
 
   useEffect(() => {
+    if (authLoading) return
+
+    if (isAuthenticated && !user?.isOnboarded && (!user?.storeSlug || !user?.whatsappNumber)) {
+      navigate('/onboarding', { replace: true })
+      return
+    }
+
     async function loadDashboard() {
       if (!isAuthenticated) {
         setIsLoading(false)
@@ -71,6 +76,7 @@ export function DashboardPage() {
         ])
         setMetrics(metricData)
         setRecentOrders(ordersData.slice(0, 5))
+        setTotalCustomers(new Set(ordersData.map((o) => o.buyer_phone).filter(Boolean)).size)
       } catch (err) {
         console.error('Error loading metrics', err)
       } finally {
@@ -78,7 +84,7 @@ export function DashboardPage() {
       }
     }
     loadDashboard()
-  }, [isAuthenticated])
+  }, [authLoading, isAuthenticated, user?.isOnboarded, user?.storeSlug, user?.whatsappNumber, storeId, navigate])
 
   const copyStoreLink = () => {
     navigator.clipboard.writeText(`https://${storeUrl}`)
@@ -117,10 +123,27 @@ export function DashboardPage() {
 
   if (isLoading || !metrics) {
     return (
-      <DashboardLayout>
-        <div className="py-24 flex flex-col items-center justify-center">
-          <div className="size-8 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin" />
-          <p className="font-sans text-sm font-medium text-[#706c64] mt-3">Menyiapkan ringkasan toko...</p>
+      <DashboardLayout isLoading={true}>
+        <div className="space-y-6 animate-pulse">
+          {/* Subtle skeleton bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e8e2d9]">
+            <div className="space-y-2">
+              <div className="h-7 w-48 bg-[#e8e2d9]/60 rounded-lg" />
+              <div className="h-4 w-72 bg-[#e8e2d9]/40 rounded-md" />
+            </div>
+            <div className="h-9 w-32 bg-[#e8e2d9]/50 rounded-lg" />
+          </div>
+
+          {/* Skeleton Metric Cards */}
+          <div className="rounded-2xl border border-[#e8e2d9] bg-[#e8e2d9] overflow-hidden shadow-2xs grid grid-cols-2 lg:grid-cols-4 gap-px">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="p-4 sm:p-5 bg-white flex flex-col justify-between h-28">
+                <div className="h-4 w-24 bg-[#e8e2d9]/50 rounded" />
+                <div className="h-7 w-28 bg-[#e8e2d9]/70 rounded-md mt-2" />
+                <div className="h-3 w-20 bg-[#e8e2d9]/40 rounded mt-1" />
+              </div>
+            ))}
+          </div>
         </div>
       </DashboardLayout>
     )
@@ -251,7 +274,7 @@ export function DashboardPage() {
             </div>
             <div className="font-sans font-bold text-lg sm:text-2xl lg:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight truncate">
               <AnimatedCounter
-                value={metrics.pending_orders_count + 1}
+                value={metrics.pending_orders_count}
                 duration={800}
               />
             </div>
@@ -270,7 +293,7 @@ export function DashboardPage() {
             </div>
             <div className="font-sans font-bold text-lg sm:text-2xl lg:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight truncate">
               <AnimatedCounter
-                value={recentOrders.length}
+                value={totalCustomers}
                 duration={900}
               />
             </div>
@@ -291,14 +314,20 @@ export function DashboardPage() {
               </div>
             </div>
             <div className="font-sans font-bold text-lg sm:text-2xl lg:text-3xl text-[#141413] mt-2 sm:mt-3 tracking-tight flex items-baseline gap-1 truncate">
-              <span>{metrics.average_rating || '5.0'}</span>
+              <span>{(metrics.total_reviews ?? 0) > 0 && metrics.average_rating ? metrics.average_rating.toFixed(1) : '0.0'}</span>
               <span className="text-xs text-[#8c867b] font-normal">/ 5.0</span>
             </div>
             <span className="text-[10px] sm:text-[11px] text-[#8c867b] mt-0.5 sm:mt-1 block truncate">
-              {metrics.total_reviews || 2} ulasan &rarr;
+              {(metrics.total_reviews ?? 0) > 0 ? `${metrics.total_reviews} ulasan` : '0 ulasan'} &rarr;
             </span>
           </Link>
         </div>
+
+        {/* Tren Pendapatan Mingguan & Bulanan */}
+        <RevenueChart
+          data={metrics.weekly_revenue_trends || metrics.revenue_trends}
+          monthlyData={metrics.monthly_revenue_trends}
+        />
 
         {/* Full-width Pesanan Terbaru Section with Clean Data Table */}
         <div className="flex flex-col">

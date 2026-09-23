@@ -19,8 +19,8 @@ import { toast } from '@/store/useToastStore'
 
 export function CatalogPage() {
   const { user } = useAuthStore()
-  const storeId = user?.storeId || 'store-batik-01'
-  const storeSlug = user?.storeSlug || 'batik-nusantara'
+  const storeId = user?.storeId || ''
+  const storeSlug = user?.storeSlug || ''
   const [products, setProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('ALL')
@@ -185,7 +185,7 @@ export function CatalogPage() {
   })
 
   return (
-    <DashboardLayout onAddProductClick={() => setIsAddModalOpen(true)}>
+    <DashboardLayout onAddProductClick={() => setIsAddModalOpen(true)} isLoading={isLoading}>
       <div className="flex flex-col gap-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#e8e2d9]">
@@ -282,14 +282,36 @@ export function CatalogPage() {
 
         {/* Products Grid */}
         {isLoading ? (
-          <div className="py-20 text-center bg-white rounded-2xl border border-[#e8e2d9] shadow-2xs">
-            <div className="size-7 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin mx-auto" />
-            <p className="text-xs text-[#706c64] mt-3">Memuat katalog toko...</p>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-56 bg-white rounded-2xl border border-[#e8e2d9]/60 p-4 flex flex-col justify-between">
+                <div className="h-28 bg-[#e8e2d9]/40 rounded-xl" />
+                <div className="h-4 bg-[#e8e2d9]/50 rounded w-3/4 mt-3" />
+                <div className="h-4 bg-[#e8e2d9]/60 rounded w-1/2 mt-1" />
+              </div>
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="p-14 text-center rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs">
+            <Package className="size-10 text-[#8c867b]/50 mx-auto mb-2" />
+            <p className="font-sans text-lg font-bold text-[#141413]">Belum ada produk</p>
+            <p className="text-xs text-[#706c64] mt-1 max-w-sm mx-auto">
+              Toko Anda belum memiliki produk di etalase. Mulai tambahkan produk pertama Anda sekarang.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setIsAddModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-[#cc785c] text-white text-xs font-semibold hover:bg-[#a9583e] shadow-2xs"
+              >
+                + Tambah Produk Pertama
+              </button>
+            </div>
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-14 text-center rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs">
             <Package className="size-10 text-[#8c867b]/50 mx-auto mb-2" />
-            <p className="font-sans text-lg font-bold text-[#141413]">Belum ada produk ditemukan</p>
+            <p className="font-sans text-lg font-bold text-[#141413]">Tidak ada produk yang cocok</p>
             <p className="text-xs text-[#706c64] mt-1 max-w-sm mx-auto">
               Tidak ada produk yang cocok dengan pencarian "{searchQuery}" atau kategori yang dipilih.
             </p>

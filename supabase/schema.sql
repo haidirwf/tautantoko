@@ -11,10 +11,26 @@ CREATE TABLE IF NOT EXISTS stores (
   name TEXT NOT NULL,
   tagline TEXT DEFAULT '',
   avatar_url TEXT DEFAULT '',
-  whatsapp_number TEXT NOT NULL, -- Format: 628...
+  whatsapp_number TEXT DEFAULT '', -- Format: 628...
+  is_onboarded BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Ensure column is_onboarded exists if table was created previously
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'stores' AND column_name = 'is_onboarded'
+  ) THEN
+    ALTER TABLE stores ADD COLUMN is_onboarded BOOLEAN DEFAULT false;
+  END IF;
+  
+  -- Ensure whatsapp_number can be empty initially
+  ALTER TABLE stores ALTER COLUMN whatsapp_number DROP NOT NULL;
+  ALTER TABLE stores ALTER COLUMN whatsapp_number SET DEFAULT '';
+END $$;
 
 -- 2. External Social Links (Link-in-Bio)
 CREATE TABLE IF NOT EXISTS store_links (
@@ -107,6 +123,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- Indexes for High Performance Querying
 -- ==============================================================================
 CREATE INDEX IF NOT EXISTS idx_stores_slug ON stores(slug);
+CREATE INDEX IF NOT EXISTS idx_stores_user ON stores(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_store ON products(store_id);
 CREATE INDEX IF NOT EXISTS idx_orders_store_status ON orders(store_id, status);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
@@ -124,52 +141,95 @@ ALTER TABLE variant_options ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
--- Stores: Public read, owner update/delete
+-- 1. Stores Policies
+DROP POLICY IF EXISTS "Public can view active stores" ON stores;
 CREATE POLICY "Public can view active stores" ON stores
   FOR SELECT USING (true);
 
-CREATE POLICY "Owners can manage their store" ON stores
-  FOR ALL USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Owners can insert their store" ON stores;
+CREATE POLICY "Owners can insert their store" ON stores
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Catalog: Public read for storefront, owner write
+DROP POLICY IF EXISTS "Owners can update their store" ON stores;
+CREATE POLICY "Owners can update their store" ON stores
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Owners can delete their store" ON stores;
+CREATE POLICY "Owners can delete their store" ON stores
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- 2. Store Links Policies
+DROP POLICY IF EXISTS "Public can view store links" ON store_links;
 CREATE POLICY "Public can view store links" ON store_links
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Owners can manage store links" ON store_links;
 CREATE POLICY "Owners can manage store links" ON store_links
   FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = store_links.store_id AND stores.user_id = auth.uid()));
 
+-- 3. Categories Policies
+DROP POLICY IF EXISTS "Public can view categories" ON categories;
 CREATE POLICY "Public can view categories" ON categories
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Owners can manage categories" ON categories;
 CREATE POLICY "Owners can manage categories" ON categories
   FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = categories.store_id AND stores.user_id = auth.uid()));
 
+-- 4. Products Policies
+DROP POLICY IF EXISTS "Public can view active products" ON products;
 CREATE POLICY "Public can view active products" ON products
   FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Owners can manage products" ON products;
 CREATE POLICY "Owners can manage products" ON products
   FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = products.store_id AND stores.user_id = auth.uid()));
 
+-- 5. Variant Groups & Options Policies
+DROP POLICY IF EXISTS "Public can view variant groups" ON variant_groups;
 CREATE POLICY "Public can view variant groups" ON variant_groups
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Owners can manage variant groups" ON variant_groups;
+CREATE POLICY "Owners can manage variant groups" ON variant_groups
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM products 
+    JOIN stores ON stores.id = products.store_id 
+    WHERE products.id = variant_groups.product_id AND stores.user_id = auth.uid()
+  ));
+
+DROP POLICY IF EXISTS "Public can view variant options" ON variant_options;
 CREATE POLICY "Public can view variant options" ON variant_options
   FOR SELECT USING (true);
 
--- Orders: Public checkout insert allowed, read/update restricted to store owner
+DROP POLICY IF EXISTS "Owners can manage variant options" ON variant_options;
+CREATE POLICY "Owners can manage variant options" ON variant_options
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM variant_groups
+    JOIN products ON products.id = variant_groups.product_id
+    JOIN stores ON stores.id = products.store_id
+    WHERE variant_groups.id = variant_options.group_id AND stores.user_id = auth.uid()
+  ));
+
+-- 6. Orders Policies
+DROP POLICY IF EXISTS "Public can insert orders" ON orders;
 CREATE POLICY "Public can insert orders" ON orders
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Owners can view and update their orders" ON orders;
 CREATE POLICY "Owners can view and update their orders" ON orders
   FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = orders.store_id AND stores.user_id = auth.uid()));
 
--- Reviews: Public can view and submit reviews, owners can manage
+-- 7. Reviews Policies
+DROP POLICY IF EXISTS "Public can view reviews" ON reviews;
 CREATE POLICY "Public can view reviews" ON reviews
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Public can insert reviews" ON reviews;
 CREATE POLICY "Public can insert reviews" ON reviews
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Owners can manage reviews" ON reviews;
 CREATE POLICY "Owners can manage reviews" ON reviews
   FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = reviews.store_id AND stores.user_id = auth.uid()));
 
@@ -179,23 +239,50 @@ CREATE POLICY "Owners can manage reviews" ON reviews
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
-  store_slug TEXT;
+  base_slug TEXT;
+  final_slug TEXT;
   store_name TEXT;
+  has_custom_profile BOOLEAN;
 BEGIN
-  -- Extract store name & slug from user_metadata or fallback to email
-  store_name := COALESCE(NEW.raw_user_meta_data->>'store_name', split_part(NEW.email, '@', 1));
-  store_slug := COALESCE(
+  -- Extract store name from metadata or fallback to email prefix
+  store_name := COALESCE(
+    NEW.raw_user_meta_data->>'store_name',
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'name',
+    split_part(NEW.email, '@', 1)
+  );
+  
+  -- Clean slug base from email or metadata
+  base_slug := COALESCE(
     NEW.raw_user_meta_data->>'store_slug',
     lower(regexp_replace(split_part(NEW.email, '@', 1), '[^a-zA-Z0-9]', '-', 'g'))
   );
+  
+  IF base_slug IS NULL OR base_slug = '' THEN
+    base_slug := 'toko';
+  END IF;
 
-  INSERT INTO public.stores (user_id, name, slug, whatsapp_number, tagline)
+  final_slug := base_slug;
+
+  -- Collision avoidance: if slug already taken, append unique short suffix from user id
+  IF EXISTS (SELECT 1 FROM public.stores WHERE slug = final_slug) THEN
+    final_slug := base_slug || '-' || substr(replace(NEW.id::text, '-', ''), 1, 6);
+  END IF;
+
+  -- Check if WhatsApp number was explicitly supplied during signup
+  has_custom_profile := (
+    NEW.raw_user_meta_data->>'whatsapp_number' IS NOT NULL AND 
+    NEW.raw_user_meta_data->>'whatsapp_number' <> ''
+  );
+
+  INSERT INTO public.stores (user_id, name, slug, whatsapp_number, tagline, is_onboarded)
   VALUES (
     NEW.id,
     store_name,
-    store_slug,
-    COALESCE(NEW.raw_user_meta_data->>'whatsapp_number', '6281234567890'),
-    'Koleksi produk berkualitas siap pesan via WhatsApp.'
+    final_slug,
+    COALESCE(NEW.raw_user_meta_data->>'whatsapp_number', ''),
+    COALESCE(NEW.raw_user_meta_data->>'tagline', ''),
+    has_custom_profile
   )
   ON CONFLICT (user_id) DO NOTHING;
 
@@ -216,9 +303,18 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-images', 'product-images', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Public can view product images" ON storage.objects;
 CREATE POLICY "Public can view product images" ON storage.objects
   FOR SELECT USING (bucket_id = 'product-images');
 
+DROP POLICY IF EXISTS "Authenticated users can upload product images" ON storage.objects;
 CREATE POLICY "Authenticated users can upload product images" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Authenticated users can update their product images" ON storage.objects;
+CREATE POLICY "Authenticated users can update their product images" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users can delete their product images" ON storage.objects;
+CREATE POLICY "Authenticated users can delete their product images" ON storage.objects
+  FOR DELETE USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');

@@ -113,3 +113,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Top Loading Line Animation (Left to Right) */
+@keyframes top-loader-sweep {
+  0% {
+    left: -40%;
+    width: 30%;
+  }
+  50% {
+    left: 30%;
+    width: 55%;
+  }
+  100% {
+    left: 100%;
+    width: 30%;
+  }
+}
+
+.animate-top-loader {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  animation: top-loader-sweep 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

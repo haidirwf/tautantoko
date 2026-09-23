@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, ShieldCheck, Check } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
 
@@ -21,12 +21,17 @@ export function AuthPage() {
 
     try {
       if (isLogin) {
-        await login(email || 'merchant@tautan.site', password)
+        const res = await login(email || 'merchant@tautan.site', password)
+        if (res?.isOnboarded) {
+          navigate('/dashboard')
+        } else {
+          navigate('/onboarding')
+        }
       } else {
         const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '') || 'tokoku'
         await signup(email || 'merchant@tautan.site', password, cleanSlug)
+        navigate('/onboarding')
       }
-      navigate('/dashboard')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kendala saat autentikasi.'
       setAuthError(msg)
@@ -40,7 +45,6 @@ export function AuthPage() {
     setAuthError(null)
     try {
       await loginWithGoogle()
-      navigate('/dashboard')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal masuk dengan Google.'
       setAuthError(msg)
@@ -64,11 +68,6 @@ export function AuthPage() {
         {/* Card Container */}
         <div className="p-6 sm:p-8 rounded-2xl bg-surface-card border border-hairline shadow-sm">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-canvas border border-hairline text-xs font-mono text-muted mb-3">
-              <ShieldCheck className="size-3.5 text-primary" />
-              <span>30 Detik • Tanpa Kartu Kredit</span>
-            </div>
-
             <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-ink">
               {isLogin ? 'Masuk ke Dashboard' : 'Buka Toko Online Kamu'}
             </h1>

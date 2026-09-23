@@ -20,54 +20,41 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/store/useToastStore'
 
+import { TopProgressBar } from '@/components/ui/TopProgressBar'
+
 interface DashboardLayoutProps {
   children: React.ReactNode
   onAddProductClick?: () => void
+  isLoading?: boolean
 }
 
-export function DashboardLayout({ children, onAddProductClick }: DashboardLayoutProps) {
+export function DashboardLayout({ children, onAddProductClick, isLoading = false }: DashboardLayoutProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const path = location.pathname
-  const { user, logout } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading, logout } = useAuthStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (authLoading) return
+    if (isAuthenticated && !user?.isOnboarded && (!user?.storeSlug || !user?.whatsappNumber)) {
+      navigate('/onboarding', { replace: true })
+    }
+  }, [authLoading, isAuthenticated, user?.isOnboarded, user?.storeSlug, user?.whatsappNumber, navigate])
 
 
   // Navigation transition & top edge loader state
   const [isNavigating, setIsNavigating] = useState(false)
-  const [navProgress, setNavProgress] = useState(0)
   const prevPathRef = useRef(path)
-  const navTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
-
-  const clearNavTimers = () => {
-    navTimersRef.current.forEach((t) => clearTimeout(t))
-    navTimersRef.current = []
-  }
+  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const startNavAnimation = () => {
-    clearNavTimers()
     setIsNavigating(true)
-    setNavProgress(25)
-
-    const t1 = setTimeout(() => {
-      setNavProgress(65)
-    }, 90)
-
-    const t2 = setTimeout(() => {
-      setNavProgress(90)
-    }, 200)
-
-    const t3 = setTimeout(() => {
-      setNavProgress(100)
-    }, 350)
-
-    const t4 = setTimeout(() => {
+    if (navTimerRef.current) clearTimeout(navTimerRef.current)
+    navTimerRef.current = setTimeout(() => {
       setIsNavigating(false)
-      setNavProgress(0)
-    }, 520)
-
-    navTimersRef.current = [t1, t2, t3, t4]
+    }, 450)
   }
 
   useEffect(() => {
@@ -75,11 +62,14 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
       prevPathRef.current = path
       startNavAnimation()
     }
-    return () => clearNavTimers()
+    return () => {
+      if (navTimerRef.current) clearTimeout(navTimerRef.current)
+    }
   }, [path])
 
-  const storeName = user?.name || 'Batik Nusantara'
-  const storeSlug = user?.storeSlug || 'batik-nusantara'
+  const storeName = user?.name || 'Toko Saya'
+  const storeSlug = user?.storeSlug || ''
+  const storeWhatsApp = user?.whatsappNumber || ''
 
   const navItems = [
     { label: 'Ringkasan', href: '/dashboard', icon: LayoutGrid, active: path === '/dashboard' },
@@ -106,24 +96,8 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col lg:flex-row relative">
-      {/* Top Edge Brown/Terracotta Progress Bar Loader */}
-      <div
-        className={`fixed top-0 left-0 right-0 h-[3px] z-[9999] pointer-events-none transition-opacity duration-200 ${
-          isNavigating ? 'opacity-100' : 'opacity-0'
-        }`}
-        aria-hidden="true"
-      >
-        <div
-          className="h-full bg-gradient-to-r from-[#d97c5e] via-[#cc785c] to-[#99462e] transition-all duration-200 ease-out relative"
-          style={{
-            width: `${navProgress}%`,
-            boxShadow: '0 0 10px rgba(204, 120, 92, 0.85), 0 0 4px rgba(204, 120, 92, 0.6)',
-          }}
-        >
-          {/* Glowing head tip */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-[5px] bg-white/80 blur-[0.5px] rounded-full shadow-[0_0_6px_#ffffff]" />
-        </div>
-      </div>
+      {/* Top Edge Progress Bar Loader (Left to Right Animation) */}
+      <TopProgressBar isLoading={isNavigating || isLoading} />
       {/* Mobile & Tablet Top Header */}
       <div className="lg:hidden flex items-center justify-between p-3.5 px-4 bg-[#faf8f5] border-b border-[#e8e2d9] sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
@@ -186,14 +160,21 @@ export function DashboardLayout({ children, onAddProductClick }: DashboardLayout
             </div>
             <div className="truncate">
               <div className="font-medium text-sm text-[#141413] truncate">{storeName}</div>
-              <a
-                href={`/${storeSlug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted hover:text-[#cc785c] transition-colors truncate block"
-              >
-                /toko/{storeSlug}
-              </a>
+              {storeWhatsApp ? (
+                <a
+                  href={`https://wa.me/${storeWhatsApp.replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted hover:text-[#cc785c] transition-colors truncate block font-mono"
+                  title="Nomor WhatsApp Toko"
+                >
+                  {storeWhatsApp.startsWith('62')
+                    ? `+62 ${storeWhatsApp.slice(2, 5)}-${storeWhatsApp.slice(5, 9)}-${storeWhatsApp.slice(9)}`
+                    : storeWhatsApp}
+                </a>
+              ) : (
+                <span className="text-xs text-muted truncate block">Belum ada WhatsApp</span>
+              )}
             </div>
           </div>
 

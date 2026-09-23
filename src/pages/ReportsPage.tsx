@@ -11,7 +11,7 @@ import type { DashboardMetrics } from '@/types'
 
 export function ReportsPage() {
   const { user } = useAuthStore()
-  const storeId = user?.storeId || 'store-batik-01'
+  const storeId = user?.storeId || ''
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -29,7 +29,7 @@ export function ReportsPage() {
   }, [])
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isLoading={isLoading || !metrics}>
       <div className="flex flex-col gap-6">
         {/* Clean Header */}
         <div className="pb-4 border-b border-[#e8e2d9]">
@@ -42,9 +42,14 @@ export function ReportsPage() {
         </div>
 
         {isLoading || !metrics ? (
-          <div className="py-20 flex flex-col items-center justify-center bg-white rounded-2xl border border-[#e8e2d9] shadow-2xs">
-            <div className="size-7 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin" />
-            <p className="text-xs text-[#706c64] mt-3">Menghitung analitik toko...</p>
+          <div className="rounded-2xl border border-[#e8e2d9] bg-[#e8e2d9] overflow-hidden shadow-2xs grid grid-cols-1 lg:grid-cols-3 gap-px animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-4 sm:p-5 bg-white h-28 flex flex-col justify-between">
+                <div className="h-4 w-32 bg-[#e8e2d9]/50 rounded" />
+                <div className="h-7 w-36 bg-[#e8e2d9]/70 rounded-md mt-2" />
+                <div className="h-3 w-28 bg-[#e8e2d9]/40 rounded mt-1" />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="flex flex-col gap-6">
@@ -114,7 +119,10 @@ export function ReportsPage() {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <RevenueChart data={metrics.revenue_trends} />
+                <RevenueChart
+                  data={metrics.weekly_revenue_trends || metrics.revenue_trends}
+                  monthlyData={metrics.monthly_revenue_trends}
+                />
               </div>
               <div>
                 <PaymentBreakdown distribution={metrics.payment_distribution} />

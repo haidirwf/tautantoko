@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 
 export function ReviewsPage() {
   const { user } = useAuthStore()
-  const storeId = user?.storeId || 'store-batik-01'
+  const storeId = user?.storeId || ''
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -42,7 +42,7 @@ export function ReviewsPage() {
   const averageRating =
     reviews.length > 0
       ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-      : '5.0'
+      : '0.0'
 
   const ratingCounts = [5, 4, 3, 2, 1].map((stars) => ({
     stars,
@@ -54,7 +54,7 @@ export function ReviewsPage() {
   }))
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isLoading={isLoading}>
       <div className="flex flex-col gap-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e8e2d9]">
@@ -80,7 +80,7 @@ export function ReviewsPage() {
                 <Star
                   key={s}
                   className={`size-4 ${
-                    s <= Math.round(Number(averageRating))
+                    reviews.length > 0 && s <= Math.round(Number(averageRating))
                       ? 'text-amber-500 fill-amber-500'
                       : 'text-[#e8e2d9]'
                   }`}
@@ -171,9 +171,19 @@ export function ReviewsPage() {
 
         {/* Reviews List */}
         {isLoading ? (
-          <div className="p-12 text-center bg-white rounded-xl border border-[#e8e2d9] shadow-2xs">
-            <div className="size-6 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin mx-auto" />
-            <p className="text-xs text-[#706c64] mt-2.5">Memuat ulasan pelanggan...</p>
+          <div className="grid grid-cols-1 gap-3.5 animate-pulse">
+            {[1, 2].map((i) => (
+              <div key={i} className="p-5 rounded-2xl border border-[#e8e2d9] bg-white h-28 flex flex-col justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-full bg-[#e8e2d9]/60" />
+                  <div className="space-y-1.5">
+                    <div className="h-3.5 w-28 bg-[#e8e2d9]/60 rounded" />
+                    <div className="h-2.5 w-16 bg-[#e8e2d9]/40 rounded" />
+                  </div>
+                </div>
+                <div className="h-3 w-3/4 bg-[#e8e2d9]/50 rounded mt-2" />
+              </div>
+            ))}
           </div>
         ) : filteredReviews.length === 0 ? (
           <div className="p-12 text-center rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs">

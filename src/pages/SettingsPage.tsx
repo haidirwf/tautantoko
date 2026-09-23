@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
@@ -8,13 +8,28 @@ import { toast } from '@/store/useToastStore'
 
 export function SettingsPage() {
   const { user } = useAuthStore()
-  const storeId = user?.storeId || 'store-batik-01'
-  const [storeName, setStoreName] = useState(user?.name || 'Batik Nusantara')
-  const [slug, setSlug] = useState(user?.storeSlug || 'batik-nusantara')
-  const [whatsapp, setWhatsapp] = useState('081298765432')
-  const [tagline, setTagline] = useState('Koleksi busana etnik modern berbahan katun primisima & pewarna alam.')
+  const storeId = user?.storeId || ''
+  const [storeName, setStoreName] = useState(user?.name || '')
+  const [slug, setSlug] = useState(user?.storeSlug || '')
+  const [whatsapp, setWhatsapp] = useState('')
+  const [tagline, setTagline] = useState('')
   const [saved, setSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    async function loadStore() {
+      if (user?.storeSlug) {
+        const store = await api.getStoreBySlug(user.storeSlug)
+        if (store) {
+          setStoreName(store.name || '')
+          setSlug(store.slug || '')
+          setWhatsapp(store.whatsapp_number || '')
+          setTagline(store.tagline || '')
+        }
+      }
+    }
+    loadStore()
+  }, [user?.storeSlug])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()

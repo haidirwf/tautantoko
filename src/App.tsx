@@ -12,6 +12,7 @@ import { ReportsPage } from '@/pages/ReportsPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { ReviewsPage } from '@/pages/ReviewsPage'
 import { AuthPage } from '@/pages/AuthPage'
+import { OnboardingPage } from '@/pages/OnboardingPage'
 import { useAuthStore } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/Toaster'
 
@@ -30,6 +31,7 @@ function AppContent() {
     '/laporan',
     '/pengaturan',
   ].some((r) => location.pathname.startsWith(r))
+  const isStandaloneLayout = isDashboardRoute || location.pathname === '/onboarding'
 
   // Group merchant routes together to keep sidebar stable during tab switches
   const transitionKey = isDashboardRoute ? 'merchant-suite' : location.pathname
@@ -37,7 +39,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans">
       <Toaster />
-      {!isDashboardRoute && <Navbar />}
+      {!isStandaloneLayout && <Navbar />}
       <div className="flex-1 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
@@ -52,6 +54,7 @@ function AppContent() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/login" element={<AuthPage />} />
+              <Route path="/onboarding" element={<OnboardingPage />} />
               
               {/* Dashboard Sub-routes */}
               <Route path="/dashboard" element={<DashboardPage />} />

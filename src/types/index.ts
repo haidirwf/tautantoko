@@ -13,6 +13,7 @@ export interface Store {
   tagline: string
   avatar_url: string
   whatsapp_number: string
+  is_onboarded?: boolean
   created_at?: string
   updated_at?: string
 }
@@ -114,6 +115,16 @@ export interface DashboardMetrics {
   conversion_rate: number
   aov: number
   revenue_trends: {
+    date: string
+    settled: number
+    pending: number
+  }[]
+  weekly_revenue_trends?: {
+    date: string
+    settled: number
+    pending: number
+  }[]
+  monthly_revenue_trends?: {
     date: string
     settled: number
     pending: number

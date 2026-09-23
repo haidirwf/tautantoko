@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
@@ -28,13 +28,19 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModal
 
     try {
       if (isLogin) {
-        await login(email || 'merchant@tautan.site', password)
+        const res = await login(email || 'merchant@tautan.site', password)
+        onClose()
+        if (res?.isOnboarded) {
+          navigate('/dashboard')
+        } else {
+          navigate('/onboarding')
+        }
       } else {
         const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '') || 'tokoku'
         await signup(email || 'merchant@tautan.site', password, cleanSlug)
+        onClose()
+        navigate('/onboarding')
       }
-      onClose()
-      navigate('/dashboard')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kendala saat autentikasi.'
       setAuthError(msg)
@@ -65,14 +71,9 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModal
       surface="canvas"
       maxWidth="md"
     >
-      <div className="flex flex-col gap-5 py-1">
+      <div className="flex flex-col gap-5 pt-3 sm:pt-5 pb-1">
         {/* Modal Header */}
         <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-card border border-hairline text-[11px] font-mono text-muted mb-2.5">
-            <ShieldCheck className="size-3 text-primary" />
-            <span>30 Detik • Tanpa Kartu Kredit</span>
-          </span>
-
           <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             {isLogin ? 'Masuk ke Dashboard Toko' : 'Buat Toko Online Kamu'}
           </h2>

@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 
 export function CustomersPage() {
   const { user } = useAuthStore()
-  const storeId = user?.storeId || 'store-batik-01'
+  const storeId = user?.storeId || ''
   const [orders, setOrders] = useState<Order[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -39,7 +39,7 @@ export function CustomersPage() {
   })
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isLoading={isLoading}>
       <div className="flex flex-col gap-5">
         {/* Clean Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e8e2d9]">
@@ -76,9 +76,16 @@ export function CustomersPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="p-12 text-center bg-white rounded-xl border border-[#e8e2d9] shadow-2xs">
-            <div className="size-6 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin mx-auto" />
-            <p className="text-xs text-[#706c64] mt-2.5">Memuat data pelanggan...</p>
+          <div className="rounded-xl border border-[#e8e2d9] bg-white divide-y divide-[#e8e2d9] overflow-hidden shadow-2xs animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-4 flex items-center justify-between">
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-[#e8e2d9]/60 rounded" />
+                  <div className="h-3 w-48 bg-[#e8e2d9]/40 rounded" />
+                </div>
+                <div className="h-8 w-24 bg-[#e8e2d9]/50 rounded-lg" />
+              </div>
+            ))}
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="p-12 text-center rounded-xl bg-white border border-[#e8e2d9] shadow-2xs">

@@ -23,7 +23,7 @@ import { AuthModal } from '@/components/auth/AuthModal'
 export function OrdersPage() {
   const { user, isAuthenticated } = useAuthStore()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const storeId = user?.storeId || 'store-batik-01'
+  const storeId = user?.storeId || ''
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
@@ -117,7 +117,7 @@ export function OrdersPage() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isLoading={isLoading}>
       <div className="flex flex-col gap-5">
         {/* Simple & Clean Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#e8e2d9]">
@@ -137,38 +137,34 @@ export function OrdersPage() {
             className="h-8 px-3 rounded-lg bg-white border border-[#e8e2d9] text-xs font-medium text-[#5c5850] hover:text-[#141413] hover:bg-[#faf8f5] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
             title="Segarkan data pesanan"
           >
-            <RefreshCw className={`size-3 text-[#706c64] ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className="size-3 text-[#706c64]" />
             <span>Segarkan</span>
           </button>
         </div>
 
         {/* Minimal Filters & Search Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          {/* Simple Tab Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-            {tabs.map((tab) => {
+          {/* Quick Status Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+            {tabs.map((filter) => {
               const count =
-                tab.id === 'ALL'
+                filter.id === 'ALL'
                   ? orders.length
-                  : orders.filter((o) => o.status === tab.id).length
-              const isSelected = selectedStatus === tab.id
-
-              if (count === 0 && tab.id !== 'ALL' && tab.id !== 'PENDING_WA') {
-                return null // Don't crowd with 0-count tabs
-              }
+                  : orders.filter((o) => o.status === filter.id).length
+              const isSelected = selectedStatus === filter.id
 
               return (
                 <button
-                  key={tab.id}
+                  key={filter.id}
                   type="button"
-                  onClick={() => setSelectedStatus(tab.id)}
+                  onClick={() => setSelectedStatus(filter.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                     isSelected
                       ? 'bg-[#141413] text-white'
                       : 'bg-white text-[#706c64] hover:text-[#141413] border border-[#e8e2d9]'
                   }`}
                 >
-                  <span>{tab.label}</span>
+                  <span>{filter.label}</span>
                   <span className={`ml-1.5 text-[10px] font-mono ${isSelected ? 'opacity-70' : 'text-[#8c867b]'}`}>
                     {count}
                   </span>
@@ -177,12 +173,12 @@ export function OrdersPage() {
             })}
           </div>
 
-          {/* Compact Search */}
-          <div className="relative w-full sm:w-60 shrink-0">
+          {/* Search Box */}
+          <div className="relative w-full sm:w-64 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-[#8c867b]" />
             <input
               type="text"
-              placeholder="Cari pesanan..."
+              placeholder="Cari pembeli, kode order..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-9 pl-9 pr-8 rounded-lg bg-white border border-[#e8e2d9] text-xs text-[#141413] placeholder:text-[#a09a8f] focus:outline-none focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] shadow-2xs"
@@ -201,9 +197,16 @@ export function OrdersPage() {
 
         {/* Clean, Calmed-Down Orders Table */}
         {isLoading ? (
-          <div className="p-12 text-center bg-white rounded-xl border border-[#e8e2d9] shadow-2xs">
-            <div className="size-6 rounded-full border-2 border-[#cc785c] border-t-transparent animate-spin mx-auto" />
-            <p className="text-xs text-[#706c64] mt-2.5">Memuat pesanan...</p>
+          <div className="rounded-xl border border-[#e8e2d9] bg-white divide-y divide-[#e8e2d9] overflow-hidden shadow-2xs animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-4 flex items-center justify-between">
+                <div className="space-y-2">
+                  <div className="h-4 w-36 bg-[#e8e2d9]/60 rounded" />
+                  <div className="h-3 w-52 bg-[#e8e2d9]/40 rounded" />
+                </div>
+                <div className="h-5 w-20 bg-[#e8e2d9]/50 rounded-full" />
+              </div>
+            ))}
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="p-12 text-center rounded-xl bg-white border border-[#e8e2d9] shadow-2xs">

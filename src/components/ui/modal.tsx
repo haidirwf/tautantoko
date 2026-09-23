@@ -13,6 +13,7 @@ interface ModalProps {
   footer?: React.ReactNode
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
   surface?: 'cream' | 'dark' | 'canvas'
+  showHeaderBorder?: boolean
 }
 
 export function Modal({
@@ -24,6 +25,7 @@ export function Modal({
   footer,
   maxWidth = 'md',
   surface = 'canvas',
+  showHeaderBorder,
 }: ModalProps) {
   const [mounted, setMounted] = React.useState(false)
 
@@ -99,35 +101,60 @@ export function Modal({
             )}
           >
             {/* Header */}
-            <div className="flex items-start justify-between p-4 sm:p-5 pb-3.5 sm:pb-4 border-b border-inherit shrink-0 bg-inherit z-10">
-              <div>
-                {title && (
-                  <h3 className="font-sans text-lg sm:text-xl font-bold tracking-tight text-[#141413]">
-                    {title}
-                  </h3>
-                )}
-                {description && (
-                  <p className={cn('text-xs mt-1', surface === 'dark' ? 'text-[#9bb0d1]' : 'text-muted')}>
-                    {description}
-                  </p>
-                )}
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                type="button"
-                onClick={onClose}
+            {title || description ? (
+              <div
                 className={cn(
-                  'p-1.5 rounded-full transition-colors shrink-0 ml-2 cursor-pointer',
-                  surface === 'dark'
-                    ? 'hover:bg-[#1b2238] text-[#9bb0d1] hover:text-white'
-                    : 'hover:bg-surface-card text-muted hover:text-ink'
+                  'flex items-start justify-between p-4 sm:p-5 pb-3.5 sm:pb-4 shrink-0 bg-inherit z-10',
+                  showHeaderBorder !== false && 'border-b border-inherit'
                 )}
-                aria-label="Tutup"
               >
-                <X className="size-4" />
-              </motion.button>
-            </div>
+                <div>
+                  {title && (
+                    <h3 className="font-sans text-lg sm:text-xl font-bold tracking-tight text-[#141413]">
+                      {title}
+                    </h3>
+                  )}
+                  {description && (
+                    <p className={cn('text-xs mt-1', surface === 'dark' ? 'text-[#9bb0d1]' : 'text-muted')}>
+                      {description}
+                    </p>
+                  )}
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={onClose}
+                  className={cn(
+                    'p-1.5 rounded-full transition-colors shrink-0 ml-2 cursor-pointer',
+                    surface === 'dark'
+                      ? 'hover:bg-[#1b2238] text-[#9bb0d1] hover:text-white'
+                      : 'hover:bg-surface-card text-muted hover:text-ink'
+                  )}
+                  aria-label="Tutup"
+                >
+                  <X className="size-4" />
+                </motion.button>
+              </div>
+            ) : (
+              <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-20">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={onClose}
+                  className={cn(
+                    'p-1.5 rounded-full transition-colors cursor-pointer',
+                    surface === 'dark'
+                      ? 'hover:bg-[#1b2238] text-[#9bb0d1] hover:text-white'
+                      : 'hover:bg-surface-card text-muted hover:text-ink'
+                  )}
+                  aria-label="Tutup"
+                >
+                  <X className="size-4" />
+                </motion.button>
+              </div>
+            )}
 
             {/* Content Body (The single scrollable container) */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
