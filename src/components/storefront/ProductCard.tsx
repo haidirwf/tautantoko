@@ -6,6 +6,7 @@ import { formatIDR } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { useCartStore } from '@/store/useCartStore'
+import { toast } from '@/store/useToastStore'
 
 interface ProductCardProps {
   product: Product
@@ -24,8 +25,9 @@ export function ProductCard({ product }: ProductCardProps) {
     if (hasVariants) {
       const defaults: Record<string, VariantOption> = {}
       product.variant_groups?.forEach((group) => {
-        if (group.options.length > 0) {
-          defaults[group.name] = group.options[0]
+        const opts = group.options || (group as any).variant_options || []
+        if (opts.length > 0) {
+          defaults[group.name] = opts[0]
         }
       })
       setSelectedVariants(defaults)
@@ -38,12 +40,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddDirect = () => {
     addItem(product, {}, 1)
     triggerAddedFeedback()
+    toast.success('Dimasukkan ke Keranjang', `${product.name} berhasil ditambahkan.`)
   }
 
   const handleAddWithVariants = () => {
     addItem(product, selectedVariants, 1)
     setIsVariantModalOpen(false)
     triggerAddedFeedback()
+    toast.success('Dimasukkan ke Keranjang', `${product.name} berhasil ditambahkan.`)
   }
 
   const triggerAddedFeedback = () => {
@@ -196,7 +200,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   {group.name}
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {group.options.map((option) => {
+                  {(group.options || (group as any).variant_options || []).map((option: any) => {
                     const isSelected = selectedVariants[group.name]?.id === option.id
                     return (
                       <button

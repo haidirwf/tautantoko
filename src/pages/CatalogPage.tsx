@@ -55,20 +55,27 @@ export function CatalogPage() {
 
   useEffect(() => {
     async function load() {
+      if (!storeId) return
       setIsLoading(true)
       try {
         const data = await api.getProducts(storeId)
         setProducts(data)
+      } catch (err) {
+        console.error('Failed to load products:', err)
       } finally {
         setIsLoading(false)
       }
     }
     load()
-  }, [])
+  }, [storeId])
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !price) return
+    if (!storeId) {
+      toast.error('Gagal Menambahkan Produk', 'Identitas toko tidak ditemukan. Silakan refresh halaman.')
+      return
+    }
 
     setIsSubmitting(true)
     try {
@@ -415,7 +422,7 @@ export function CatalogPage() {
                           className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] bg-[#faf8f5] border border-[#e8e2d9] text-[#706c64] font-medium"
                         >
                           <Tag className="size-2 sm:size-2.5 text-[#cc785c]" />
-                          <span>{vg.name} ({vg.options.length})</span>
+                          <span>{vg.name} ({(vg.options?.length ?? (vg as any).variant_options?.length ?? 0)})</span>
                         </span>
                       ))}
                     </div>

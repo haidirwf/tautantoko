@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- tautan.site: PostgreSQL Database Schema & Row Level Security (RLS) Policies
--- Built for Supabase Backend (PRD v1.1.0)
+-- Built for Supabase Backend (Production-Grade & 100% Idempotent)
 -- ==============================================================================
 
 -- 1. Profiles / Tenants (Stores)
@@ -17,19 +17,20 @@ CREATE TABLE IF NOT EXISTS stores (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Ensure column is_onboarded exists if table was created previously
+-- Ensure all columns and defaults are up to date if table already existed
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS tagline TEXT DEFAULT '';
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT '';
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS whatsapp_number TEXT DEFAULT '';
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS is_onboarded BOOLEAN DEFAULT false;
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'stores' AND column_name = 'is_onboarded'
-  ) THEN
-    ALTER TABLE stores ADD COLUMN is_onboarded BOOLEAN DEFAULT false;
-  END IF;
-  
-  -- Ensure whatsapp_number can be empty initially
   ALTER TABLE stores ALTER COLUMN whatsapp_number DROP NOT NULL;
   ALTER TABLE stores ALTER COLUMN whatsapp_number SET DEFAULT '';
+EXCEPTION WHEN OTHERS THEN
+  NULL;
 END $$;
 
 -- 2. External Social Links (Link-in-Bio)
@@ -42,6 +43,9 @@ CREATE TABLE IF NOT EXISTS store_links (
   sort_order INT DEFAULT 0
 );
 
+ALTER TABLE store_links ADD COLUMN IF NOT EXISTS icon TEXT DEFAULT 'link';
+ALTER TABLE store_links ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+
 -- 3. Product Categories
 CREATE TABLE IF NOT EXISTS categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -49,6 +53,8 @@ CREATE TABLE IF NOT EXISTS categories (
   name TEXT NOT NULL,
   sort_order INT DEFAULT 0
 );
+
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
 
 -- 4. Products
 CREATE TABLE IF NOT EXISTS products (
@@ -66,6 +72,16 @@ CREATE TABLE IF NOT EXISTS products (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Backward compatibility column updates for products
+ALTER TABLE products ADD COLUMN IF NOT EXISTS category_id UUID REFERENCES categories(id) ON DELETE SET NULL;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INT DEFAULT NULL;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_digital BOOLEAN DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+
 -- 5. Product Variant Groups (e.g. Size, Color)
 CREATE TABLE IF NOT EXISTS variant_groups (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -73,6 +89,8 @@ CREATE TABLE IF NOT EXISTS variant_groups (
   name TEXT NOT NULL,
   sort_order INT DEFAULT 0
 );
+
+ALTER TABLE variant_groups ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
 
 -- 6. Product Variant Options
 CREATE TABLE IF NOT EXISTS variant_options (
@@ -82,6 +100,9 @@ CREATE TABLE IF NOT EXISTS variant_options (
   price_delta INT DEFAULT 0,
   sort_order INT DEFAULT 0
 );
+
+ALTER TABLE variant_options ADD COLUMN IF NOT EXISTS price_delta INT DEFAULT 0;
+ALTER TABLE variant_options ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
 
 -- 7. Orders (Manual Progress Tracking & Financial Ledger)
 CREATE TABLE IF NOT EXISTS orders (
@@ -108,6 +129,18 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Backward compatibility column updates for orders
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_notes TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_fee INT DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'MANUAL_TRANSFER';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS courier_name TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS seller_internal_note TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
 -- 8. Reviews / Testimonials (Buyer Reviews)
 CREATE TABLE IF NOT EXISTS reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -125,6 +158,9 @@ CREATE TABLE IF NOT EXISTS reviews (
 CREATE INDEX IF NOT EXISTS idx_stores_slug ON stores(slug);
 CREATE INDEX IF NOT EXISTS idx_stores_user ON stores(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_store ON products(store_id);
+CREATE INDEX IF NOT EXISTS idx_products_store_active ON products(store_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_variant_groups_prod ON variant_groups(product_id);
+CREATE INDEX IF NOT EXISTS idx_variant_options_group ON variant_options(group_id);
 CREATE INDEX IF NOT EXISTS idx_orders_store_status ON orders(store_id, status);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_reviews_store ON reviews(store_id);
@@ -165,7 +201,9 @@ CREATE POLICY "Public can view store links" ON store_links
 
 DROP POLICY IF EXISTS "Owners can manage store links" ON store_links;
 CREATE POLICY "Owners can manage store links" ON store_links
-  FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = store_links.store_id AND stores.user_id = auth.uid()));
+  FOR ALL 
+  USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = store_links.store_id AND stores.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM stores WHERE stores.id = store_links.store_id AND stores.user_id = auth.uid()));
 
 -- 3. Categories Policies
 DROP POLICY IF EXISTS "Public can view categories" ON categories;
@@ -174,7 +212,9 @@ CREATE POLICY "Public can view categories" ON categories
 
 DROP POLICY IF EXISTS "Owners can manage categories" ON categories;
 CREATE POLICY "Owners can manage categories" ON categories
-  FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = categories.store_id AND stores.user_id = auth.uid()));
+  FOR ALL 
+  USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = categories.store_id AND stores.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM stores WHERE stores.id = categories.store_id AND stores.user_id = auth.uid()));
 
 -- 4. Products Policies
 DROP POLICY IF EXISTS "Public can view active products" ON products;
@@ -183,7 +223,9 @@ CREATE POLICY "Public can view active products" ON products
 
 DROP POLICY IF EXISTS "Owners can manage products" ON products;
 CREATE POLICY "Owners can manage products" ON products
-  FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = products.store_id AND stores.user_id = auth.uid()));
+  FOR ALL 
+  USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = products.store_id AND stores.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM stores WHERE stores.id = products.store_id AND stores.user_id = auth.uid()));
 
 -- 5. Variant Groups & Options Policies
 DROP POLICY IF EXISTS "Public can view variant groups" ON variant_groups;
@@ -192,7 +234,13 @@ CREATE POLICY "Public can view variant groups" ON variant_groups
 
 DROP POLICY IF EXISTS "Owners can manage variant groups" ON variant_groups;
 CREATE POLICY "Owners can manage variant groups" ON variant_groups
-  FOR ALL USING (EXISTS (
+  FOR ALL 
+  USING (EXISTS (
+    SELECT 1 FROM products 
+    JOIN stores ON stores.id = products.store_id 
+    WHERE products.id = variant_groups.product_id AND stores.user_id = auth.uid()
+  ))
+  WITH CHECK (EXISTS (
     SELECT 1 FROM products 
     JOIN stores ON stores.id = products.store_id 
     WHERE products.id = variant_groups.product_id AND stores.user_id = auth.uid()
@@ -204,7 +252,14 @@ CREATE POLICY "Public can view variant options" ON variant_options
 
 DROP POLICY IF EXISTS "Owners can manage variant options" ON variant_options;
 CREATE POLICY "Owners can manage variant options" ON variant_options
-  FOR ALL USING (EXISTS (
+  FOR ALL 
+  USING (EXISTS (
+    SELECT 1 FROM variant_groups
+    JOIN products ON products.id = variant_groups.product_id
+    JOIN stores ON stores.id = products.store_id
+    WHERE variant_groups.id = variant_options.group_id AND stores.user_id = auth.uid()
+  ))
+  WITH CHECK (EXISTS (
     SELECT 1 FROM variant_groups
     JOIN products ON products.id = variant_groups.product_id
     JOIN stores ON stores.id = products.store_id
@@ -216,9 +271,15 @@ DROP POLICY IF EXISTS "Public can insert orders" ON orders;
 CREATE POLICY "Public can insert orders" ON orders
   FOR INSERT WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Owners can view and update their orders" ON orders;
-CREATE POLICY "Owners can view and update their orders" ON orders
-  FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = orders.store_id AND stores.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Public can view orders" ON orders;
+CREATE POLICY "Public can view orders" ON orders
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Owners can manage orders" ON orders;
+CREATE POLICY "Owners can manage orders" ON orders
+  FOR ALL 
+  USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = orders.store_id AND stores.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM stores WHERE stores.id = orders.store_id AND stores.user_id = auth.uid()));
 
 -- 7. Reviews Policies
 DROP POLICY IF EXISTS "Public can view reviews" ON reviews;
@@ -231,7 +292,9 @@ CREATE POLICY "Public can insert reviews" ON reviews
 
 DROP POLICY IF EXISTS "Owners can manage reviews" ON reviews;
 CREATE POLICY "Owners can manage reviews" ON reviews
-  FOR ALL USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = reviews.store_id AND stores.user_id = auth.uid()));
+  FOR ALL 
+  USING (EXISTS (SELECT 1 FROM stores WHERE stores.id = reviews.store_id AND stores.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM stores WHERE stores.id = reviews.store_id AND stores.user_id = auth.uid()));
 
 -- ==============================================================================
 -- Automatic Store Creation Trigger on User Sign Up (Supabase Auth)
@@ -249,7 +312,8 @@ BEGIN
     NEW.raw_user_meta_data->>'store_name',
     NEW.raw_user_meta_data->>'full_name',
     NEW.raw_user_meta_data->>'name',
-    split_part(NEW.email, '@', 1)
+    split_part(NEW.email, '@', 1),
+    'Toko'
   );
   
   -- Clean slug base from email or metadata
@@ -264,10 +328,10 @@ BEGIN
 
   final_slug := base_slug;
 
-  -- Collision avoidance: if slug already taken, append unique short suffix from user id
-  IF EXISTS (SELECT 1 FROM public.stores WHERE slug = final_slug) THEN
-    final_slug := base_slug || '-' || substr(replace(NEW.id::text, '-', ''), 1, 6);
-  END IF;
+  -- Collision avoidance: if slug already taken, loop to guarantee unique slug
+  WHILE EXISTS (SELECT 1 FROM public.stores WHERE slug = final_slug) LOOP
+    final_slug := base_slug || '-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 6);
+  END LOOP;
 
   -- Check if WhatsApp number was explicitly supplied during signup
   has_custom_profile := (
@@ -287,8 +351,11 @@ BEGIN
   ON CONFLICT (user_id) DO NOTHING;
 
   RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  -- Prevent failure from blocking user creation in auth.users
+  RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Trigger execution on auth.users insert
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
@@ -297,11 +364,28 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ==============================================================================
+-- Backfill Existing Auth Users Who Do Not Have a Store Record Yet
+-- ==============================================================================
+INSERT INTO public.stores (user_id, name, slug, whatsapp_number, tagline, is_onboarded)
+SELECT 
+  u.id,
+  COALESCE(u.raw_user_meta_data->>'store_name', u.raw_user_meta_data->>'full_name', u.raw_user_meta_data->>'name', split_part(u.email, '@', 1), 'Toko') AS name,
+  lower(regexp_replace(split_part(u.email, '@', 1), '[^a-zA-Z0-9]', '-', 'g')) || '-' || substr(replace(u.id::text, '-', ''), 1, 6) AS slug,
+  COALESCE(u.raw_user_meta_data->>'whatsapp_number', '') AS whatsapp_number,
+  COALESCE(u.raw_user_meta_data->>'tagline', '') AS tagline,
+  false AS is_onboarded
+FROM auth.users u
+WHERE NOT EXISTS (
+  SELECT 1 FROM public.stores s WHERE s.user_id = u.id
+)
+ON CONFLICT (user_id) DO NOTHING;
+
+-- ==============================================================================
 -- Storage Bucket Setup for Product Images
 -- ==============================================================================
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-images', 'product-images', true)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET public = true;
 
 DROP POLICY IF EXISTS "Public can view product images" ON storage.objects;
 CREATE POLICY "Public can view product images" ON storage.objects

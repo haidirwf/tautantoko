@@ -57,11 +57,37 @@ export const useAuthStore = create<AuthState>()(
           if (session?.user) {
             const authUser = session.user
             // Fetch associated store from database
-            const { data: store } = await supabase
+            let { data: store } = await supabase
               .from('stores')
               .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
               .eq('user_id', authUser.id)
               .maybeSingle()
+
+            // Auto-heal: if store record is missing, create it automatically
+            if (!store) {
+              const fallbackName = authUser.user_metadata?.store_name || authUser.email?.split('@')[0] || 'Merchant'
+              const cleanSlugBase = (authUser.user_metadata?.store_slug || authUser.email?.split('@')[0] || 'toko')
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+              const fallbackSlug = `${cleanSlugBase}-${authUser.id.replace(/-/g, '').slice(0, 6)}`
+
+              const { data: createdStore } = await supabase
+                .from('stores')
+                .insert([{
+                  user_id: authUser.id,
+                  name: fallbackName,
+                  slug: fallbackSlug,
+                  whatsapp_number: authUser.user_metadata?.whatsapp_number || '',
+                  tagline: authUser.user_metadata?.tagline || '',
+                  is_onboarded: false,
+                }])
+                .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
+                .maybeSingle()
+
+              if (createdStore) {
+                store = createdStore
+              }
+            }
 
             const name = store?.name || authUser.user_metadata?.store_name || authUser.email?.split('@')[0] || 'Merchant'
             const storeSlug = store?.slug || authUser.user_metadata?.store_slug || ''
@@ -113,11 +139,37 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw error
 
           if (data.user) {
-            const { data: store } = await supabase
+            let { data: store } = await supabase
               .from('stores')
               .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
               .eq('user_id', data.user.id)
               .maybeSingle()
+
+            // Auto-heal: if store record is missing, create it automatically
+            if (!store) {
+              const fallbackName = data.user.user_metadata?.store_name || email.split('@')[0] || 'Merchant'
+              const cleanSlugBase = (data.user.user_metadata?.store_slug || storeSlug || email.split('@')[0] || 'toko')
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+              const fallbackSlug = `${cleanSlugBase}-${data.user.id.replace(/-/g, '').slice(0, 6)}`
+
+              const { data: createdStore } = await supabase
+                .from('stores')
+                .insert([{
+                  user_id: data.user.id,
+                  name: fallbackName,
+                  slug: fallbackSlug,
+                  whatsapp_number: data.user.user_metadata?.whatsapp_number || '',
+                  tagline: data.user.user_metadata?.tagline || '',
+                  is_onboarded: false,
+                }])
+                .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
+                .maybeSingle()
+
+              if (createdStore) {
+                store = createdStore
+              }
+            }
 
             const name = store?.name || data.user.user_metadata?.store_name || email.split('@')[0] || 'Merchant'
             const resolvedSlug = store?.slug || storeSlug || data.user.user_metadata?.store_slug || ''

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'motion/react'
 import { formatIDR } from '@/lib/utils'
 
 interface RevenueChartProps {
@@ -52,61 +53,77 @@ export function RevenueChart({
       {/* Top Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-3">
-            <h3 className="font-sans text-base sm:text-lg font-bold tracking-tight text-[#141413]">
-              {displayTitle}
-            </h3>
-            {monthlyData && (
-              <div className="flex items-center p-0.5 rounded-lg bg-[#faf8f5] border border-[#e8e2d9]">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPeriod('weekly')
-                    setHoverIndex(null)
-                  }}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
-                    period === 'weekly'
-                      ? 'bg-white text-[#141413] shadow-2xs border border-[#e8e2d9]/60'
-                      : 'text-[#706c64] hover:text-[#141413]'
-                  }`}
-                >
-                  Mingguan
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPeriod('monthly')
-                    setHoverIndex(null)
-                  }}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
-                    period === 'monthly'
-                      ? 'bg-white text-[#141413] shadow-2xs border border-[#e8e2d9]/60'
-                      : 'text-[#706c64] hover:text-[#141413]'
-                  }`}
-                >
-                  Bulanan
-                </button>
-              </div>
-            )}
-          </div>
+          <h3 className="font-sans text-base sm:text-lg font-bold tracking-tight text-[#141413]">
+            {displayTitle}
+          </h3>
           <p className="text-xs text-[#706c64] mt-0.5">
             {displaySubtitle}
           </p>
         </div>
 
-        {/* Legend & Summary */}
-        <div className="flex items-center flex-wrap gap-3 sm:gap-4 text-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-xs bg-[#cc785c] shrink-0" />
-            <span className="text-[#706c64] font-medium">
-              Selesai: <strong className="text-[#141413] font-mono">{formatIDR(totalSettled)}</strong>
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-xs bg-[#e8a55a] shrink-0" />
-            <span className="text-[#706c64] font-medium">
-              Pending: <strong className="text-[#a8651a] font-mono">{formatIDR(totalPending)}</strong>
-            </span>
+        {/* Right side: Modern Segmented Switch + Totals */}
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-5">
+          {monthlyData && (
+            <div className="relative inline-flex items-center p-0.5 rounded-xl bg-[#f4f0eb] border border-[#e5dfd5]">
+              <button
+                type="button"
+                onClick={() => {
+                  setPeriod('weekly')
+                  setHoverIndex(null)
+                }}
+                className={`relative px-3 py-1.5 rounded-lg text-xs transition-colors duration-200 cursor-pointer select-none z-10 ${
+                  period === 'weekly'
+                    ? 'text-[#141413] font-semibold'
+                    : 'text-[#706c64] hover:text-[#141413] font-medium'
+                }`}
+              >
+                {period === 'weekly' && (
+                  <motion.div
+                    layoutId="revenueChartPeriodPill"
+                    className="absolute inset-0 bg-white rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+                Mingguan
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPeriod('monthly')
+                  setHoverIndex(null)
+                }}
+                className={`relative px-3 py-1.5 rounded-lg text-xs transition-colors duration-200 cursor-pointer select-none z-10 ${
+                  period === 'monthly'
+                    ? 'text-[#141413] font-semibold'
+                    : 'text-[#706c64] hover:text-[#141413] font-medium'
+                }`}
+              >
+                {period === 'monthly' && (
+                  <motion.div
+                    layoutId="revenueChartPeriodPill"
+                    className="absolute inset-0 bg-white rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+                Bulanan
+              </button>
+            </div>
+          )}
+
+          {/* Legend & Summary */}
+          <div className="flex items-center gap-3 sm:gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="size-2 rounded-xs bg-[#cc785c] shrink-0" />
+              <span className="text-[#706c64] font-medium">
+                Selesai: <strong className="text-[#141413] font-mono">{formatIDR(totalSettled)}</strong>
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="size-2 rounded-xs bg-[#e8a55a] shrink-0" />
+              <span className="text-[#706c64] font-medium">
+                Pending: <strong className="text-[#a8651a] font-mono">{formatIDR(totalPending)}</strong>
+              </span>
+            </div>
           </div>
         </div>
       </div>

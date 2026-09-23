@@ -31,7 +31,7 @@ export function StorefrontPage() {
           const [linksData, catsData, prodsData] = await Promise.all([
             api.getStoreLinks(storeData.id),
             api.getCategories(storeData.id),
-            api.getProducts(storeData.id),
+            api.getProducts(storeData.id, true),
           ])
           setLinks(linksData)
           setCategories(catsData)

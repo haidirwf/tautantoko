@@ -152,6 +152,10 @@ export function DashboardPage() {
   const handleSaveNewProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newProdName.trim() || !newProdPrice) return
+    if (!storeId) {
+      toast.error('Gagal Menyimpan Produk', 'Identitas toko tidak ditemukan. Silakan refresh halaman.')
+      return
+    }
 
     setIsSavingProduct(true)
     try {

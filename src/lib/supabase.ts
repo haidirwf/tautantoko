@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Store, StoreLink, Category, Product, Order, OrderStatus, DashboardMetrics, Review } from '@/types'
+import type { Store, StoreLink, Category, Product, VariantGroup, VariantOption, Order, OrderStatus, DashboardMetrics, Review } from '@/types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -9,6 +9,32 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
+
+export function formatProductFromDb(raw: any): Product {
+  const rawGroups = raw.variant_groups || []
+  const variant_groups: VariantGroup[] = rawGroups.map((vg: any) => {
+    const rawOpts = vg.options || vg.variant_options || []
+    const options: VariantOption[] = rawOpts.map((opt: any) => ({
+      id: opt.id,
+      group_id: opt.group_id,
+      name: opt.name,
+      price_delta: Number(opt.price_delta) || 0,
+      sort_order: Number(opt.sort_order) || 0,
+    }))
+    return {
+      id: vg.id,
+      product_id: vg.product_id,
+      name: vg.name,
+      sort_order: Number(vg.sort_order) || 0,
+      options,
+    }
+  })
+
+  return {
+    ...raw,
+    variant_groups,
+  }
+}
 
 const STORAGE_KEYS = {
   STORE: 'tautan_store_data',
@@ -256,37 +282,90 @@ export const api = {
     return []
   },
 
-  async getProducts(storeId: string): Promise<Product[]> {
+  async getProducts(storeId: string, onlyActive: boolean = false): Promise<Product[]> {
     if (!storeId) return []
     if (isSupabaseConfigured && supabase) {
-      const { data } = await supabase
+      let query = supabase
         .from('products')
         .select('*, variant_groups(*, variant_options(*))')
         .eq('store_id', storeId)
-        .eq('is_active', true)
         .order('sort_order', { ascending: true })
-      return data || []
+
+      if (onlyActive) {
+        query = query.eq('is_active', true)
+      }
+
+      const { data } = await query
+      return (data || []).map(formatProductFromDb)
     }
-    return getStoredProducts().filter((p) => p.store_id === storeId)
+    return getStoredProducts().filter((p) => p.store_id === storeId && (!onlyActive || p.is_active))
   },
 
   async createProduct(productInput: Omit<Product, 'id'>): Promise<Product> {
+    const { variant_groups, ...dbFields } = productInput
+
+    if (isSupabaseConfigured && supabase) {
+      // 1. Insert product into Supabase products table
+      const { data: createdProduct, error } = await supabase
+        .from('products')
+        .insert([{
+          store_id: dbFields.store_id,
+          category_id: dbFields.category_id || null,
+          name: dbFields.name.trim(),
+          description: dbFields.description?.trim() || '',
+          base_price: dbFields.base_price,
+          image_url: dbFields.image_url || '',
+          stock: dbFields.stock !== undefined ? dbFields.stock : null,
+          is_digital: dbFields.is_digital ?? false,
+          is_active: dbFields.is_active ?? true,
+          sort_order: dbFields.sort_order ?? 1,
+        }])
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error inserting product into Supabase:', error)
+        throw error
+      }
+
+      // 2. If variants exist, insert into variant_groups & variant_options
+      if (createdProduct && variant_groups && variant_groups.length > 0) {
+        for (let gIdx = 0; gIdx < variant_groups.length; gIdx++) {
+          const group = variant_groups[gIdx]
+          const { data: createdGroup, error: groupErr } = await supabase
+            .from('variant_groups')
+            .insert([{
+              product_id: createdProduct.id,
+              name: group.name,
+              sort_order: gIdx + 1,
+            }])
+            .select()
+            .single()
+
+          if (!groupErr && createdGroup && group.options && group.options.length > 0) {
+            const optionsToInsert = group.options.map((opt, oIdx) => ({
+              group_id: createdGroup.id,
+              name: opt.name,
+              price_delta: opt.price_delta || 0,
+              sort_order: oIdx + 1,
+            }))
+            await supabase.from('variant_options').insert(optionsToInsert)
+          }
+        }
+      }
+
+      return {
+        ...createdProduct,
+        variant_groups: variant_groups || [],
+      }
+    }
+
     const newProd: Product = {
       ...productInput,
       id: 'prod-' + Date.now(),
       is_active: productInput.is_active ?? true,
       sort_order: productInput.sort_order ?? 1,
     }
-
-    if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('products')
-        .insert([newProd])
-        .select()
-        .single()
-      if (!error && data) return data
-    }
-
     const current = getStoredProducts()
     const updated = [newProd, ...current]
     saveStoredProducts(updated)
@@ -294,17 +373,68 @@ export const api = {
   },
 
   async updateProduct(productId: string, updates: Partial<Product>): Promise<Product> {
+    const { variant_groups, ...dbFields } = updates
+
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('products')
+        .update(dbFields)
+        .eq('id', productId)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error updating product in Supabase:', error)
+        throw error
+      }
+
+      // Sync variants if explicitly provided
+      if (variant_groups !== undefined) {
+        // Remove existing variant groups for this product (cascades to options)
+        await supabase.from('variant_groups').delete().eq('product_id', productId)
+
+        if (variant_groups.length > 0) {
+          for (let gIdx = 0; gIdx < variant_groups.length; gIdx++) {
+            const group = variant_groups[gIdx]
+            const { data: createdGroup, error: groupErr } = await supabase
+              .from('variant_groups')
+              .insert([{
+                product_id: productId,
+                name: group.name,
+                sort_order: gIdx + 1,
+              }])
+              .select()
+              .single()
+
+            if (!groupErr && createdGroup && group.options && group.options.length > 0) {
+              const optionsToInsert = group.options.map((opt, oIdx) => ({
+                group_id: createdGroup.id,
+                name: opt.name,
+                price_delta: opt.price_delta || 0,
+                sort_order: oIdx + 1,
+              }))
+              await supabase.from('variant_options').insert(optionsToInsert)
+            }
+          }
+        }
+      }
+
+      // Re-fetch product with newly nested variant groups & options
+      const { data: refreshed } = await supabase
+        .from('products')
+        .select('*, variant_groups(*, variant_options(*))')
+        .eq('id', productId)
+        .single()
+
+      return refreshed ? formatProductFromDb(refreshed) : { ...data, variant_groups: variant_groups || [] }
+    }
+
     const current = getStoredProducts()
     const index = current.findIndex((p) => p.id === productId)
     if (index !== -1) {
       const updatedProduct = { ...current[index], ...updates }
       current[index] = updatedProduct
       saveStoredProducts(current)
-
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('products').update(updates).eq('id', productId)
-      }
-
       return updatedProduct
     }
     throw new Error('Product not found')
@@ -321,9 +451,10 @@ export const api = {
   },
 
   async createOrder(orderInput: Omit<Order, 'id' | 'created_at'>): Promise<Order> {
+    const generatedId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ord-${Date.now()}`
     const newOrder: Order = {
       ...orderInput,
-      id: 'ord-' + Date.now(),
+      id: generatedId,
       created_at: new Date().toISOString(),
     }
 
@@ -347,6 +478,9 @@ export const api = {
         .select()
         .single()
       if (!error && data) return data
+      if (error) {
+        console.warn('Supabase createOrder error, falling back to local storage:', error)
+      }
     }
 
     // LocalStorage fallback
@@ -533,14 +667,34 @@ export const api = {
   },
 
   async createReview(input: Omit<Review, 'id' | 'created_at'>): Promise<Review> {
+    const generatedId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `rev-${Date.now()}`
     const newRev: Review = {
       ...input,
-      id: `rev-${Date.now()}`,
+      id: generatedId,
       created_at: new Date().toISOString(),
     }
 
     if (isSupabaseConfigured && supabase) {
-      await supabase.from('reviews').insert(newRev)
+      // Validate order_id: must be a valid UUID format or null
+      const isValidUuid = (str?: string) =>
+        Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str))
+
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([{
+          store_id: input.store_id,
+          order_id: isValidUuid(input.order_id) ? input.order_id : null,
+          buyer_name: input.buyer_name,
+          rating: input.rating,
+          comment: input.comment,
+        }])
+        .select()
+        .single()
+
+      if (!error && data) return data
+      if (error) {
+        console.warn('Supabase createReview error, falling back to local storage:', error)
+      }
     }
 
     const current = getStoredReviews()

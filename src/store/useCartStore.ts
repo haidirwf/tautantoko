@@ -56,7 +56,7 @@ export const useCartStore = create<CartState>()(
         if (existingIndex > -1) {
           const updated = [...currentItems]
           updated[existingIndex].quantity += quantity
-          set({ items: updated, isCartOpen: true })
+          set({ items: updated })
         } else {
           set({
             items: [
@@ -69,7 +69,6 @@ export const useCartStore = create<CartState>()(
                 quantity,
               },
             ],
-            isCartOpen: true,
           })
         }
       },

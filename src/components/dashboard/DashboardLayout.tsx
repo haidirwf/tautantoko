@@ -90,7 +90,7 @@ export function DashboardLayout({ children, onAddProductClick, isLoading = false
     if (onAddProductClick) {
       onAddProductClick()
     } else {
-      setIsAddProductModalOpen(true)
+      navigate('/dashboard/katalog')
     }
   }
 
@@ -134,9 +134,9 @@ export function DashboardLayout({ children, onAddProductClick, isLoading = false
         </div>
       </div>
 
-      {/* Left Sidebar (Desktop permanent & Mobile/Tablet Drawer) */}
+      {/* Left Sidebar (Desktop permanent sticky & Mobile/Tablet Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#faf8f5] border-r border-[#e8e2d9] flex flex-col justify-between transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#faf8f5] border-r border-[#e8e2d9] flex flex-col justify-between transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:translate-x-0 overflow-y-auto ${
           isMobileMenuOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full'
         }`}
       >

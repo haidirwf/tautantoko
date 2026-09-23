@@ -213,12 +213,62 @@ export function CartDrawer({ store }: CartDrawerProps) {
           step === 'cart'
             ? `Keranjang Belanja (${itemCount})`
             : step === 'checkout'
-            ? 'Detail Pengiriman'
+            ? 'Pengisian Alamat & Checkout'
             : 'Pesanan Diteruskan ke WhatsApp'
+        }
+        description={
+          step === 'cart'
+            ? 'Periksa kembali daftar pesanan dan jumlah sebelum melanjutkan.'
+            : step === 'checkout'
+            ? 'Lengkapi data pengiriman untuk diteruskan ke WhatsApp penjual.'
+            : undefined
         }
         surface="canvas"
         maxWidth={step === 'checkout' ? 'lg' : 'md'}
       >
+        {/* Step Indicator Header (Step 1 Keranjang -> Step 2 Checkout) */}
+        {step !== 'success' && (
+          <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-hairline/60">
+            <div className="flex items-center gap-2">
+              <span
+                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                  step === 'cart'
+                    ? 'bg-primary text-white'
+                    : 'bg-emerald-100 text-emerald-800'
+                }`}
+              >
+                1
+              </span>
+              <span
+                className={`text-xs font-semibold ${
+                  step === 'cart' ? 'text-ink' : 'text-muted'
+                }`}
+              >
+                1. Keranjang Belanja
+              </span>
+            </div>
+            <div className="h-px w-8 bg-hairline" />
+            <div className="flex items-center gap-2">
+              <span
+                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                  step === 'checkout'
+                    ? 'bg-primary text-white'
+                    : 'bg-[#efe9de] text-[#8c867b]'
+                }`}
+              >
+                2
+              </span>
+              <span
+                className={`text-xs font-semibold ${
+                  step === 'checkout' ? 'text-ink' : 'text-muted'
+                }`}
+              >
+                2. Detail Checkout
+              </span>
+            </div>
+          </div>
+        )}
+
         <AnimatePresence mode="wait" initial={false}>
           {/* Step 1: Cart Items */}
           {step === 'cart' && (
