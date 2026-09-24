@@ -17,7 +17,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-[#faf8f5]/90 backdrop-blur-md border-b border-[#e8e2d9] transition-all">
+      <header className={`${isLandingPage ? 'fixed' : 'sticky'} top-0 left-0 right-0 z-40 w-full bg-[#faf8f5]/90 backdrop-blur-md border-b border-[#e8e2d9] transition-all`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Logo on Left */}
           <Link to="/" className="flex items-center gap-2 group">
@@ -45,7 +45,7 @@ export function Navbar() {
                 onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 2 } }))}
                 className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
               >
-                Keunggulan
+                Katalog Produk
               </button>
               <button
                 type="button"
@@ -173,7 +173,7 @@ export function Navbar() {
                 }}
                 className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
               >
-                Keunggulan
+                Katalog Produk
               </button>
               <button
                 type="button"
