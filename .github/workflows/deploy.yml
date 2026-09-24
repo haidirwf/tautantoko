@@ -1,4 +1,4 @@
-name: Deploy Main to cPanel FTP
+name: Deploy Main to cPanel
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: Build & Sync to cPanel
+  build-and-deploy:
+    name: Build & Deploy to cPanel
     runs-on: ubuntu-latest
     steps:
       - name: 1. Checkout repository
@@ -42,20 +42,14 @@ jobs:
           </IfModule>
           EOF
 
-      - name: 6. Sync dist to cPanel FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          protocol: ftp
-          security: loose
-          local-dir: ./dist/
-          server-dir: /public_html/
-          state-name: .ftp-deploy-sync-state.json
-
-
-
-
-
+      - name: 6. Deploy files to cPanel via LFTP
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -c "
+            set ftp:ssl-allow no;
+            set ftp:passive-mode true;
+            set net:timeout 15;
+            set net:max-retries 3;
+            open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
+            mirror -R -e -v --parallel=4 ./dist/ ./
+          "
