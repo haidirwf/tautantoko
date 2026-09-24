@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, MessageCircle, CheckCircle2, Star } from 'lucide-react'
 import type { Store, Order } from '@/types'
@@ -7,6 +7,43 @@ import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { useCartStore } from '@/store/useCartStore'
 import { api } from '@/lib/supabase'
+
+function SmoothStepWrapper({ children }: { children: React.ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState<number | 'auto'>('auto')
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const el = containerRef.current
+    const update = () => {
+      const h = el.offsetHeight || el.getBoundingClientRect().height
+      if (h > 0) {
+        setHeight(h)
+      }
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <motion.div
+      animate={{ height }}
+      transition={{
+        type: 'spring',
+        stiffness: 280,
+        damping: 28,
+        mass: 0.9,
+      }}
+      className="relative w-full overflow-hidden"
+    >
+      <div ref={containerRef} className="relative w-full">
+        {children}
+      </div>
+    </motion.div>
+  )
+}
 
 interface CartDrawerProps {
   store: Store
@@ -27,6 +64,14 @@ export function CartDrawer({ store }: CartDrawerProps) {
   } = useCartStore()
 
   const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart')
+  const [direction, setDirection] = useState<number>(1)
+
+  const goToStep = (newStep: 'cart' | 'checkout' | 'success') => {
+    const order = { cart: 1, checkout: 2, success: 3 }
+    setDirection(order[newStep] >= order[step] ? 1 : -1)
+    setStep(newStep)
+  }
+
   const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null)
   const [waLink, setWaLink] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -102,11 +147,11 @@ export function CartDrawer({ store }: CartDrawerProps) {
       // Generate WhatsApp Link
       const message = buildWhatsAppOrderMessage(newOrder, store)
       const encodedMsg = encodeURIComponent(message)
-      const generatedWaUrl = `https://wa.me/${sellerPhone}?text=${encodedMsg}`
+      const generatedWaUrl = `https://api.whatsapp.com/send?phone=${sellerPhone}&text=${encodedMsg}`
 
       setLastCreatedOrder(newOrder)
       setWaLink(generatedWaUrl)
-      setStep('success')
+      goToStep('success')
       clearCart()
 
       // Open WhatsApp automatically in a new window/tab
@@ -123,7 +168,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
     setCartOpen(false)
     if (step === 'success') {
       setTimeout(() => {
-        setStep('cart')
+        goToStep('cart')
         setReviewSubmitted(false)
         setReviewComment('')
         setReviewRating(5)
@@ -168,7 +213,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
-                setStep('cart')
+                goToStep('cart')
                 setCartOpen(true)
               }}
               className="pointer-events-auto w-full max-w-md flex items-center justify-between p-3.5 pl-5 rounded-full bg-[#141413] text-[#faf8f5] border border-[#e8e2d9] shadow-2xl transition-all group cursor-pointer"
@@ -213,7 +258,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
           step === 'cart'
             ? `Keranjang Belanja (${itemCount})`
             : step === 'checkout'
-            ? 'Pengisian Alamat & Checkout'
+            ? 'Pengisian Alamat & Pembayaran'
             : 'Pesanan Diteruskan ke WhatsApp'
         }
         description={
@@ -226,60 +271,81 @@ export function CartDrawer({ store }: CartDrawerProps) {
         surface="canvas"
         maxWidth={step === 'checkout' ? 'lg' : 'md'}
       >
-        {/* Step Indicator Header (Step 1 Keranjang -> Step 2 Checkout) */}
+        {/* Step Indicator Header (Step 1 Keranjang -> Step 2 Pembayaran) */}
         {step !== 'success' && (
           <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-hairline/60">
-            <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => goToStep('cart')}
+              className="flex items-center gap-2 group cursor-pointer focus:outline-none"
+            >
               <span
-                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center transition-all duration-300 ${
                   step === 'cart'
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-white shadow-xs scale-105'
                     : 'bg-emerald-100 text-emerald-800'
                 }`}
               >
                 1
               </span>
               <span
-                className={`text-xs font-semibold ${
-                  step === 'cart' ? 'text-ink' : 'text-muted'
+                className={`text-xs font-semibold transition-colors duration-300 ${
+                  step === 'cart' ? 'text-ink' : 'text-muted group-hover:text-ink'
                 }`}
               >
                 1. Keranjang Belanja
               </span>
+            </button>
+            <div className="flex-1 mx-3 h-1 bg-[#efe9de] rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-primary rounded-full"
+                initial={false}
+                animate={{ width: step === 'checkout' ? '100%' : '0%' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              />
             </div>
-            <div className="h-px w-8 bg-hairline" />
             <div className="flex items-center gap-2">
               <span
-                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                className={`size-5 rounded-full text-[11px] font-bold flex items-center justify-center transition-all duration-300 ${
                   step === 'checkout'
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-white shadow-xs scale-105'
                     : 'bg-[#efe9de] text-[#8c867b]'
                 }`}
               >
                 2
               </span>
               <span
-                className={`text-xs font-semibold ${
+                className={`text-xs font-semibold transition-colors duration-300 ${
                   step === 'checkout' ? 'text-ink' : 'text-muted'
                 }`}
               >
-                2. Detail Checkout
+                2. Detail Pembayaran
               </span>
             </div>
           </div>
         )}
 
-        <AnimatePresence mode="wait" initial={false}>
-          {/* Step 1: Cart Items */}
-          {step === 'cart' && (
-            <motion.div
-              key="step-cart"
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 16 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              className="flex flex-col gap-4"
-            >
+        <SmoothStepWrapper>
+          <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+            {/* Step 1: Cart Items */}
+            {step === 'cart' && (
+              <motion.div
+                key="step-cart"
+                custom={direction}
+                variants={{
+                  enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
+                  center: { x: 0, opacity: 1 },
+                  exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  duration: 0.28,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="flex flex-col gap-4 w-full"
+              >
               {items.length === 0 ? (
                 <div className="py-12 text-center flex flex-col items-center justify-center">
                   <ShoppingBag className="size-12 text-muted/40 mb-3" />
@@ -366,10 +432,10 @@ export function CartDrawer({ store }: CartDrawerProps) {
                     <p className="text-[11px] text-muted">
                       *Ongkos kirim akan dihitung & disepakati bersama penjual via WhatsApp.
                     </p>
-                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                      <Button onClick={() => setStep('checkout')} className="w-full mt-1">
-                        <span>Lanjut ke Pengiriman</span>
-                        <ArrowRight className="size-4" />
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                      <Button onClick={() => goToStep('checkout')} className="w-full mt-1 group">
+                        <span>Lanjut ke Pembayaran</span>
+                        <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </motion.div>
                   </div>
@@ -378,16 +444,25 @@ export function CartDrawer({ store }: CartDrawerProps) {
             </motion.div>
           )}
 
-          {/* Step 2: Customer Shipping Form */}
+          {/* Step 2: Customer Shipping & Payment Form */}
           {step === 'checkout' && (
             <motion.form
               key="step-checkout"
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -16 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
+              custom={direction}
+              variants={{
+                enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
+                center: { x: 0, opacity: 1 },
+                exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                duration: 0.28,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               onSubmit={handleCheckoutSubmit}
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-4 w-full"
             >
               <div className="flex flex-col gap-3">
                 {/* Name */}
@@ -472,7 +547,7 @@ export function CartDrawer({ store }: CartDrawerProps) {
                   <Button
                     type="button"
                     variant="secondary"
-                    onClick={() => setStep('cart')}
+                    onClick={() => goToStep('cart')}
                     className="w-1/3"
                   >
                     Kembali
@@ -494,10 +569,14 @@ export function CartDrawer({ store }: CartDrawerProps) {
           {step === 'success' && lastCreatedOrder && (
             <motion.div
               key="step-success"
-              initial={{ opacity: 0, scale: 0.92 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-              className="py-6 text-center flex flex-col items-center gap-4"
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{
+                duration: 0.25,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="py-6 text-center flex flex-col items-center gap-4 w-full"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -600,7 +679,8 @@ export function CartDrawer({ store }: CartDrawerProps) {
             </motion.div>
           )}
         </AnimatePresence>
-      </Modal>
+      </SmoothStepWrapper>
+    </Modal>
     </>
   )
 }

@@ -80,22 +80,21 @@ export function Modal({
             onClick={onClose}
           />
 
-          {/* Elevated Floating Modal Dialog with Layout Animation */}
+          {/* Elevated Floating Modal Dialog */}
           <motion.div
             role="dialog"
             aria-modal="true"
-            layout
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{
               type: 'spring',
-              damping: 26,
-              stiffness: 360,
-              layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
+              damping: 30,
+              stiffness: 300,
             }}
             className={cn(
               'relative w-full rounded-2xl border max-h-[85vh] max-h-[85dvh] flex flex-col z-10 overflow-hidden my-auto shadow-[0_25px_65px_-12px_rgba(0,0,0,0.38),0_0_0_1px_rgba(0,0,0,0.06)]',
+              'transition-[max-width] duration-350 ease-[cubic-bezier(0.16,1,0.3,1)]',
               surfaceClass,
               maxWClass
             )}

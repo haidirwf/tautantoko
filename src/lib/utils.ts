@@ -45,27 +45,30 @@ export function buildWhatsAppOrderMessage(
       const variantDesc = item.variants && Object.keys(item.variants).length > 0
         ? ` (${Object.entries(item.variants).map(([k, v]) => `${k}: ${v}`).join(', ')})`
         : ''
-      return `• ${item.quantity}x ${item.product_name}${variantDesc} — ${formatIDR(item.subtotal)}`
+      return `- ${item.quantity}x ${item.product_name}${variantDesc} — ${formatIDR(item.subtotal)}`
     })
     .join('\n')
 
-  const notesText = order.order_notes?.trim()
-    ? `\n📝 *Catatan*: ${order.order_notes.trim()}\n`
-    : ''
-
-  return [
+  const lines = [
     `Halo kak ${store.name}, saya ingin memesan:`,
     ``,
-    `📦 *Pesanan*: ${order.order_code}`,
-    `👤 *Nama*: ${order.buyer_name}`,
-    `📱 *No. WA*: ${order.buyer_phone}`,
-    `📍 *Alamat*: ${order.shipping_address}`,
+    `*Pesanan:* ${order.order_code}`,
+    `*Nama:* ${order.buyer_name}`,
+    `*No. WA:* ${order.buyer_phone}`,
+    `*Alamat:* ${order.shipping_address}`,
     ``,
-    `🛒 *Rincian Barang*:`,
+    `*Rincian Barang:*`,
     itemsText,
     ``,
-    `💰 *Subtotal*: ${formatIDR(order.subtotal)}`,
-    notesText,
-    `Mohon info rekening untuk pembayaran dan estimasi ongkirnya ya kak. Terima kasih!`
-  ].filter(line => line !== undefined).join('\n')
+    `*Subtotal:* ${formatIDR(order.subtotal)}`,
+  ]
+
+  if (order.order_notes?.trim()) {
+    lines.push(`*Catatan:* ${order.order_notes.trim()}`)
+  }
+
+  lines.push(``)
+  lines.push(`Mohon info rekening untuk pembayaran dan estimasi ongkirnya ya kak. Terima kasih!`)
+
+  return lines.join('\n')
 }
