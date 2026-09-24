@@ -45,19 +45,13 @@ export const useAuthStore = create<AuthState>()(
           return
         }
 
-        set({ isLoading: true })
-        try {
-          const { data: { session }, error } = await supabase.auth.getSession()
-          if (error) {
-            console.warn('Error fetching Supabase session', error)
-            set({ user: null, isAuthenticated: false, isLoading: false })
-            return
-          }
+        const client = supabase
 
+        const processUserSession = async (session: any) => {
           if (session?.user) {
             const authUser = session.user
             // Fetch associated store from database
-            let { data: store } = await supabase
+            let { data: store } = await client
               .from('stores')
               .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
               .eq('user_id', authUser.id)
@@ -65,13 +59,22 @@ export const useAuthStore = create<AuthState>()(
 
             // Auto-heal: if store record is missing, create it automatically
             if (!store) {
-              const fallbackName = authUser.user_metadata?.store_name || authUser.email?.split('@')[0] || 'Merchant'
-              const cleanSlugBase = (authUser.user_metadata?.store_slug || authUser.email?.split('@')[0] || 'toko')
+              const fallbackName =
+                authUser.user_metadata?.store_name ||
+                authUser.user_metadata?.full_name ||
+                authUser.user_metadata?.name ||
+                authUser.email?.split('@')[0] ||
+                'Merchant'
+              const cleanSlugBase = (
+                authUser.user_metadata?.store_slug ||
+                authUser.email?.split('@')[0] ||
+                'toko'
+              )
                 .toLowerCase()
                 .replace(/[^a-z0-9]/g, '-')
               const fallbackSlug = `${cleanSlugBase}-${authUser.id.replace(/-/g, '').slice(0, 6)}`
 
-              const { data: createdStore } = await supabase
+              const { data: createdStore } = await client
                 .from('stores')
                 .insert([{
                   user_id: authUser.id,
@@ -89,7 +92,13 @@ export const useAuthStore = create<AuthState>()(
               }
             }
 
-            const name = store?.name || authUser.user_metadata?.store_name || authUser.email?.split('@')[0] || 'Merchant'
+            const name =
+              store?.name ||
+              authUser.user_metadata?.store_name ||
+              authUser.user_metadata?.full_name ||
+              authUser.user_metadata?.name ||
+              authUser.email?.split('@')[0] ||
+              'Merchant'
             const storeSlug = store?.slug || authUser.user_metadata?.store_slug || ''
             const isOnboarded = Boolean(
               store?.is_onboarded ||
@@ -113,6 +122,24 @@ export const useAuthStore = create<AuthState>()(
           } else {
             set({ user: null, isAuthenticated: false, isLoading: false })
           }
+        }
+
+        set({ isLoading: true })
+        try {
+          const { data: { session }, error } = await client.auth.getSession()
+          if (error) {
+            console.warn('Error fetching Supabase session', error)
+          }
+          await processUserSession(session)
+
+          // Listen for ongoing auth state changes (e.g. OAuth callback completion)
+          client.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+              await processUserSession(session)
+            } else if (event === 'SIGNED_OUT') {
+              set({ user: null, isAuthenticated: false, isLoading: false })
+            }
+          })
         } catch (err) {
           console.warn('Failed to initialize Supabase session', err)
           set({ user: null, isAuthenticated: false, isLoading: false })
