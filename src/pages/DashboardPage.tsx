@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
   DollarSign,
@@ -7,7 +7,6 @@ import {
   Users,
   ArrowRight,
   Plus,
-  Lock,
   Copy,
   Check,
   Star,
@@ -21,7 +20,6 @@ import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { useAuthStore } from '@/store/useAuthStore'
-import { AuthModal } from '@/components/auth/AuthModal'
 import { ProductImageUploader } from '@/components/common/ProductImageUploader'
 import { ProductStockAndVariants, draftToVariantGroups, type VariantGroupDraft } from '@/components/dashboard/ProductStockAndVariants'
 import { RevenueChart } from '@/components/dashboard/RevenueChart'
@@ -29,7 +27,6 @@ import { toast } from '@/store/useToastStore'
 
 export function DashboardPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore()
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
@@ -92,33 +89,8 @@ export function DashboardPage() {
     setTimeout(() => setIsLinkCopied(false), 2000)
   }
 
-  // If user is not authenticated, show the private area security wall
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#faf8f5] flex flex-col items-center justify-center p-4 text-center">
-        <div className="max-w-md w-full p-8 rounded-2xl bg-white border border-[#e8e2d9] shadow-xs">
-          <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
-            <Lock className="size-5" />
-          </div>
-          <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">Area Privat Penjual</h2>
-          <p className="text-xs sm:text-sm text-[#706c64] mt-2 leading-relaxed">
-            Data keuangan, analitik omzet, dan rincian pesanan hanya dapat diakses oleh pemilik toko yang terautentikasi.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
-            <Button onClick={() => setIsAuthModalOpen(true)} className="w-full sm:w-auto">
-              Masuk ke Akun Toko
-            </Button>
-            <Link to="/" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto">
-                Kembali ke Beranda
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode="login" />
-      </div>
-    )
+    return <Navigate to="/login" replace />
   }
 
   if (isLoading || !metrics) {

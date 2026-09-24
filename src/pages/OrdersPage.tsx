@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
   Search,
@@ -7,22 +7,18 @@ import {
   SlidersHorizontal,
   Package,
   RefreshCw,
-  Lock,
   X,
 } from 'lucide-react'
 import type { Order, OrderStatus } from '@/types'
 import { api } from '@/lib/supabase'
 import { formatIDR, sanitizeWhatsApp } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { OrderEditModal } from '@/components/dashboard/OrderEditModal'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { useAuthStore } from '@/store/useAuthStore'
-import { AuthModal } from '@/components/auth/AuthModal'
 
 export function OrdersPage() {
   const { user, isAuthenticated } = useAuthStore()
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const storeId = user?.storeId || ''
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
@@ -89,31 +85,7 @@ export function OrdersPage() {
   })
 
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-[80vh] bg-[#faf8f5] flex flex-col items-center justify-center p-4 text-center">
-        <div className="max-w-md p-8 rounded-2xl bg-white border border-[#e8e2d9] shadow-xs">
-          <div className="size-12 rounded-full bg-[#faf8f5] border border-[#e8e2d9] flex items-center justify-center text-[#cc785c] mx-auto mb-4">
-            <Lock className="size-5" />
-          </div>
-          <h2 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">Pesanan Toko Bersifat Privat</h2>
-          <p className="text-xs sm:text-sm text-[#706c64] mt-2 leading-relaxed">
-            Hanya pemilik toko yang terautentikasi yang dapat melihat dan mengelola pesanan WhatsApp.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
-            <Button onClick={() => setIsAuthModalOpen(true)} className="w-full sm:w-auto">
-              Masuk ke Akun Toko
-            </Button>
-            <Link to="/" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto">
-                Kembali ke Beranda
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode="login" />
-      </div>
-    )
+    return <Navigate to="/login" replace />
   }
 
   return (

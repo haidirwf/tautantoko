@@ -14,6 +14,7 @@ import { ReviewsPage } from '@/pages/ReviewsPage'
 import { AuthPage } from '@/pages/AuthPage'
 import { OnboardingPage } from '@/pages/OnboardingPage'
 import { useAuthStore } from '@/store/useAuthStore'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Toaster } from '@/components/ui/Toaster'
 
 function AppContent() {
@@ -54,24 +55,24 @@ function AppContent() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/login" element={<AuthPage />} />
-              <Route path="/onboarding" element={<OnboardingPage />} />
+              <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
               
               {/* Dashboard Sub-routes */}
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/dashboard/orders" element={<OrdersPage />} />
-              <Route path="/dashboard/katalog" element={<CatalogPage />} />
-              <Route path="/dashboard/pelanggan" element={<CustomersPage />} />
-              <Route path="/dashboard/ulasan" element={<ReviewsPage />} />
-              <Route path="/dashboard/laporan" element={<ReportsPage />} />
-              <Route path="/dashboard/pengaturan" element={<SettingsPage />} />
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+              <Route path="/dashboard/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+              <Route path="/dashboard/katalog" element={<ProtectedRoute><CatalogPage /></ProtectedRoute>} />
+              <Route path="/dashboard/pelanggan" element={<ProtectedRoute><CustomersPage /></ProtectedRoute>} />
+              <Route path="/dashboard/ulasan" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+              <Route path="/dashboard/laporan" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+              <Route path="/dashboard/pengaturan" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
               {/* Backward compatibility aliases */}
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/katalog" element={<CatalogPage />} />
-              <Route path="/pelanggan" element={<CustomersPage />} />
-              <Route path="/ulasan" element={<ReviewsPage />} />
-              <Route path="/laporan" element={<ReportsPage />} />
-              <Route path="/pengaturan" element={<SettingsPage />} />
+              <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+              <Route path="/katalog" element={<ProtectedRoute><CatalogPage /></ProtectedRoute>} />
+              <Route path="/pelanggan" element={<ProtectedRoute><CustomersPage /></ProtectedRoute>} />
+              <Route path="/ulasan" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+              <Route path="/laporan" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+              <Route path="/pengaturan" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
               <Route path="/:slug" element={<StorefrontPage />} />
             </Routes>
