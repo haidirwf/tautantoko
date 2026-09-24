@@ -4,7 +4,6 @@
 **Version**: 1.1.0 (Implementation Blueprint)  
 **Document Status**: Approved / Implementation Ready  
 **Target Market**: Indonesian SMBs, Creator-Merchants, & Independent Online Sellers  
-**Primary UI / Design System Reference**: /claude.design.md
 
 ---
 
@@ -27,7 +26,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
 2. **Order Progress Management Latency**: 1-click status updates from `/orders` reflecting immediately across Supabase and updating dashboard revenue aggregations in < 300ms.
 3. **Financial Dashboard Integrity**: 100% mathematical accuracy in calculating Total Settled Revenue, Pending Pipeline, and Order Conversion rates based on manual order status flags.
 4. **Static Build & cPanel Performance**: Initial bundle payload under 300KB (gzipped), achieving >= 95 Lighthouse Mobile Performance score with First Contentful Paint (FCP) <= 1.0s on cPanel static hosting.
-5. **UI Fidelity Compliance**: 100% adherence to the editorial design tokens, color palette, typography hierarchy, and surface modes specified in [`claude.design.md`](file:///home/idal/sekolajh/tokolink-app/claude.design.md).
+5. **UI Fidelity Compliance**: 100% adherence to the editorial design tokens, color palette, typography hierarchy, and surface modes specified in the Design System.
 
 ---
 
@@ -65,7 +64,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
 #### 2.3 Storefront Browsing & Link-in-Bio Presentation
 * **Story**: *As a buyer visiting a merchant's store, I want to browse social links and filter products by category in an elegant, editorial interface.*
 * **Acceptance Criteria**:
-  - Visual theme strictly reflects the warm cream canvas, serif display typography, and coral CTAs defined in [`claude.design.md`](file:///home/idal/sekolajh/tokolink-app/claude.design.md).
+  - Visual theme strictly reflects the warm cream canvas, serif display typography, and coral CTAs defined in the Design System.
   - Continuous-scroll layout displaying:
     - Merchant brand avatar, title, and bio description.
     - Social / External Link buttons (e.g., Shopee, Tokopedia, Instagram, Portfolio).
@@ -136,7 +135,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
     - **Tingkat Konversi WhatsApp (Conversion Rate)**: Percentage of checkouts that transitioned from `PENDING_WA` to `PAID` (`[Paid Orders / Total Checkouts] * 100`).
     - **Rata-rata Nilai Pesanan (Average Order Value / AOV)**: `Settled Revenue / Paid Orders Count`.
   - **Trend Visualizations & Breakdown**:
-    - **Grafik Tren Pendapatan (Revenue Over Time)**: Daily and monthly bar/area charts showing revenue trajectory (built with lightweight SVG or Recharts following `claude.design.md` dark navy styling).
+    - **Grafik Tren Pendapatan (Revenue Over Time)**: Daily and monthly bar/area charts showing revenue trajectory (built with lightweight SVG or Recharts following dark navy styling).
     - **Distribusi Metode Pembayaran**: Percentage breakdown of manual methods (e.g., 65% Transfer BCA, 25% QRIS, 10% Lainnya).
     - **Kartu Transaksi Terkini (Recent Transactions Feed)**: Displays recent orders styled with payment gateway aesthetics (timestamp, customer avatar initial, payment method badge, status pill, and currency amount in IDR).
 
@@ -152,7 +151,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
 ## 3. UI / UX Design System Specification
 
 > [!IMPORTANT]
-> All visual design, layout rules, color palettes, typography, and component styling **MUST strictly reference and follow [`claude.design.md`](file:///home/idal/sekolajh/tokolink-app/claude.design.md)**. Generic SaaS themes, harsh cool blues, and pure white backgrounds are strictly forbidden.
+> All visual design, layout rules, color palettes, typography, and component styling **MUST strictly adhere to the editorial design guidelines**. Generic SaaS themes, harsh cool blues, and pure white backgrounds are strictly forbidden.
 
 ### 3.1 Design Philosophy & Surface Modes
 * **Core Brand Atmosphere**: Tinted warm cream canvas paired with dark navy product surfaces, punctuated by warm coral CTAs.
@@ -161,7 +160,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
   2. **Feature / Catalog Cards (`#efe9de`)**: Content card backgrounds, slightly deeper cream.
   3. **Dark Navy Surfaces (`#181715`)**: Dashboard panels, financial stat cards, order summary highlights, code/detail preview mockups, and footer.
 
-### 3.2 Color Tokens (Direct Reference from `claude.design.md`)
+### 3.2 Color Tokens
 | Token | Hex Value | Application in Storefront & Dashboard |
 |---|---|---|
 | **Primary (Coral)** | `#cc785c` | Main CTA buttons ("Tambah ke Keranjang", "Pesan via WhatsApp", "Simpan Perubahan"), active highlights |
@@ -219,7 +218,7 @@ Built as a high-performance **React.js + Vite Single Page Application (SPA)**, t
 +---------------------------------------------------------------------------------------+
 |                                    Client Browser                                     |
 |  - React.js 19 + Vite (Single Page Application - SPA)                                 |
-|  - Tailwind CSS + UI Component System derived from `claude.design.md`                |
+|  - Tailwind CSS + UI Component System                                                |
 |  - Zustand Store (Cart, Checkout Draft, Filter States)                                |
 |  - React Router DOM / TanStack Router (Client-Side Routing)                           |
 +-------------------------------------------+-------------------------------------------+
@@ -399,7 +398,7 @@ The dashboard computes financial metrics directly via Supabase Client query or P
 
 ```
 [Phase 1: Foundation & Core Storefront]
-  ├── Vite + React project setup with `claude.design.md` design system
+  ├── Vite + React project setup with editorial design system
   ├── Supabase project connection (Auth + Database Schema + Storage)
   ├── Merchant Store creation & Link-in-bio management
   └── Product catalog & Variant management
@@ -428,4 +427,4 @@ The dashboard computes financial metrics directly via Supabase Client query or P
 | **Seller Forgetting to Update Status from WhatsApp** | Medium | Medium | In-dashboard reminders highlighting orders in `PENDING_WA` older than 24 hours; quick-action buttons on every row. |
 | **Discrepancy Between Cart Subtotal and Actual Transfer** | Low | Medium | Provide inline editable `shipping_fee` and adjustment field on the order detail modal so the ledger matches the real bank transfer. |
 | **Public Order Table Spam / Abuse** | Medium | Medium | Implement client-side debounce and honeypot field; enable Supabase rate limiting and RLS policies on `orders` table. |
-| **Inconsistent Typography on Client Devices** | Low | Low | Embed web-font substitutes specified in `claude.design.md` (Cormorant Garamond / EB Garamond for serif display and Inter for body) via Google Fonts. |
+| **Inconsistent Typography on Client Devices** | Low | Low | Embed web-font substitutes (Cormorant Garamond / EB Garamond for serif display and Inter for body) via Google Fonts. |
