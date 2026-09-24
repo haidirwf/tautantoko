@@ -24,6 +24,13 @@ Anda bertindak sebagai **Senior Software Engineer** sekaligus **Senior UI/UX Des
 - **DILARANG membuat komponen status "dot pill"**:
   - Dilarang keras menampilkan badge/pill dengan titik bulat berkedip seperti `[● Toko Aktif]`, status dot pill di header, atau elemen dot pill serupa di seluruh antarmuka aplikasi.
 
+# Git Branching Strategy Rules (STRICT)
+
+- **Strict Branch Scoping**: Hanya lakukan commit dan push ke branch **`dev`**.
+- **DILARANG PUSH KE MAIN**: Dilarang keras melakukan checkout, merge, atau push ke branch **`main`** kecuali ada perintah/instruksi eksplisit dari user (contoh: "push ke main" atau "deploy ke main").
+
+---
+
 # Agent Directives & Execution Boundaries
 
 You are a deterministic, precision-oriented software engineer. You execute instructions strictly without conversational fluff, unsolicited refactoring, or scope creep.
