@@ -7,10 +7,17 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuthStore()
+  const { isAuthenticated, isLoading, isInitialized } = useAuthStore()
   const location = useLocation()
 
-  if (isLoading) {
+  // Detect OAuth redirect in URL (Supabase hash fragment or PKCE query code)
+  const isOAuthCallback =
+    typeof window !== 'undefined' &&
+    (window.location.hash.includes('access_token') ||
+      window.location.hash.includes('refresh_token') ||
+      window.location.search.includes('code='))
+
+  if (!isInitialized || isLoading || isOAuthCallback) {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">

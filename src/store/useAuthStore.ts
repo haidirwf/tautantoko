@@ -17,6 +17,7 @@ interface AuthState {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
+  isInitialized: boolean
   login: (email: string, password?: string, storeSlug?: string) => Promise<{ isOnboarded: boolean }>
   signup: (email: string, password?: string, storeSlug?: string, storeName?: string) => Promise<{ isOnboarded: boolean }>
   loginWithGoogle: () => Promise<void>
@@ -30,18 +31,19 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      isLoading: true,
+      isInitialized: false,
 
       initialize: async () => {
         // If state has leftover dump user from mock testing, purge it immediately
         const currentUser = useAuthStore.getState().user
         if (currentUser?.id?.startsWith('usr-')) {
           clearAllDumpData()
-          set({ user: null, isAuthenticated: false, isLoading: false })
+          set({ user: null, isAuthenticated: false, isLoading: false, isInitialized: true })
         }
 
         if (!isSupabaseConfigured || !supabase) {
-          set({ user: null, isAuthenticated: false, isLoading: false })
+          set({ user: null, isAuthenticated: false, isLoading: false, isInitialized: true })
           return
         }
 
@@ -50,46 +52,53 @@ export const useAuthStore = create<AuthState>()(
         const processUserSession = async (session: any) => {
           if (session?.user) {
             const authUser = session.user
-            // Fetch associated store from database
-            let { data: store } = await client
-              .from('stores')
-              .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
-              .eq('user_id', authUser.id)
-              .maybeSingle()
+            let store: any = null
 
-            // Auto-heal: if store record is missing, create it automatically
-            if (!store) {
-              const fallbackName =
-                authUser.user_metadata?.store_name ||
-                authUser.user_metadata?.full_name ||
-                authUser.user_metadata?.name ||
-                authUser.email?.split('@')[0] ||
-                'Merchant'
-              const cleanSlugBase = (
-                authUser.user_metadata?.store_slug ||
-                authUser.email?.split('@')[0] ||
-                'toko'
-              )
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, '-')
-              const fallbackSlug = `${cleanSlugBase}-${authUser.id.replace(/-/g, '').slice(0, 6)}`
-
-              const { data: createdStore } = await client
+            try {
+              // Fetch associated store from database
+              const { data: existingStore } = await client
                 .from('stores')
-                .insert([{
-                  user_id: authUser.id,
-                  name: fallbackName,
-                  slug: fallbackSlug,
-                  whatsapp_number: authUser.user_metadata?.whatsapp_number || '',
-                  tagline: authUser.user_metadata?.tagline || '',
-                  is_onboarded: false,
-                }])
                 .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
+                .eq('user_id', authUser.id)
                 .maybeSingle()
+              store = existingStore
 
-              if (createdStore) {
-                store = createdStore
+              // Auto-heal: if store record is missing, create it automatically
+              if (!store) {
+                const fallbackName =
+                  authUser.user_metadata?.store_name ||
+                  authUser.user_metadata?.full_name ||
+                  authUser.user_metadata?.name ||
+                  authUser.email?.split('@')[0] ||
+                  'Merchant'
+                const cleanSlugBase = (
+                  authUser.user_metadata?.store_slug ||
+                  authUser.email?.split('@')[0] ||
+                  'toko'
+                )
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]/g, '-')
+                const fallbackSlug = `${cleanSlugBase}-${authUser.id.replace(/-/g, '').slice(0, 6)}`
+
+                const { data: createdStore } = await client
+                  .from('stores')
+                  .insert([{
+                    user_id: authUser.id,
+                    name: fallbackName,
+                    slug: fallbackSlug,
+                    whatsapp_number: authUser.user_metadata?.whatsapp_number || '',
+                    tagline: authUser.user_metadata?.tagline || '',
+                    is_onboarded: false,
+                  }])
+                  .select('id, name, slug, whatsapp_number, tagline, is_onboarded')
+                  .maybeSingle()
+
+                if (createdStore) {
+                  store = createdStore
+                }
               }
+            } catch (errStore) {
+              console.warn('Store fetch/auto-heal warning during session init', errStore)
             }
 
             const name =
@@ -118,9 +127,10 @@ export const useAuthStore = create<AuthState>()(
               },
               isAuthenticated: true,
               isLoading: false,
+              isInitialized: true,
             })
           } else {
-            set({ user: null, isAuthenticated: false, isLoading: false })
+            set({ user: null, isAuthenticated: false, isLoading: false, isInitialized: true })
           }
         }
 
@@ -137,12 +147,12 @@ export const useAuthStore = create<AuthState>()(
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
               await processUserSession(session)
             } else if (event === 'SIGNED_OUT') {
-              set({ user: null, isAuthenticated: false, isLoading: false })
+              set({ user: null, isAuthenticated: false, isLoading: false, isInitialized: true })
             }
           })
         } catch (err) {
           console.warn('Failed to initialize Supabase session', err)
-          set({ user: null, isAuthenticated: false, isLoading: false })
+          set({ user: null, isAuthenticated: false, isLoading: false, isInitialized: true })
         }
       },
 
@@ -218,6 +228,7 @@ export const useAuthStore = create<AuthState>()(
               },
               isAuthenticated: true,
               isLoading: false,
+              isInitialized: true,
             })
 
             return { isOnboarded }
@@ -283,6 +294,7 @@ export const useAuthStore = create<AuthState>()(
               },
               isAuthenticated: Boolean(data.session),
               isLoading: false,
+              isInitialized: true,
             })
 
             return { isOnboarded: false }
@@ -340,11 +352,16 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           isAuthenticated: false,
           isLoading: false,
+          isInitialized: true,
         })
       },
     }),
     {
       name: 'tautan_auth_storage',
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 )

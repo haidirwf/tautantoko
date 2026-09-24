@@ -9,17 +9,23 @@ interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   initialMode?: 'signup' | 'login'
+  initialSlug?: string
 }
 
-export function AuthModal({ isOpen, onClose, initialMode = 'signup' }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, initialMode = 'signup', initialSlug = '' }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(initialMode === 'login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [slug, setSlug] = useState('')
+  const [slug, setSlug] = useState(initialSlug)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login, signup, loginWithGoogle } = useAuthStore()
   const [authError, setAuthError] = useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (initialSlug) setSlug(initialSlug)
+    setIsLogin(initialMode === 'login')
+  }, [initialSlug, initialMode, isOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

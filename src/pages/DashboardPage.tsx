@@ -89,11 +89,7 @@ export function DashboardPage() {
     setTimeout(() => setIsLinkCopied(false), 2000)
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-
-  if (isLoading || !metrics) {
+  if (authLoading || isLoading || !metrics) {
     return (
       <DashboardLayout isLoading={true}>
         <div className="space-y-6 animate-pulse">
@@ -119,6 +115,10 @@ export function DashboardPage() {
         </div>
       </DashboardLayout>
     )
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
   }
 
   const handleSaveNewProduct = async (e: React.FormEvent) => {

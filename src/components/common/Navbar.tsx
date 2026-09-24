@@ -32,19 +32,28 @@ export function Navbar() {
 
           {/* Navigation Links in Center */}
           {isLandingPage ? (
-            <nav className="hidden md:flex items-center gap-8 text-xs sm:text-sm font-medium text-[#706c64]">
-              <a href="#features" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
-                Fitur
-              </a>
-              <a href="#usecases" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
-                Solusi Bisnis
-              </a>
-              <a href="#how" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
-                Alur Kerja
-              </a>
-              <a href="#faq" className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5">
-                FAQ
-              </a>
+            <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-[#706c64]">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 1 } }))}
+                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+              >
+                Tradisional vs Modern
+              </button>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 2 } }))}
+                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+              >
+                Keunggulan
+              </button>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 3 } }))}
+                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+              >
+                Klaim Toko
+              </button>
             </nav>
           ) : isMerchantArea ? (
             <nav className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium">
@@ -146,34 +155,36 @@ export function Navbar() {
               transition={{ type: 'spring', stiffness: 350, damping: 28 }}
               className="md:hidden overflow-hidden border-t border-[#e8e2d9] bg-[#faf8f5] px-4 py-4 flex flex-col gap-3 shadow-md"
             >
-              <a
-                href="#features"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 1 } }))
+                }}
+                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
               >
-                Fitur Utama
-              </a>
-              <a
-                href="#usecases"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+                Tradisional vs Modern
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 2 } }))
+                }}
+                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
               >
-                Solusi Bisnis
-              </a>
-              <a
-                href="#how"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
+                Keunggulan
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 3 } }))
+                }}
+                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
               >
-                Alur Kerja
-              </a>
-              <a
-                href="#faq"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors"
-              >
-                Pertanyaan Umum (FAQ)
-              </a>
+                Klaim Toko
+              </button>
               <div className="pt-2 border-t border-[#e8e2d9]/60 flex items-center justify-between">
                 <button
                   type="button"

@@ -1,18 +1,33 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export function AuthPage() {
-  const [isLogin, setIsLogin] = useState(false)
+  const location = useLocation()
+  const [isLogin, setIsLogin] = useState(location.pathname === '/login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [slug, setSlug] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { login, signup, loginWithGoogle } = useAuthStore()
+  const { user, isAuthenticated, isInitialized, login, signup, loginWithGoogle } = useAuthStore()
   const [authError, setAuthError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setIsLogin(location.pathname === '/login')
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (isInitialized && isAuthenticated) {
+      if (user?.isOnboarded) {
+        navigate('/dashboard', { replace: true })
+      } else {
+        navigate('/onboarding', { replace: true })
+      }
+    }
+  }, [isInitialized, isAuthenticated, user?.isOnboarded, navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

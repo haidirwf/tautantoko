@@ -18,7 +18,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export function OrdersPage() {
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore()
   const storeId = user?.storeId || ''
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
@@ -83,6 +83,10 @@ export function OrdersPage() {
 
     return matchesStatus && matchesSearch
   })
+
+  if (authLoading) {
+    return <DashboardLayout isLoading={true}><div className="space-y-6 animate-pulse" /></DashboardLayout>
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
