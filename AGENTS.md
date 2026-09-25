@@ -26,8 +26,9 @@ Anda bertindak sebagai **Senior Software Engineer** sekaligus **Senior UI/UX Des
 
 # Git Branching Strategy Rules (STRICT)
 
-- **Strict Branch Scoping**: Hanya lakukan commit dan push ke branch **`dev`**.
-- **DILARANG PUSH KE MAIN**: Dilarang keras melakukan checkout, merge, atau push ke branch **`main`** kecuali ada perintah/instruksi eksplisit dari user (contoh: "push ke main" atau "deploy ke main").
+- **DILARANG PUSH KE DEV**: Dilarang melakukan `git push origin dev` tanpa instruksi eksplisit dari user.
+- **DILARANG MERGE & PUSH KE MAIN**: Dilarang keras melakukan checkout, merge, atau push ke branch **`main`** kecuali ada instruksi eksplisit dari user (contoh: "push ke main" atau "merge main").
+- Semua pekerjaan hanya dilakukan secara lokal di branch **`dev`** dan tidak dipush ke remote repository sampai diinstruksikan.
 
 ---
 
