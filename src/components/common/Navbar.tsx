@@ -17,42 +17,52 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`${isLandingPage ? 'fixed' : 'sticky'} top-0 left-0 right-0 z-40 w-full bg-[#faf8f5]/90 backdrop-blur-md border-b border-[#e8e2d9] transition-all`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* Logo on Left */}
+      <header className={`${isLandingPage ? 'fixed' : 'sticky'} top-0 left-0 right-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-neutral-100 transition-all`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          {/* Logo on Left (with Lime Accent Dot matching UIref.webp) */}
           <Link to="/" className="flex items-center gap-2 group">
+            <div className="size-3.5 rounded-full bg-[#D2F801] shrink-0 shadow-2xs group-hover:scale-110 transition-transform" />
             <motion.span
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="font-sans text-xl font-bold tracking-tight text-[#141413] flex items-center"
+              className="font-sans text-xl font-extrabold tracking-tight text-[#111111] flex items-center"
             >
-              tautan<span className="text-[#cc785c] text-sm font-semibold">.site</span>
+              tautan<span className="text-neutral-400 text-sm font-semibold ml-0.5">.site</span>
             </motion.span>
           </Link>
 
           {/* Navigation Links in Center */}
           {isLandingPage ? (
-            <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-[#706c64]">
+            <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-medium text-neutral-600">
               <button
                 type="button"
-                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 1 } }))}
-                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+                onClick={() => {
+                  const el = document.getElementById('advantages')
+                  el?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Tradisional vs Modern
+                Fitur & Solusi
               </button>
               <button
                 type="button"
-                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 2 } }))}
-                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+                onClick={() => {
+                  const el = document.getElementById('etalase')
+                  el?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Katalog Produk
+                Etalase Toko
               </button>
               <button
                 type="button"
-                onClick={() => window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 3 } }))}
-                className="hover:text-[#141413] transition-colors relative py-1 hover:-translate-y-0.5 cursor-pointer"
+                onClick={() => {
+                  const el = document.getElementById('advantages')
+                  el?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Klaim Toko
+                Keunggulan
               </button>
             </nav>
           ) : isMerchantArea ? (
@@ -118,15 +128,23 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAuthOpen(true)}
+                  className="px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-neutral-700 hover:text-black transition-colors cursor-pointer"
+                >
+                  Masuk
+                </button>
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   type="button"
                   onClick={() => setIsAuthOpen(true)}
-                  className="rounded-full bg-[#141413] px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium text-[#faf8f5] hover:bg-[#252523] transition-all shadow-xs inline-flex items-center gap-1.5"
+                  className="rounded-full bg-[#111111] px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold text-white hover:bg-black transition-all shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Mulai gratis</span>
+                  <span>Buka Toko</span>
+                  <ArrowRight className="size-3.5" />
                 </motion.button>
               </div>
             )}
@@ -153,46 +171,49 @@ export function Navbar() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-              className="md:hidden overflow-hidden border-t border-[#e8e2d9] bg-[#faf8f5] px-4 py-4 flex flex-col gap-3 shadow-md"
+              className="md:hidden overflow-hidden border-t border-neutral-100 bg-white px-4 py-4 flex flex-col gap-3 shadow-md"
             >
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 1 } }))
+                  const el = document.getElementById('advantages')
+                  el?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
+                className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Tradisional vs Modern
+                Fitur & Solusi
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 2 } }))
+                  const el = document.getElementById('etalase')
+                  el?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
+                className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Katalog Produk
+                Etalase Toko
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  window.dispatchEvent(new CustomEvent('landing-scroll-to', { detail: { index: 3 } }))
+                  const el = document.getElementById('advantages')
+                  el?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="text-left text-sm font-medium text-[#5c5850] hover:text-[#cc785c] py-1.5 transition-colors cursor-pointer"
+                className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Klaim Toko
+                Keunggulan
               </button>
-              <div className="pt-2 border-t border-[#e8e2d9]/60 flex items-center justify-between">
+              <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => {
                     setIsMobileMenuOpen(false)
                     setIsAuthOpen(true)
                   }}
-                  className="w-full text-center py-2.5 rounded-full bg-[#cc785c] text-white text-xs font-semibold shadow-xs"
+                  className="w-full text-center py-2.5 rounded-full bg-[#111111] hover:bg-black text-white text-xs font-bold shadow-xs cursor-pointer"
                 >
                   Buka Toko Gratis Sekarang
                 </button>
