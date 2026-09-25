@@ -88,7 +88,12 @@ export function LandingPage() {
       }
     } else {
       const panels = document.querySelectorAll('.gsap-panel')
-      panels[index]?.scrollIntoView({ behavior: 'smooth' })
+      if (panels[index]) {
+        const navOffset = 64
+        const elementPosition = panels[index].getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - navOffset
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+      }
     }
   }
 
@@ -137,25 +142,6 @@ export function LandingPage() {
           horizontalTween.kill()
         }
       })
-
-      // Mobile / Tablet: Smooth entrance for stacked cards
-      mm.add('(max-width: 1023px)', () => {
-        const panels = gsap.utils.toArray<HTMLElement>('.gsap-panel')
-        panels.forEach((panel) => {
-          gsap.from(panel, {
-            opacity: 0.3,
-            y: 30,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: panel,
-              start: 'top 85%',
-              end: 'top 40%',
-              scrub: true,
-            },
-          })
-        })
-      })
     }, containerRef)
 
     const timer = setTimeout(() => {
@@ -170,7 +156,7 @@ export function LandingPage() {
   }, [])
 
   return (
-    <div className="relative bg-[#faf8f5] text-[#141413] selection:bg-[#cc785c]/25 selection:text-[#141413]">
+    <div className="relative bg-[#faf8f5] text-[#141413] selection:bg-[#cc785c]/25 selection:text-[#141413] overflow-x-hidden">
       {/* Top Scrub Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-[#e8e2d9]/40 pointer-events-none">
         <div
@@ -184,31 +170,37 @@ export function LandingPage() {
       <div ref={containerRef} className="lg:h-screen lg:overflow-hidden w-full relative">
         <div
           ref={trackRef}
-          className="flex flex-col lg:flex-row lg:w-[400vw] lg:h-full will-change-transform"
+          className="flex flex-col lg:flex-row lg:w-[400vw] lg:h-full lg:will-change-transform"
         >
           {/* ==================================================================== */}
           {/* PANEL 1: HERO */}
           {/* ==================================================================== */}
-          <section className="gsap-panel w-full lg:w-screen h-auto lg:h-full flex flex-col justify-center pt-20 pb-8 px-6 sm:px-12 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
-            <div className="max-w-6xl mx-auto w-full my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
+          <section className="gsap-panel w-full lg:w-screen flex flex-col justify-center pt-24 pb-16 sm:py-20 lg:py-0 px-5 sm:px-10 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
+            <div className="max-w-6xl mx-auto w-full my-auto py-2 lg:py-0 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-16 items-center z-10">
               {/* Left: Headline & Copy */}
-              <div className="lg:col-span-7 flex flex-col items-start">
-                <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.08]">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-7 flex flex-col items-start"
+              >
+                <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.12]">
                   Bukan Sekadar Tautan. <br />
                   <span className="text-[#cc785c]">Mesin Kasir</span> di Medsosmu.
                 </h1>
 
-                <p className="mt-5 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed">
+                <p className="mt-4 sm:mt-5 text-sm sm:text-base lg:text-lg text-[#5c5850] max-w-xl leading-relaxed">
                   Tampilkan etalase produk, terima pesanan terstruktur, dan arahkan pembeli langsung ke WhatsApp tanpa potongan komisi.
                 </p>
 
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="button"
                     onClick={() => handleOpenAuth('signup')}
-                    className="px-6 py-3.5 rounded-full bg-[#141413] hover:bg-[#252523] text-white font-medium text-sm transition-colors shadow-sm flex items-center gap-2.5 cursor-pointer"
+                    className="justify-center px-6 py-3.5 rounded-full bg-[#141413] hover:bg-[#252523] text-white font-medium text-sm transition-colors shadow-sm flex items-center gap-2.5 cursor-pointer"
                   >
                     <span>Buka Toko Gratis</span>
                     <ArrowRight className="size-4 text-[#cc785c]" />
@@ -219,18 +211,24 @@ export function LandingPage() {
                     whileTap={{ scale: 0.98 }}
                     type="button"
                     onClick={() => scrollToSection(1)}
-                    className="px-5 py-3.5 rounded-full bg-white hover:bg-[#efe9de] text-[#141413] border border-[#e8e2d9] font-medium text-sm transition-colors cursor-pointer flex items-center gap-2"
+                    className="justify-center px-5 py-3.5 rounded-full bg-white hover:bg-[#efe9de] text-[#141413] border border-[#e8e2d9] font-medium text-sm transition-colors cursor-pointer flex items-center gap-2"
                   >
                     <span>Lihat Perbandingan</span>
                     <ChevronRight className="size-4 text-[#8c867b]" />
                   </motion.button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Right: Clean Product Preview Card */}
-              <div className="lg:col-span-5 w-full">
-                <div className="rounded-3xl bg-white border border-[#e8e2d9] shadow-xs p-6 sm:p-7">
-                  <div className="flex items-center justify-between pb-4">
+              <motion.div
+                initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-5 w-full"
+              >
+                <div className="rounded-2xl sm:rounded-3xl bg-white border border-[#e8e2d9] shadow-xs p-5 sm:p-7">
+                  <div className="flex items-center justify-between pb-3.5">
                     <div>
                       <div className="text-sm font-bold text-[#141413]">Kedai Kopi Senja</div>
                       <div className="text-xs font-mono text-[#8c867b]">tautan.site/senja</div>
@@ -238,7 +236,7 @@ export function LandingPage() {
                     <span className="text-xs font-mono text-[#8c867b]">Etalase Toko</span>
                   </div>
 
-                  <div className="mt-4 p-4 rounded-2xl bg-[#faf8f5] border border-[#e8e2d9]/60">
+                  <div className="mt-3.5 p-4 rounded-xl sm:rounded-2xl bg-[#faf8f5] border border-[#e8e2d9]/60">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <h3 className="font-sans text-sm sm:text-base font-bold text-[#141413]">
@@ -277,71 +275,91 @@ export function LandingPage() {
                         </button>
                       </div>
 
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         type="button"
                         onClick={() => handleOpenAuth('signup')}
                         className="px-3.5 py-1.5 rounded-lg bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <span>Pesan via WA</span>
                         <ArrowRight className="size-3" />
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </section>
 
           {/* ==================================================================== */}
           {/* PANEL 2: PERBANDINGAN BERSIH */}
           {/* ==================================================================== */}
-          <section className="gsap-panel w-full lg:w-screen h-auto lg:h-full flex flex-col justify-center pt-20 pb-8 px-6 sm:px-12 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
+          <section className="gsap-panel w-full lg:w-screen flex flex-col justify-center py-16 sm:py-20 lg:py-0 px-5 sm:px-10 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
             <div className="w-full max-w-5xl mx-auto my-auto z-10">
-              <div className="max-w-2xl mb-10">
+              <motion.div
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 16 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                className="max-w-2xl mb-8 sm:mb-10"
+              >
                 <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#141413]">
                   Tinggalkan Cara Jualan Usang.
                 </h2>
                 <p className="mt-2 text-sm sm:text-base text-[#5c5850]">
                   Bandingkan alur transaksi manual dengan kecepatan checkout terstruktur tautan.site.
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 items-stretch">
                 {/* Cara Tradisional */}
-                <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#e8e2d9] shadow-xs flex flex-col justify-between">
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 22 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                  className="p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl bg-white border border-[#e8e2d9] shadow-xs flex flex-col justify-between"
+                >
                   <div>
                     <span className="text-xs font-mono font-semibold uppercase tracking-wider text-rose-600">
                       Sebelumnya
                     </span>
-                    <h3 className="font-sans text-xl sm:text-2xl font-bold text-[#141413] mt-3 mb-3">
+                    <h3 className="font-sans text-xl sm:text-2xl font-bold text-[#141413] mt-2.5 mb-2.5">
                       Waktu habis merekap chat berulang
                     </h3>
                     <p className="text-sm text-[#5c5850] leading-relaxed">
                       Pertanyaan harga yang sama, konfirmasi varian manual, dan format alamat yang sering keliru memperlambat alur penjualan Anda setiap hari.
                     </p>
                   </div>
-                  <div className="mt-8 text-xs font-mono text-[#8c867b]">
+                  <div className="mt-6 sm:mt-8 text-xs font-mono text-[#8c867b]">
                     Pembeli sering batal transaksi karena lama menunggu balasan.
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Modern tautan.site */}
-                <div className="p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-[#2b2824] shadow-md flex flex-col justify-between">
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 22 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl bg-[#141413] text-white border border-[#2b2824] shadow-md flex flex-col justify-between"
+                >
                   <div>
                     <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#cc785c]">
                       Dengan tautan.site
                     </span>
-                    <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-3 mb-3">
+                    <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-2.5 mb-2.5">
                       Katalog rapi, checkout otomatis ke WhatsApp
                     </h3>
                     <p className="text-sm text-[#d4cebe] leading-relaxed">
                       Pembeli memilih varian dan mengisi alamat dalam hitungan detik. Rincian pesanan siap kirim langsung tersaji di WhatsApp Anda.
                     </p>
                   </div>
-                  <div className="mt-8 text-xs font-mono text-[#cc785c]">
+                  <div className="mt-6 sm:mt-8 text-xs font-mono text-[#cc785c]">
                     Alur transaksi instan tanpa drama chat bolak-balik.
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
           </section>
@@ -349,9 +367,15 @@ export function LandingPage() {
           {/* ==================================================================== */}
           {/* PANEL 3: UI KATALOG PRODUK */}
           {/* ==================================================================== */}
-          <section className="gsap-panel w-full lg:w-screen h-auto lg:h-full flex flex-col justify-center pt-20 pb-8 px-6 sm:px-12 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
+          <section className="gsap-panel w-full lg:w-screen flex flex-col justify-center py-16 sm:py-20 lg:py-0 px-5 sm:px-10 lg:px-20 shrink-0 relative border-b lg:border-b-0 lg:border-r border-[#e8e2d9]/70 bg-[#faf8f5]">
             <div className="w-full max-w-5xl mx-auto my-auto z-10">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7">
+              <motion.div
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 16 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8"
+              >
                 <div>
                   <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#141413]">
                     Etalase Bersih, Belanja Cepat.
@@ -362,7 +386,7 @@ export function LandingPage() {
                 </div>
 
                 {/* Filter Kategori Simpel */}
-                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border border-[#e8e2d9] shadow-2xs shrink-0 self-start sm:self-auto">
+                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border border-[#e8e2d9] shadow-2xs shrink-0 self-start sm:self-auto overflow-x-auto no-scrollbar max-w-full">
                   {[
                     { id: 'all', label: 'Semua' },
                     { id: 'minuman', label: 'Minuman' },
@@ -372,7 +396,7 @@ export function LandingPage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setCatalogFilter(tab.id as 'all' | 'minuman' | 'pastry')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                         catalogFilter === tab.id
                           ? 'bg-[#141413] text-white shadow-2xs'
                           : 'text-[#706c64] hover:text-[#141413]'
@@ -382,34 +406,39 @@ export function LandingPage() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Grid Kartu Produk */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                {filteredCatalogProducts.map((item) => {
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                {filteredCatalogProducts.map((item, idx) => {
                   const isSelected = selectedCatalogId === item.id
                   return (
-                    <div
+                    <motion.div
                       key={item.id}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      viewport={{ once: true, amount: 0.15 }}
+                      transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
                       onClick={() => setSelectedCatalogId(isSelected ? null : item.id)}
-                      className={`p-4 rounded-3xl bg-white border transition-all cursor-pointer flex flex-col justify-between group ${
+                      className={`p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white border transition-all cursor-pointer flex flex-col justify-between group ${
                         isSelected
                           ? 'border-[#cc785c] ring-2 ring-[#cc785c]/20 shadow-md'
                           : 'border-[#e8e2d9] hover:border-[#cc785c]/40 shadow-xs'
                       }`}
                     >
                       <div>
-                        <div className="aspect-4/3 rounded-2xl overflow-hidden bg-[#faf8f5] mb-4">
+                        <div className="aspect-16/10 sm:aspect-4/3 w-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#faf8f5] mb-3.5">
                           <img
                             src={item.image}
                             alt={item.name}
-                            className="size-full object-cover group-hover:scale-103 transition-transform duration-300"
+                            className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                         <h3 className="font-sans text-base font-bold text-[#141413] group-hover:text-[#cc785c] transition-colors">
                           {item.name}
                         </h3>
-                        <p className="text-xs text-[#706c64] mt-1 line-clamp-1">
+                        <p className="text-xs text-[#706c64] mt-1 line-clamp-2">
                           {item.desc}
                         </p>
                       </div>
@@ -428,53 +457,72 @@ export function LandingPage() {
                           {isSelected ? 'Dipilih' : '+ Tambah'}
                         </span>
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
 
               {/* Bar Simulasi Checkout */}
-              <div className="mt-6 p-4 rounded-2xl bg-[#141413] text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
-                <div className="flex items-center gap-3 text-xs sm:text-sm">
-                  <span className="text-white/60">Simulasi:</span>
-                  <span className="font-medium text-white">
+              <motion.div
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 16 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-6 p-4 sm:p-5 rounded-2xl bg-[#141413] text-white flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-md"
+              >
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                  <span className="text-white/50 shrink-0">Simulasi:</span>
+                  <span className="font-medium text-white truncate">
                     {selectedCatalogItem
                       ? `1 pesanan dipilih (${selectedCatalogItem.name} • Rp ${selectedCatalogItem.price.toLocaleString('id-ID')})`
                       : 'Pilih produk di atas untuk simulasi pemesanan'}
                   </span>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
                 >
                   <span>Buka Toko Sekarang</span>
                   <ArrowRight className="size-3.5" />
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </div>
           </section>
 
           {/* ==================================================================== */}
           {/* PANEL 4: KLAIM DOMAIN TOKO */}
           {/* ==================================================================== */}
-          <section className="gsap-panel w-full lg:w-screen h-auto lg:h-full flex flex-col justify-center pt-20 pb-8 px-6 sm:px-12 lg:px-20 shrink-0 relative bg-[#141413] text-white">
-            <div className="my-auto py-6 lg:py-0 w-full max-w-3xl mx-auto text-center z-10">
-              <h2 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
-                Amankan Nama Tokomu <br />
-                Sebelum Diambil Penjual Lain.
-              </h2>
+          <section className="gsap-panel w-full lg:w-screen flex flex-col justify-between py-16 sm:py-20 lg:py-8 px-5 sm:px-10 lg:px-20 shrink-0 relative bg-[#141413] text-white">
+            <div className="my-auto py-8 lg:py-0 w-full max-w-3xl mx-auto text-center z-10">
+              <motion.div
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <h2 className="font-sans text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+                  Amankan Nama Tokomu <br />
+                  Sebelum Diambil Penjual Lain.
+                </h2>
 
-              <p className="mt-4 text-sm sm:text-base text-white/70 max-w-lg mx-auto leading-relaxed">
-                Ketik nama tokomu untuk mengklaim link bio tokomu secara instan dan mulai pajang produk hari ini.
-              </p>
+                <p className="mt-4 text-xs sm:text-base text-white/70 max-w-lg mx-auto leading-relaxed">
+                  Ketik nama tokomu untuk mengklaim link bio tokomu secara instan dan mulai pajang produk hari ini.
+                </p>
+              </motion.div>
 
               {/* Minimal Claim Domain Form */}
-              <form
+              <motion.form
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.55, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
                 onSubmit={handleClaimSubmit}
-                className="mt-8 max-w-lg mx-auto bg-white p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-2xl flex flex-col sm:flex-row items-center gap-2"
+                className="mt-6 sm:mt-8 max-w-lg mx-auto bg-white p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-2xl flex flex-col sm:flex-row items-center gap-2"
               >
-                <div className="flex items-center w-full sm:w-auto flex-1 pl-4 pr-2 py-1">
+                <div className="flex items-center w-full sm:w-auto flex-1 pl-3 sm:pl-4 pr-2 py-1">
                   <span className="font-mono text-xs sm:text-sm font-semibold text-[#8c867b] select-none">
                     tautan.site/
                   </span>
@@ -494,16 +542,16 @@ export function LandingPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl sm:rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-sm font-semibold transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl sm:rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-semibold transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
                 >
                   <span>Klaim Sekarang</span>
                   <ArrowRight className="size-4" />
                 </motion.button>
-              </form>
+              </motion.form>
             </div>
 
             {/* Bottom Footer Credits */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/40 font-mono border-t border-white/10 pt-4 z-10 max-w-5xl mx-auto w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40 font-mono border-t border-white/10 pt-4 z-10 max-w-5xl mx-auto w-full">
               <span>© {new Date().getFullYear()} tautan.site • Platform Etalase dan Link-in-Bio</span>
               <button
                 type="button"
