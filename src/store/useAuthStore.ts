@@ -313,13 +313,20 @@ export const useAuthStore = create<AuthState>()(
           )
         }
 
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
             redirectTo: `${window.location.origin}/dashboard`,
+            queryParams: {
+              prompt: 'select_account',
+              access_type: 'offline',
+            },
           },
         })
         if (error) throw error
+        if (data?.url) {
+          window.location.href = data.url
+        }
       },
 
       updateUserStore: (store) => {

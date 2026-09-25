@@ -32,7 +32,11 @@ function AppContent() {
     '/laporan',
     '/pengaturan',
   ].some((r) => location.pathname.startsWith(r))
-  const isStandaloneLayout = isDashboardRoute || location.pathname === '/onboarding'
+  const isStandaloneLayout =
+    isDashboardRoute ||
+    location.pathname === '/onboarding' ||
+    location.pathname === '/login' ||
+    location.pathname === '/auth'
 
   // Group merchant routes together to keep sidebar stable during tab switches
   const transitionKey = isDashboardRoute ? 'merchant-suite' : location.pathname

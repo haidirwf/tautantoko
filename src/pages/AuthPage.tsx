@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/useAuthStore'
+import { toast } from '@/store/useToastStore'
 
 export function AuthPage() {
   const location = useLocation()
@@ -64,6 +65,7 @@ export function AuthPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal masuk dengan Google.'
       setAuthError(msg)
+      toast.error('Gagal Masuk dengan Google', msg)
       setLoading(false)
     }
   }
@@ -93,12 +95,18 @@ export function AuthPage() {
             </p>
           </div>
 
+          {authError && (
+            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600 font-medium leading-relaxed">
+              {authError}
+            </div>
+          )}
+
           {/* Quick Google Sign In */}
           <button
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full h-11 px-4 rounded-full border border-hairline bg-canvas hover:bg-surface-soft text-ink text-xs font-medium flex items-center justify-center gap-2.5 transition-all shadow-2xs group"
+            className="w-full h-11 px-4 rounded-full border border-hairline bg-surface-card hover:bg-surface-soft text-ink text-xs font-medium flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <svg className="size-4" viewBox="0 0 24 24">
               <path
