@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'motion/react'
 import {
   ArrowRight,
+  ShoppingBag,
   Search,
   Zap,
   MessageCircle,
   Percent,
   Smartphone,
-  ShoppingBag,
   Coffee,
   Package,
 } from 'lucide-react'
@@ -18,73 +18,27 @@ import { useNavigate } from 'react-router-dom'
 export function LandingPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup')
-  const [claimSlug, setClaimSlug] = useState('')
   const [heroVariant, setHeroVariant] = useState<'dingin' | 'hangat'>('dingin')
-  const [catalogFilter, setCatalogFilter] = useState<'all' | 'minuman' | 'pastry'>('all')
-  const [selectedCatalogId, setSelectedCatalogId] = useState<number | null>(1)
 
   const { isAuthenticated } = useAuthStore()
   const navigate = useNavigate()
 
-  const handleOpenAuth = (mode: 'signup' | 'login', slug = '') => {
+  const handleOpenAuth = (mode: 'signup' | 'login') => {
     if (isAuthenticated) {
       navigate('/dashboard')
       return
     }
     setAuthMode(mode)
-    if (slug) {
-      setClaimSlug(slug)
-    }
     setIsAuthOpen(true)
   }
 
-  const handleClaimSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const clean = claimSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')
-    if (!clean) return
-    handleOpenAuth('signup', clean)
-  }
-
-  const catalogDemoProducts = [
-    {
-      id: 1,
-      name: 'Kopi Susu Aren',
-      category: 'minuman',
-      price: 22000,
-      image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
-      desc: 'Espresso ganda, susu segar, gula aren alami',
-    },
-    {
-      id: 2,
-      name: 'Cold Brew Bottle',
-      category: 'minuman',
-      price: 28000,
-      image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=600&auto=format&fit=crop&q=80',
-      desc: 'Seduh dingin 16 jam, aroma manis floral',
-    },
-    {
-      id: 3,
-      name: 'Artisan Croissant',
-      category: 'pastry',
-      price: 18000,
-      image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&auto=format&fit=crop&q=80',
-      desc: 'Renyah di luar, lembut berlapis mentega',
-    },
-  ]
-
-  const filteredCatalogProducts = catalogDemoProducts.filter(
-    (p) => catalogFilter === 'all' || p.category === catalogFilter
-  )
-
-  const selectedCatalogItem = catalogDemoProducts.find((p) => p.id === selectedCatalogId)
-
   return (
-    <div className="min-h-screen bg-white text-[#111111] selection:bg-[#D2F801] selection:text-black">
+    <div className="min-h-screen bg-white text-[#141413] selection:bg-[#cc785c] selection:text-white">
       {/* ==================================================================== */}
-      {/* SECTION 1: HERO BANNER (Electric Lime, widened container) */}
+      {/* SECTION 1: HERO BANNER (Terracotta #cc785c matching UIref.webp layout) */}
       {/* ==================================================================== */}
-      <section className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12">
-        <div className="bg-[#D2F801] text-[#111111] rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 relative overflow-hidden shadow-xs">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12">
+        <div className="bg-[#cc785c] text-white rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 relative overflow-hidden shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
             {/* Left Column: Headline, Copy & CTA */}
             <motion.div
@@ -93,13 +47,13 @@ export function LandingPage() {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-7 flex flex-col items-start"
             >
-              <h1 className="font-sans text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#111111] leading-[1.08]">
+              <h1 className="font-sans text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
                 Invest for <span className="inline-block relative">✦</span> <br />
                 the Future
               </h1>
 
-              <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-[#111111]/85 max-w-lg leading-relaxed font-normal">
-                Tampilkan etalase produk, kelola pesanan terstruktur, dan terima checkout langsung ke WhatsApp pembeli tanpa potongan komisi.
+              <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-white/90 max-w-lg leading-relaxed font-normal">
+                Kelola etalase produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
               </p>
 
               {/* CTA & Playful Doodle Arrow */}
@@ -109,9 +63,9 @@ export function LandingPage() {
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-7 py-4 rounded-full bg-[#111111] hover:bg-black text-white text-sm sm:text-base font-semibold flex items-center justify-center gap-3 transition-all shadow-md cursor-pointer group"
+                  className="px-7 py-4 rounded-full bg-[#141413] hover:bg-black text-white text-sm sm:text-base font-semibold flex items-center justify-center gap-3 transition-all shadow-md cursor-pointer group"
                 >
-                  <ShoppingBag className="size-4 text-[#D2F801]" />
+                  <ShoppingBag className="size-4 text-[#cc785c]" />
                   <span>Buka Toko Gratis</span>
                   <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
                 </motion.button>
@@ -122,7 +76,7 @@ export function LandingPage() {
                     const el = document.getElementById('advantages')
                     el?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-[#111111]/80 hover:text-black flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-white/90 hover:text-white flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <span>Pelajari Selengkapnya</span>
                   <span className="text-xs">↓</span>
@@ -134,7 +88,7 @@ export function LandingPage() {
                     viewBox="0 0 140 90"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-full text-[#111111]"
+                    className="w-full h-full text-white/80"
                   >
                     <path
                       d="M 10 50 C 40 85, 90 80, 125 35"
@@ -162,27 +116,27 @@ export function LandingPage() {
               className="lg:col-span-5 relative flex items-center justify-center lg:justify-end min-h-[420px] sm:min-h-[480px] w-full"
             >
               {/* Back Mockup: Dark Phone (Receipt / Incoming WhatsApp Order) */}
-              <div className="absolute right-0 sm:right-2 top-0 sm:top-2 w-[220px] sm:w-[260px] bg-[#111111] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-5 shadow-2xl border border-white/10 z-10 transform translate-x-2 sm:translate-x-4 -rotate-1 select-none">
+              <div className="absolute right-0 sm:right-2 top-0 sm:top-2 w-[220px] sm:w-[260px] bg-[#141413] text-white rounded-[28px] sm:rounded-[36px] p-4 sm:p-5 shadow-2xl border border-white/10 z-10 transform translate-x-2 sm:translate-x-4 -rotate-1 select-none">
                 <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <div>
                     <span className="text-[11px] font-mono text-white/50 block">Pesanan Masuk</span>
                     <span className="text-xs font-mono font-bold text-white">#ORD-1042</span>
                   </div>
-                  <span className="text-xs font-mono font-bold text-[#D2F801]">+Rp 74.000</span>
+                  <span className="text-xs font-mono font-bold text-[#cc785c]">+Rp 74.000</span>
                 </div>
 
-                {/* Mini Candlestick / Activity Chart */}
+                {/* Mini Activity Chart */}
                 <div className="mt-3 bg-white/5 rounded-xl p-2.5">
                   <div className="flex items-center justify-between text-[10px] font-mono text-white/60 mb-2">
                     <span>Omzet Hari Ini</span>
-                    <span className="text-[#D2F801] font-bold">+28.4%</span>
+                    <span className="text-[#cc785c] font-bold">+28.4%</span>
                   </div>
                   <div className="h-10 flex items-end gap-1.5 justify-between px-1">
                     {[35, 55, 40, 75, 60, 95, 80, 100].map((h, i) => (
                       <div
                         key={i}
                         className={`w-full rounded-t-sm ${
-                          i === 7 ? 'bg-[#D2F801]' : 'bg-white/20'
+                          i === 7 ? 'bg-[#cc785c]' : 'bg-white/20'
                         }`}
                         style={{ height: `${h}%` }}
                       />
@@ -202,7 +156,7 @@ export function LandingPage() {
                   </div>
                   <div className="flex justify-between text-white/50 pt-1 border-t border-white/10">
                     <span>Biaya Layanan</span>
-                    <span className="font-mono text-[#D2F801]">Rp 0 (0%)</span>
+                    <span className="font-mono text-[#cc785c]">Rp 0 (0%)</span>
                   </div>
                 </div>
 
@@ -210,7 +164,7 @@ export function LandingPage() {
                   <button
                     type="button"
                     onClick={() => handleOpenAuth('signup')}
-                    className="flex-1 py-1.5 rounded-lg bg-[#D2F801] text-black text-center font-bold text-[11px] cursor-pointer"
+                    className="flex-1 py-1.5 rounded-lg bg-[#cc785c] text-white text-center font-bold text-[11px] cursor-pointer"
                   >
                     Buka WhatsApp
                   </button>
@@ -218,10 +172,10 @@ export function LandingPage() {
               </div>
 
               {/* Front Mockup: White Phone (Clean Storefront & Catalog) */}
-              <div className="relative w-[230px] sm:w-[270px] bg-white text-[#111111] rounded-[28px] sm:rounded-[36px] p-4 sm:p-5 shadow-2xl border border-neutral-100 z-20 transform -translate-x-6 sm:-translate-x-12 translate-y-6 sm:translate-y-8 select-none">
+              <div className="relative w-[230px] sm:w-[270px] bg-white text-[#141413] rounded-[28px] sm:rounded-[36px] p-4 sm:p-5 shadow-2xl border border-neutral-100 z-20 transform -translate-x-6 sm:-translate-x-12 translate-y-6 sm:translate-y-8 select-none">
                 <div className="flex items-center justify-between pb-3">
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#111111]">Kedai Kopi Senja</h3>
+                    <h3 className="text-sm font-extrabold text-[#141413]">Kedai Kopi Senja</h3>
                     <p className="text-[10px] font-mono text-neutral-500">tautan.site/senja</p>
                   </div>
                   <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">
@@ -236,8 +190,8 @@ export function LandingPage() {
                 </div>
 
                 {/* Banner Promo */}
-                <div className="mt-3 p-2.5 rounded-xl bg-[#111111] text-white">
-                  <div className="text-[10px] font-mono text-[#D2F801]">Promo Spesial</div>
+                <div className="mt-3 p-2.5 rounded-xl bg-[#141413] text-white">
+                  <div className="text-[10px] font-mono text-[#cc785c]">Promo Spesial</div>
                   <div className="text-xs font-bold mt-0.5">Kopi Susu + Croissant</div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-xs font-mono font-bold text-white">Rp 36.000</span>
@@ -262,7 +216,7 @@ export function LandingPage() {
                         onClick={() => setHeroVariant('dingin')}
                         className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
                           heroVariant === 'dingin'
-                            ? 'bg-black text-white'
+                            ? 'bg-[#141413] text-white'
                             : 'bg-white text-neutral-600 border border-neutral-200'
                         }`}
                       >
@@ -273,7 +227,7 @@ export function LandingPage() {
                         onClick={() => setHeroVariant('hangat')}
                         className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
                           heroVariant === 'hangat'
-                            ? 'bg-black text-white'
+                            ? 'bg-[#141413] text-white'
                             : 'bg-white text-neutral-600 border border-neutral-200'
                         }`}
                       >
@@ -284,7 +238,7 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => handleOpenAuth('signup')}
-                      className="px-2.5 py-1 rounded-lg bg-[#D2F801] text-black text-[10px] font-bold flex items-center gap-1 hover:bg-[#bde300] transition-colors cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#cc785c] text-white text-[10px] font-bold flex items-center gap-1 hover:bg-[#b8674d] transition-colors cursor-pointer"
                     >
                       <span>+ Pesan</span>
                     </button>
@@ -307,11 +261,11 @@ export function LandingPage() {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-2xl mb-8 sm:mb-12"
         >
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-[#111111] tracking-tight leading-[1.12]">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight leading-[1.12]">
             Get the Most Out <br />
             of Your Medsos Store
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-neutral-600">
+          <p className="mt-3 text-sm sm:text-base text-[#6c6a64]">
             Kombinasi etalase modern dan checkout otomatis WhatsApp untuk konversi penjualan maksimal.
           </p>
         </motion.div>
@@ -326,10 +280,10 @@ export function LandingPage() {
             className="p-8 sm:p-12 rounded-[32px] bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between min-h-[320px] sm:min-h-[380px] relative overflow-hidden group"
           >
             <div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#111111] tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
                 Katalog & Varian Tanpa Batas
               </h3>
-              <p className="mt-3 text-sm sm:text-base text-neutral-600 max-w-md leading-relaxed">
+              <p className="mt-3 text-sm sm:text-base text-[#6c6a64] max-w-md leading-relaxed">
                 Pajang seluruh lini produkmu dengan foto jernih, pilihan varian (panas/dingin, ukuran, topping), dan status stok real-time.
               </p>
             </div>
@@ -338,20 +292,20 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => handleOpenAuth('signup')}
-                className="inline-flex items-center gap-2 text-sm font-bold text-[#111111] hover:text-neutral-700 transition-colors cursor-pointer group-hover:translate-x-1 duration-200"
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#141413] hover:text-[#cc785c] transition-colors cursor-pointer group-hover:translate-x-1 duration-200"
               >
                 <span>Pelajari Lebih Lanjut</span>
                 <ArrowRight className="size-4" />
               </button>
 
-              {/* Decorative Geometric Blob Graphic (Lime + Black Pill matching UIref.webp) */}
+              {/* Decorative Geometric Blob Graphic (Terracotta + Black Pill matching UIref.webp) */}
               <div className="relative w-28 h-28 pointer-events-none select-none">
-                <div className="absolute right-0 bottom-0 w-24 h-24 rounded-tl-full rounded-br-2xl bg-[#D2F801] transform rotate-12 transition-transform group-hover:scale-105" />
-                <div className="absolute right-10 bottom-0 w-10 h-16 rounded-full bg-[#111111] transform -rotate-12 transition-transform group-hover:-translate-y-1" />
+                <div className="absolute right-0 bottom-0 w-24 h-24 rounded-tl-full rounded-br-2xl bg-[#cc785c] transform rotate-12 transition-transform group-hover:scale-105" />
+                <div className="absolute right-10 bottom-0 w-10 h-16 rounded-full bg-[#141413] transform -rotate-12 transition-transform group-hover:-translate-y-1" />
                 <svg
                   viewBox="0 0 60 60"
                   fill="none"
-                  className="absolute right-4 bottom-4 w-12 h-12 text-[#111111]"
+                  className="absolute right-4 bottom-4 w-12 h-12 text-white"
                 >
                   <path
                     d="M 10 30 C 25 10, 45 45, 20 50 C 5 52, 10 20, 40 25"
@@ -373,10 +327,10 @@ export function LandingPage() {
             className="p-8 sm:p-12 rounded-[32px] bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between min-h-[320px] sm:min-h-[380px] relative overflow-hidden group"
           >
             <div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#111111] tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight">
                 Rekap & Analisis Otomatis
               </h3>
-              <p className="mt-3 text-sm sm:text-base text-neutral-600 max-w-md leading-relaxed">
+              <p className="mt-3 text-sm sm:text-base text-[#6c6a64] max-w-md leading-relaxed">
                 Pantau pesanan yang masuk, total omzet harian, dan produk paling laris secara transparan tanpa rumus spreadsheet manual.
               </p>
             </div>
@@ -385,44 +339,44 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => handleOpenAuth('signup')}
-                className="inline-flex items-center gap-2 text-sm font-bold text-[#111111] hover:text-neutral-700 transition-colors cursor-pointer group-hover:translate-x-1 duration-200"
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#141413] hover:text-[#cc785c] transition-colors cursor-pointer group-hover:translate-x-1 duration-200"
               >
                 <span>Pelajari Lebih Lanjut</span>
                 <ArrowRight className="size-4" />
               </button>
 
-              {/* Decorative Segmented Circle Ring Graphic (Lime, Coral, Black + Trend Line matching UIref.webp) */}
+              {/* Decorative Segmented Circle Ring Graphic (Terracotta, Coral, Black + Trend Line matching UIref.webp) */}
               <div className="relative w-28 h-28 pointer-events-none select-none flex items-center justify-center">
                 <svg viewBox="0 0 100 100" className="w-24 h-24 transform -rotate-45">
-                  {/* Segment 1: Lime */}
+                  {/* Segment 1: Terracotta */}
                   <circle
                     cx="50"
                     cy="50"
                     r="40"
                     fill="none"
-                    stroke="#D2F801"
+                    stroke="#cc785c"
                     strokeWidth="10"
                     strokeDasharray="90 250"
                     strokeDashoffset="0"
                   />
-                  {/* Segment 2: Coral */}
+                  {/* Segment 2: Amber Coral */}
                   <circle
                     cx="50"
                     cy="50"
                     r="40"
                     fill="none"
-                    stroke="#FF6B50"
+                    stroke="#e8a55a"
                     strokeWidth="10"
                     strokeDasharray="60 250"
                     strokeDashoffset="-95"
                   />
-                  {/* Segment 3: Black */}
+                  {/* Segment 3: Deep Ink */}
                   <circle
                     cx="50"
                     cy="50"
                     r="40"
                     fill="none"
-                    stroke="#111111"
+                    stroke="#141413"
                     strokeWidth="10"
                     strokeDasharray="50 250"
                     strokeDashoffset="-160"
@@ -433,7 +387,7 @@ export function LandingPage() {
                 <svg
                   viewBox="0 0 60 40"
                   fill="none"
-                  className="absolute inset-0 m-auto w-12 h-10 text-[#111111]"
+                  className="absolute inset-0 m-auto w-12 h-10 text-[#141413]"
                 >
                   <path
                     d="M 8 32 L 20 22 L 32 26 L 48 10"
@@ -457,7 +411,7 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* SECTION 3: "Advantages" (Split Layout 2x2 Cards with Lime Icons) */}
+      {/* SECTION 3: "Advantages" (Split Layout 2x2 Cards matching UIref.webp) */}
       {/* ==================================================================== */}
       <section id="advantages" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 border-t border-neutral-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -469,10 +423,10 @@ export function LandingPage() {
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-4"
           >
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#111111] tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight">
               Advantages
             </h2>
-            <p className="mt-4 text-sm sm:text-base text-neutral-600 leading-relaxed">
+            <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed">
               Kami mendengarkan kebutuhan ribuan penjual media sosial untuk menciptakan sistem etalase dan transaksi paling efisien.
             </p>
           </motion.div>
@@ -488,13 +442,13 @@ export function LandingPage() {
               className="p-6 sm:p-8 rounded-2xl bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between"
             >
               <div>
-                <div className="size-10 rounded-full bg-[#D2F801] flex items-center justify-center text-black mb-4 shadow-2xs">
+                <div className="size-10 rounded-full bg-[#cc785c] flex items-center justify-center text-white mb-4 shadow-2xs">
                   <Zap className="size-5" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#111111]">
+                <h3 className="text-lg sm:text-xl font-bold text-[#141413]">
                   Mulai dalam 60 Detik
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] leading-relaxed">
                   Tanpa perlu coding atau setup rumit. Cukup masuk dengan Google dan toko online langsung aktif siap dibagikan.
                 </p>
               </div>
@@ -503,7 +457,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#111111] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#141413] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Buka Toko
                 </button>
@@ -519,13 +473,13 @@ export function LandingPage() {
               className="p-6 sm:p-8 rounded-2xl bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between"
             >
               <div>
-                <div className="size-10 rounded-full bg-[#D2F801] flex items-center justify-center text-black mb-4 shadow-2xs">
+                <div className="size-10 rounded-full bg-[#cc785c] flex items-center justify-center text-white mb-4 shadow-2xs">
                   <MessageCircle className="size-5" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#111111]">
+                <h3 className="text-lg sm:text-xl font-bold text-[#141413]">
                   Dukungan 24/7 WhatsApp
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] leading-relaxed">
                   Tim kami siap menjawab pertanyaan setup toko, integrasi menu, dan optimasi etalase jualanmu setiap saat.
                 </p>
               </div>
@@ -534,7 +488,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#111111] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#141413] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Tanya Tim
                 </button>
@@ -550,13 +504,13 @@ export function LandingPage() {
               className="p-6 sm:p-8 rounded-2xl bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between"
             >
               <div>
-                <div className="size-10 rounded-full bg-[#D2F801] flex items-center justify-center text-black mb-4 shadow-2xs">
+                <div className="size-10 rounded-full bg-[#cc785c] flex items-center justify-center text-white mb-4 shadow-2xs">
                   <Percent className="size-5" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#111111]">
+                <h3 className="text-lg sm:text-xl font-bold text-[#141413]">
                   0% Biaya Komisi
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] leading-relaxed">
                   Tanpa potongan komisi penjualan atau biaya per transaksi tersembunyi. Keuntungan toko 100% utuh untukmu.
                 </p>
               </div>
@@ -565,7 +519,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#111111] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#141413] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Cek Skema
                 </button>
@@ -581,13 +535,13 @@ export function LandingPage() {
               className="p-6 sm:p-8 rounded-2xl bg-[#F5F6F8] border border-[#E9EBEF] flex flex-col justify-between"
             >
               <div>
-                <div className="size-10 rounded-full bg-[#D2F801] flex items-center justify-center text-black mb-4 shadow-2xs">
+                <div className="size-10 rounded-full bg-[#cc785c] flex items-center justify-center text-white mb-4 shadow-2xs">
                   <Smartphone className="size-5" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#111111]">
+                <h3 className="text-lg sm:text-xl font-bold text-[#141413]">
                   Akses Kilat Tanpa Unduh
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] leading-relaxed">
                   Pembeli membuka link di bio medsos langsung di browser ponsel tanpa harus mengunduh aplikasi tambahan.
                 </p>
               </div>
@@ -596,7 +550,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#111111] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-white hover:bg-neutral-100 text-[#141413] border border-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Mulai Sekarang
                 </button>
@@ -609,11 +563,11 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* SECTION 4: "Our Partners" (Monochrome Partner Logos) */}
       {/* ==================================================================== */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center border-t border-neutral-100">
-        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#111111] tracking-tight">
+      <section id="partners" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center border-t border-neutral-100">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#141413] tracking-tight">
           Our Partners
         </h2>
-        <p className="mt-2 text-xs sm:text-sm text-neutral-500 max-w-lg mx-auto">
+        <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] max-w-lg mx-auto">
           Mendukung ekosistem pembayaran digital dan kurir logistik terpercaya di seluruh Indonesia
         </p>
 
@@ -631,10 +585,10 @@ export function LandingPage() {
           ].map((partner, idx) => (
             <div
               key={idx}
-              className="size-14 sm:size-16 rounded-full bg-neutral-50 border border-neutral-200/80 flex items-center justify-center p-2 shadow-2xs hover:border-[#D2F801] hover:scale-105 transition-all cursor-pointer"
+              className="size-14 sm:size-16 rounded-full bg-[#F5F6F8] border border-neutral-200/80 flex items-center justify-center p-2 shadow-2xs hover:border-[#cc785c] hover:scale-105 transition-all cursor-pointer"
               title={partner.name}
             >
-              <span className="font-mono text-[10px] sm:text-xs font-bold text-neutral-800 text-center leading-tight">
+              <span className="font-mono text-[10px] sm:text-xs font-bold text-[#141413] text-center leading-tight">
                 {partner.name}
               </span>
             </div>
@@ -645,8 +599,8 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* SECTION 5: Dark Highlight Banner ("Keep Your Finger on the Investment Pulse") */}
       {/* ==================================================================== */}
-      <section className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 my-10 sm:my-20">
-        <div className="bg-[#0E0E0E] text-white rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 relative overflow-hidden shadow-2xl">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-20">
+        <div className="bg-[#141413] text-white rounded-[32px] sm:rounded-[44px] p-6 sm:p-12 lg:p-16 relative overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
             {/* Left Column */}
             <motion.div
@@ -683,9 +637,9 @@ export function LandingPage() {
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="px-7 py-3.5 rounded-full bg-white hover:bg-neutral-100 text-black text-sm font-bold flex items-center gap-2.5 transition-all shadow-md cursor-pointer"
+                  className="px-7 py-3.5 rounded-full bg-white hover:bg-neutral-100 text-[#141413] text-sm font-bold flex items-center gap-2.5 transition-all shadow-md cursor-pointer"
                 >
-                  <ShoppingBag className="size-4 text-black" />
+                  <ShoppingBag className="size-4 text-[#cc785c]" />
                   <span>Buka Dashboard Toko</span>
                   <ArrowRight className="size-4" />
                 </motion.button>
@@ -700,12 +654,12 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-5 flex items-center justify-center"
             >
-              <div className="w-full max-w-[300px] bg-white text-black rounded-[32px] p-5 shadow-2xl border border-neutral-200">
+              <div className="w-full max-w-[300px] bg-white text-[#141413] rounded-[32px] p-5 shadow-2xl border border-neutral-200">
                 <div className="text-center pb-3 border-b border-neutral-100">
                   <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
                     TOTAL PENJUALAN
                   </span>
-                  <div className="text-2xl font-extrabold font-mono text-neutral-900 mt-0.5">
+                  <div className="text-2xl font-extrabold font-mono text-[#141413] mt-0.5">
                     Rp 16.988.310
                   </div>
                   <span className="text-[11px] font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mt-1">
@@ -756,125 +710,87 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* SECTION 6: "Trade in Real Time" (Interactive Etalase - Single-screen on mobile) */}
+      {/* SECTION 6: "Trade in Real Time" (Split Section matching UIref.webp) */}
       {/* ==================================================================== */}
-      <section
-        id="etalase"
-        className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-20 min-h-[calc(100svh-64px)] lg:min-h-0 flex flex-col justify-center"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-4 sm:mb-8">
-          <div>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#111111] tracking-tight">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 border-t border-neutral-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+          {/* Left Column: Dark Preview Card with Chart (Exact UIref composition) */}
+          <motion.div
+            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 relative flex items-center justify-center"
+          >
+            {/* Background Accent Rounded Shape */}
+            <div className="w-[85%] h-52 bg-[#cc785c] rounded-[28px] absolute -top-3 -left-3 transform -rotate-2 opacity-90" />
+
+            {/* Dark Chart Card */}
+            <div className="w-full max-w-md bg-[#141413] text-white rounded-[28px] p-6 shadow-2xl relative z-10 border border-white/10">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div>
+                  <span className="text-[11px] font-mono text-neutral-400 block">Transaksi Real-time</span>
+                  <div className="text-lg font-bold font-mono text-white mt-0.5">135.76 <span className="text-emerald-400 text-xs font-semibold">+1.25%</span></div>
+                </div>
+                <span className="text-[11px] font-mono text-[#cc785c] font-bold">LIVE SYNC</span>
+              </div>
+
+              {/* Sparkline Wave Graph */}
+              <div className="mt-4 h-24 w-full flex items-center justify-center">
+                <svg viewBox="0 0 300 80" fill="none" className="w-full h-full text-white/90">
+                  <path
+                    d="M 5 50 L 35 30 L 65 60 L 95 20 L 130 55 L 160 35 L 190 70 L 225 15 L 260 40 L 295 10"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M 5 50 L 35 30 L 65 60 L 95 20 L 130 55 L 160 35 L 190 70 L 225 15 L 260 40 L 295 10 L 295 80 L 5 80 Z"
+                    fill="url(#chart-grad)"
+                    opacity="0.15"
+                  />
+                  <defs>
+                    <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#cc785c" />
+                      <stop offset="100%" stopColor="#141413" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              <div className="mt-2 flex items-center justify-between text-[11px] text-neutral-400 font-mono pt-3 border-t border-white/10">
+                <span>Konfirmasi Otomatis</span>
+                <span className="text-emerald-400 font-bold">WhatsApp Langsung</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Copy & Details */}
+          <motion.div
+            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: 20 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 flex flex-col items-start"
+          >
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight leading-[1.12]">
               Trade in Real Time
             </h2>
-            <p className="mt-1.5 text-xs sm:text-base text-neutral-600 max-w-xl">
-              Etalase interaktif yang dilihat pelanggan. Pembeli memilih varian, lalu data terformat rapi siap kirim ke WhatsApp.
+
+            <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed">
+              No more waiting. Pesanan pembeli langsung terekam dan terformat rapi ke WhatsApp toko Anda setiap detik tanpa jeda. Semua rincian item, varian, dan total harga langsung siap kirim.
             </p>
-          </div>
-
-          {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-neutral-100 border border-neutral-200/80 self-start sm:self-auto">
-            {[
-              { id: 'all', label: 'Semua' },
-              { id: 'minuman', label: 'Minuman' },
-              { id: 'pastry', label: 'Pastry' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setCatalogFilter(tab.id as 'all' | 'minuman' | 'pastry')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  catalogFilter === tab.id
-                    ? 'bg-black text-white shadow-2xs'
-                    : 'text-neutral-600 hover:text-black'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Product Cards Row (Mobile Horizontal Snap, Desktop 3-column Grid) */}
-        <div className="flex sm:grid sm:grid-cols-3 gap-3 sm:gap-6 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 snap-x snap-mandatory no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
-          {filteredCatalogProducts.map((item) => {
-            const isSelected = selectedCatalogId === item.id
-            return (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                onClick={() => setSelectedCatalogId(isSelected ? null : item.id)}
-                className={`w-[68vw] min-w-[220px] max-w-[260px] sm:w-auto shrink-0 snap-center sm:snap-align-none p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#F5F6F8] border transition-all cursor-pointer flex flex-col justify-between group ${
-                  isSelected
-                    ? 'border-black ring-2 ring-black/10 shadow-md bg-white'
-                    : 'border-[#E9EBEF] hover:border-neutral-300'
-                }`}
-              >
-                <div>
-                  <div className="aspect-[16/10] sm:aspect-[4/3] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-neutral-200 mb-2.5 sm:mb-3.5">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-base font-bold text-neutral-900 group-hover:text-black transition-colors truncate">
-                    {item.name}
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-neutral-500 mt-0.5 line-clamp-1 sm:line-clamp-2">
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="mt-3 pt-2.5 border-t border-neutral-200/80 flex items-center justify-between">
-                  <span className="font-mono text-xs sm:text-sm font-bold text-neutral-900">
-                    Rp {item.price.toLocaleString('id-ID')}
-                  </span>
-                  <span
-                    className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-colors ${
-                      isSelected
-                        ? 'bg-[#D2F801] text-black shadow-2xs'
-                        : 'bg-white text-neutral-700 border border-neutral-200 group-hover:bg-black group-hover:text-white'
-                    }`}
-                  >
-                    {isSelected ? 'Dipilih' : '+ Tambah'}
-                  </span>
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
-
-        {/* Live Simulation Checkout Bar */}
-        <div className="mt-4 sm:mt-6 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#111111] text-white flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-2 text-xs sm:text-sm">
-            <span className="text-neutral-400 shrink-0">Simulasi:</span>
-            <span className="font-medium text-white truncate">
-              {selectedCatalogItem
-                ? `1 pesanan (${selectedCatalogItem.name} • Rp ${selectedCatalogItem.price.toLocaleString('id-ID')})`
-                : 'Pilih produk di atas untuk simulasi checkout'}
-            </span>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="button"
-            onClick={() => handleOpenAuth('signup')}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg sm:rounded-xl bg-[#D2F801] hover:bg-[#bde300] text-black text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
-          >
-            <span>Buka Toko Sekarang</span>
-            <ArrowRight className="size-3.5" />
-          </motion.button>
+          </motion.div>
         </div>
       </section>
 
       {/* ==================================================================== */}
-      {/* SECTION 7: "100,000+ Stonks in Your App" (Large Lime Graphic) */}
+      {/* SECTION 7: KATALOG PRODUK (Replacing "100,000+ Stonks in Your App") */}
       {/* ==================================================================== */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24 border-t border-neutral-100">
+      <section id="catalog" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24 border-t border-neutral-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column */}
+          {/* Left Column: Heading & Description about Catalog */}
           <motion.div
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 20 }}
@@ -882,78 +798,102 @@ export function LandingPage() {
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-6"
           >
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#111111] tracking-tight leading-[1.12]">
-              10,000+ Pesanan <br />
-              Terkirim ke WhatsApp
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight leading-[1.12]">
+              Katalog Produk <br />
+              di Medsosmu
             </h2>
 
-            <p className="mt-4 text-sm sm:text-base text-neutral-600 leading-relaxed max-w-md">
-              UMKM dan kreator di seluruh Indonesia mengandalkan tautan.site untuk menyulap bio media sosial menjadi kanal penjualan berdaya konversi tinggi.
+            <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed max-w-md">
+              Pajang ratusan produk dengan foto jernih, pilihan varian temperatur/rasa, dan stok otomatis. Pembeli menjelajahi etalase tokomu secepat kilat langsung dari tautan bio Instagram atau TikTok.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {['Kopi & Minuman', 'Pastry & Roti', 'Fashion & Aksesori', 'Produk Digital'].map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="px-3.5 py-1.5 rounded-full bg-[#F5F6F8] border border-neutral-200 text-xs font-semibold text-[#141413]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Right Column: Giant Lime Circle + Floating Stock/Product Cards */}
+          {/* Right Column: Giant Terracotta Circle Backdrop + Floating Catalog Product Cards */}
           <motion.div
             whileInView={{ opacity: 1, scale: 1 }}
             initial={{ opacity: 0, scale: 0.95 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-6 relative flex items-center justify-center min-h-[340px]"
+            className="lg:col-span-6 relative flex items-center justify-center min-h-[360px] sm:min-h-[420px]"
           >
-            {/* Giant Lime Circle Backdrop */}
-            <div className="size-72 sm:size-96 rounded-full bg-[#D2F801] absolute right-0 sm:right-6 pointer-events-none" />
+            {/* Giant Terracotta Circle Backdrop matching UIref.webp composition */}
+            <div className="size-72 sm:size-96 rounded-full bg-[#cc785c] absolute right-0 sm:right-6 pointer-events-none opacity-90 shadow-lg" />
 
-            {/* Overlapping Floating Cards */}
-            <div className="relative z-10 w-full max-w-sm space-y-3">
-              {/* Card 1 */}
+            {/* Overlapping Floating Product Cards */}
+            <div className="relative z-10 w-full max-w-sm space-y-3.5">
+              {/* Product Card 1 */}
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white shadow-xl border border-neutral-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-xs">
-                    <Coffee className="size-4 text-[#D2F801]" />
+                  <div className="size-9 rounded-full bg-[#141413] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <Coffee className="size-4 text-[#cc785c]" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-bold text-neutral-900">Kedai Kopi Senja</div>
-                    <div className="text-[10px] font-mono text-neutral-400">320 pesanan terkirim</div>
+                    <div className="text-xs sm:text-sm font-bold text-[#141413]">Kopi Susu Aren</div>
+                    <div className="text-[10px] font-mono text-neutral-400">Espresso & aren alami</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs sm:text-sm font-mono font-bold text-neutral-900">Rp 1.882.000</div>
-                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+18.2%</span>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#141413]">Rp 22.000</div>
+                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+18.2% terlaris</span>
                 </div>
               </div>
 
-              {/* Card 2 */}
+              {/* Product Card 2 */}
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white shadow-xl border border-neutral-100 flex items-center justify-between transform translate-x-2 sm:translate-x-4">
                 <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-xs">
-                    <Package className="size-4 text-[#D2F801]" />
+                  <div className="size-9 rounded-full bg-[#141413] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <Package className="size-4 text-[#cc785c]" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-bold text-neutral-900">Artisan Bakery</div>
-                    <div className="text-[10px] font-mono text-neutral-400">140 pesanan terkirim</div>
+                    <div className="text-xs sm:text-sm font-bold text-[#141413]">Artisan Croissant</div>
+                    <div className="text-[10px] font-mono text-neutral-400">Renyah berlapis mentega</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs sm:text-sm font-mono font-bold text-neutral-900">Rp 1.402.710</div>
-                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+12.4%</span>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#141413]">Rp 18.000</div>
+                  <span className="text-[10px] font-mono text-neutral-500 font-bold">Stok ready</span>
                 </div>
               </div>
 
-              {/* Card 3 */}
+              {/* Product Card 3 */}
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white shadow-xl border border-neutral-100 flex items-center justify-between transform -translate-x-1 sm:-translate-x-2">
                 <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-xs">
-                    <ShoppingBag className="size-4 text-[#D2F801]" />
+                  <div className="size-9 rounded-full bg-[#141413] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <ShoppingBag className="size-4 text-[#cc785c]" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-bold text-neutral-900">Daily Apparel</div>
-                    <div className="text-[10px] font-mono text-neutral-400">89 pesanan terkirim</div>
+                    <div className="text-xs sm:text-sm font-bold text-[#141413]">Cold Brew Bottle</div>
+                    <div className="text-[10px] font-mono text-neutral-400">Seduh dingin 16 jam</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs sm:text-sm font-mono font-bold text-neutral-900">Rp 669.120</div>
-                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+11.7%</span>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#141413]">Rp 28.000</div>
+                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+11.7% rating</span>
                 </div>
+              </div>
+
+              {/* Curved Doodle Loop SVG */}
+              <div className="absolute -left-6 -bottom-6 w-20 h-20 pointer-events-none text-[#141413]">
+                <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+                  <path
+                    d="M 20 80 Q 50 10, 80 50 T 20 80"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="4 4"
+                  />
+                </svg>
               </div>
             </div>
           </motion.div>
@@ -970,56 +910,40 @@ export function LandingPage() {
           viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#111111] tracking-tight leading-[1.1]">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#141413] tracking-tight leading-[1.1]">
             Get the App for Free <br />
             and Start Now
           </h2>
 
-          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-neutral-600 max-w-lg mx-auto">
-            Klaim nama tokomu sekarang dan mulai pasang etalase penjualan WhatsApp dalam 1 menit.
+          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-[#6c6a64] max-w-lg mx-auto">
+            Buka toko online gratis sekarang dan mulai terima pesanan otomatis ke WhatsApp dalam 1 menit.
           </p>
 
-          {/* Minimal Claim Domain Input Bar */}
-          <form
-            onSubmit={handleClaimSubmit}
-            className="mt-6 sm:mt-8 max-w-md mx-auto bg-[#F5F6F8] p-1.5 rounded-full border border-neutral-300/80 shadow-xs flex items-center gap-2"
-          >
-            <div className="flex items-center flex-1 pl-4 pr-1">
-              <span className="font-mono text-xs sm:text-sm font-semibold text-neutral-400 select-none">
-                tautan.site/
-              </span>
-              <input
-                type="text"
-                required
-                placeholder="nama-tokomu"
-                value={claimSlug}
-                onChange={(e) =>
-                  setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
-                }
-                className="w-full pl-1 pr-2 py-1.5 bg-transparent text-xs sm:text-sm font-mono font-bold text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-full bg-[#111111] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer shrink-0"
+          <div className="mt-8 flex justify-center">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="button"
+              onClick={() => handleOpenAuth('signup')}
+              className="px-8 py-4 rounded-full bg-[#141413] hover:bg-black text-white text-sm sm:text-base font-semibold flex items-center justify-center gap-3 transition-all shadow-md cursor-pointer"
             >
-              <span>Klaim</span>
-              <ArrowRight className="size-3.5 text-[#D2F801]" />
-            </button>
-          </form>
+              <ShoppingBag className="size-4 text-[#cc785c]" />
+              <span>Buka Toko Gratis</span>
+              <ArrowRight className="size-4" />
+            </motion.button>
+          </div>
         </motion.div>
       </section>
 
       {/* ==================================================================== */}
       {/* SECTION 9: FOOTER (Pitch Black, matching UIref.webp footer) */}
       {/* ==================================================================== */}
-      <footer className="w-full bg-[#0B0B0B] text-white pt-14 pb-10 px-6 sm:px-12 lg:px-20 border-t border-neutral-900">
+      <footer className="w-full bg-[#141413] text-white pt-14 pb-10 px-6 sm:px-12 lg:px-20 border-t border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/10">
           {/* Brand Logo & Tagline */}
           <div className="md:col-span-4 flex flex-col items-start">
             <div className="flex items-center gap-2">
-              <div className="size-3.5 rounded-full bg-[#D2F801]" />
+              <div className="size-3.5 rounded-full bg-[#cc785c]" />
               <span className="font-sans text-xl font-bold tracking-tight text-white">
                 tautan<span className="text-neutral-400 text-sm font-medium">.site</span>
               </span>
@@ -1039,7 +963,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
                   Etalase Produk
                 </button>
@@ -1048,7 +972,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
                   Checkout WhatsApp
                 </button>
@@ -1057,7 +981,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
                   Dashboard Kasir
                 </button>
@@ -1066,7 +990,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenAuth('signup')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
                   Skema Komisi (0%)
                 </button>
@@ -1107,11 +1031,11 @@ export function LandingPage() {
               <input
                 type="email"
                 placeholder="Your e-mail"
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#D2F801]"
+                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#cc785c]"
               />
               <button
                 type="submit"
-                className="size-9 rounded-xl bg-[#D2F801] hover:bg-[#bde300] text-black flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                className="size-9 rounded-xl bg-[#cc785c] hover:bg-[#b8674d] text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 title="Subscribe"
               >
                 <ArrowRight className="size-4" />
@@ -1136,7 +1060,6 @@ export function LandingPage() {
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         initialMode={authMode}
-        initialSlug={claimSlug}
       />
     </div>
   )

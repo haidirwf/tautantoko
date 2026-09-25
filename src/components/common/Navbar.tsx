@@ -19,19 +19,19 @@ export function Navbar() {
     <>
       <header className={`${isLandingPage ? 'fixed' : 'sticky'} top-0 left-0 right-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-neutral-100 transition-all`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo on Left (with Lime Accent Dot matching UIref.webp) */}
+          {/* Logo on Left (with Terracotta Accent Dot matching website identity) */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="size-3.5 rounded-full bg-[#D2F801] shrink-0 shadow-2xs group-hover:scale-110 transition-transform" />
+            <div className="size-3.5 rounded-full bg-[#cc785c] shrink-0 shadow-2xs group-hover:scale-110 transition-transform" />
             <motion.span
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="font-sans text-xl font-extrabold tracking-tight text-[#111111] flex items-center"
+              className="font-sans text-xl font-extrabold tracking-tight text-[#141413] flex items-center"
             >
               tautan<span className="text-neutral-400 text-sm font-semibold ml-0.5">.site</span>
             </motion.span>
           </Link>
 
-          {/* Navigation Links in Center */}
+          {/* Navigation Links in Center matching UIref.webp */}
           {isLandingPage ? (
             <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-medium text-neutral-600">
               <button
@@ -42,17 +42,17 @@ export function Navbar() {
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Fitur & Solusi
+                Tentang
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  const el = document.getElementById('etalase')
+                  const el = document.getElementById('catalog')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Etalase Toko
+                Katalog
               </button>
               <button
                 type="button"
@@ -62,7 +62,17 @@ export function Navbar() {
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Keunggulan
+                Harga
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('partners')
+                  el?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="hover:text-black transition-colors relative py-1 cursor-pointer"
+              >
+                Bantuan
               </button>
             </nav>
           ) : isMerchantArea ? (
