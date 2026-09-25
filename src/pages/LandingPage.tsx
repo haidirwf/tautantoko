@@ -729,10 +729,10 @@ export function LandingPage() {
             <div className="w-full max-w-md bg-[#141413] text-white rounded-[28px] p-6 shadow-2xl relative z-10 border border-white/10">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div>
-                  <span className="text-[11px] font-mono text-neutral-400 block">Transaksi Real-time</span>
-                  <div className="text-lg font-bold font-mono text-white mt-0.5">135.76 <span className="text-emerald-400 text-xs font-semibold">+1.25%</span></div>
+                  <span className="text-[11px] font-mono text-neutral-400 block">Transaksi Masuk Real-Time</span>
+                  <div className="text-lg font-bold font-mono text-white mt-0.5">+38 Pesanan <span className="text-emerald-400 text-xs font-semibold">Hari Ini</span></div>
                 </div>
-                <span className="text-[11px] font-mono text-[#cc785c] font-bold">LIVE SYNC</span>
+                <span className="text-[11px] font-mono text-[#cc785c] font-bold">OTOMATIS</span>
               </div>
 
               {/* Sparkline Wave Graph */}
@@ -760,8 +760,8 @@ export function LandingPage() {
               </div>
 
               <div className="mt-2 flex items-center justify-between text-[11px] text-neutral-400 font-mono pt-3 border-t border-white/10">
-                <span>Konfirmasi Otomatis</span>
-                <span className="text-emerald-400 font-bold">WhatsApp Langsung</span>
+                <span>Format Rapi</span>
+                <span className="text-emerald-400 font-bold">Langsung ke WhatsApp</span>
               </div>
             </div>
           </motion.div>
@@ -779,7 +779,7 @@ export function LandingPage() {
             </h2>
 
             <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed">
-              No more waiting. Pesanan pembeli langsung terekam dan terformat rapi ke WhatsApp toko Anda setiap detik tanpa jeda. Semua rincian item, varian, dan total harga langsung siap kirim.
+              Tanpa tunggu konfirmasi manual. Pesanan pembeli langsung terekam dan terformat rapi ke WhatsApp toko Anda setiap detik tanpa jeda. Semua rincian item, varian, dan total harga langsung siap kirim.
             </p>
           </motion.div>
         </div>
@@ -862,7 +862,7 @@ export function LandingPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xs sm:text-sm font-mono font-bold text-[#141413]">Rp 18.000</div>
-                  <span className="text-[10px] font-mono text-neutral-500 font-bold">Stok ready</span>
+                  <span className="text-[10px] font-mono text-neutral-500 font-bold">Stok Tersedia</span>
                 </div>
               </div>
 
@@ -879,7 +879,7 @@ export function LandingPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xs sm:text-sm font-mono font-bold text-[#141413]">Rp 28.000</div>
-                  <span className="text-[10px] font-mono text-emerald-600 font-bold">+11.7% rating</span>
+                  <span className="text-[10px] font-mono text-emerald-600 font-bold">Rating 4.9 ★</span>
                 </div>
               </div>
 
@@ -956,7 +956,7 @@ export function LandingPage() {
           {/* Resources Column */}
           <div className="md:col-span-2">
             <h4 className="text-xs font-mono font-bold text-neutral-300 uppercase tracking-wider mb-3">
-              Resources
+              Fitur & Layanan
             </h4>
             <ul className="space-y-2 text-xs text-neutral-400">
               <li>
@@ -1001,7 +1001,7 @@ export function LandingPage() {
           {/* Company Column */}
           <div className="md:col-span-2">
             <h4 className="text-xs font-mono font-bold text-neutral-300 uppercase tracking-wider mb-3">
-              Company
+              Perusahaan
             </h4>
             <ul className="space-y-2 text-xs text-neutral-400">
               <li>
@@ -1019,10 +1019,10 @@ export function LandingPage() {
             </ul>
           </div>
 
-          {/* Subscribe to News Column */}
+          {/* Kolom Berlangganan Tips Bisnis */}
           <div className="md:col-span-4">
             <h4 className="text-xs font-mono font-bold text-neutral-300 uppercase tracking-wider mb-3">
-              Subscribe to News
+              Langganan Tips Bisnis
             </h4>
             <p className="text-xs text-neutral-400 mb-3">
               Dapatkan pembaruan fitur dan tips jualan medsos langsung ke email Anda.
@@ -1030,13 +1030,13 @@ export function LandingPage() {
             <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2">
               <input
                 type="email"
-                placeholder="Your e-mail"
+                placeholder="Ketik email Anda..."
                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#cc785c]"
               />
               <button
                 type="submit"
                 className="size-9 rounded-xl bg-[#cc785c] hover:bg-[#b8674d] text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                title="Subscribe"
+                title="Langganan"
               >
                 <ArrowRight className="size-4" />
               </button>
