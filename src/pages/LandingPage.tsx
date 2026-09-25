@@ -48,8 +48,8 @@ export function LandingPage() {
               className="lg:col-span-7 flex flex-col items-start"
             >
               <h1 className="font-sans text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
-                Invest for <span className="inline-block relative">✦</span> <br />
-                the Future
+                Mesin Kasir <span className="inline-block relative">✦</span> <br />
+                di Medsosmu
               </h1>
 
               <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-white/90 max-w-lg leading-relaxed font-normal">
@@ -262,8 +262,8 @@ export function LandingPage() {
           className="max-w-2xl mb-8 sm:mb-12"
         >
           <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight leading-[1.12]">
-            Get the Most Out <br />
-            of Your Medsos Store
+            Kelola Penjualan <br />
+            Medsos Makin Mudah
           </h2>
           <p className="mt-3 text-sm sm:text-base text-[#6c6a64]">
             Kombinasi etalase modern dan checkout otomatis WhatsApp untuk konversi penjualan maksimal.
@@ -424,7 +424,7 @@ export function LandingPage() {
             className="lg:col-span-4"
           >
             <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight">
-              Advantages
+              Keunggulan
             </h2>
             <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed">
               Kami mendengarkan kebutuhan ribuan penjual media sosial untuk menciptakan sistem etalase dan transaksi paling efisien.
@@ -565,7 +565,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       <section id="partners" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center border-t border-neutral-100">
         <h2 className="text-2xl sm:text-4xl font-extrabold text-[#141413] tracking-tight">
-          Our Partners
+          Mitra & Integrasi
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-[#6c6a64] max-w-lg mx-auto">
           Mendukung ekosistem pembayaran digital dan kurir logistik terpercaya di seluruh Indonesia
@@ -623,8 +623,8 @@ export function LandingPage() {
               </div>
 
               <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.12]">
-                Keep Your Finger on the <br />
-                Medsos Store Pulse
+                Pantau Penjualan & <br />
+                Arus Kas Real-Time
               </h2>
 
               <p className="mt-4 text-sm sm:text-base text-neutral-400 max-w-lg leading-relaxed">
@@ -775,7 +775,7 @@ export function LandingPage() {
             className="lg:col-span-6 flex flex-col items-start"
           >
             <h2 className="text-3xl sm:text-5xl font-extrabold text-[#141413] tracking-tight leading-[1.12]">
-              Trade in Real Time
+              Transaksi Kilat Real-Time
             </h2>
 
             <p className="mt-4 text-sm sm:text-base text-[#6c6a64] leading-relaxed">
@@ -911,8 +911,8 @@ export function LandingPage() {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#141413] tracking-tight leading-[1.1]">
-            Get the App for Free <br />
-            and Start Now
+            Buka Tokomu Gratis <br />
+            dan Mulai Sekarang
           </h2>
 
           <p className="mt-3 sm:mt-4 text-xs sm:text-base text-[#6c6a64] max-w-lg mx-auto">
