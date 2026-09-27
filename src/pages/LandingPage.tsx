@@ -96,7 +96,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 1. HERO SECTION (Clean, Minimalist Linktree & Inkto Vibe) */}
       {/* ==================================================================== */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-8 sm:pt-14 lg:pt-16 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           {/* Left Column: Direct Confident Typography & Claim Input (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
@@ -316,7 +316,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 2. BENTO GRID FEATURES (Inspired by Linktree & Modern Clean UI) */}
       {/* ==================================================================== */}
-      <section id="features" className="border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="features" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
@@ -442,7 +442,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 3. 3-STEP WORKFLOW (Frictionless Onboarding) */}
       {/* ==================================================================== */}
-      <section id="how" className="border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="how" className="scroll-mt-20 border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
@@ -498,7 +498,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 4. PERTANYAAN UMUM / FAQ (#faq) */}
       {/* ==================================================================== */}
-      <section id="faq" className="border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="faq" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">

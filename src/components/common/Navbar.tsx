@@ -17,7 +17,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`${isLandingPage ? 'fixed' : 'sticky'} top-0 left-0 right-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-neutral-100 transition-all`}>
+      <header className="sticky top-0 left-0 right-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-neutral-100 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo on Left (with Terracotta Accent Dot matching website identity) */}
           <Link to="/" className="flex items-center gap-2 group">
