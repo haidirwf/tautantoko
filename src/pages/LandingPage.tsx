@@ -105,13 +105,15 @@ export function LandingPage() {
                   onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   className="w-full text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium bg-transparent"
                 />
-                <button
+                <motion.button
                   type="submit"
-                  className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-colors shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer group"
                 >
                   <span>Klaim</span>
-                  <ArrowRight className="size-3.5 text-[#cc785c]" />
-                </button>
+                  <ArrowRight className="size-3.5 text-[#cc785c] group-hover:translate-x-0.5 transition-transform" />
+                </motion.button>
               </form>
 
               {/* Clean Trust Indicators */}
@@ -132,68 +134,98 @@ export function LandingPage() {
             </motion.div>
           </div>
 
-          {/* Right Column: Pure Minimalist Showcase Card */}
+          {/* Right Column: Pure Minimalist Showcase Card with Gentle Float & Interactive Items */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-md p-6 sm:p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm text-left"
+              initial={{ opacity: 0, y: 28, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-md"
             >
-              {/* Creator Profile */}
-              <div className="text-center pb-4 border-b border-[#f0ece5]">
-                <div className="size-14 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2.5 shadow-2xs">
-                  KS
-                </div>
-                <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
-                <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
-                <p className="text-xs text-[#5c5850] mt-1.5 leading-relaxed">
-                  Biji kopi pilihan Nusantara, diseduh segar setiap hari.
-                </p>
-              </div>
-
-              {/* Simple Clean Product Items */}
-              <div className="py-3.5 space-y-2.5">
-                <div className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
-                    alt="Kopi Susu Aren"
-                    className="size-12 rounded-xl object-cover shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
-                    <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
-                  </div>
-                  <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413]">
-                    Pesan
-                  </span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
-                    alt="Croissant"
-                    className="size-12 rounded-xl object-cover shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Butter Croissant</span>
-                    <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
-                  </div>
-                  <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413]">
-                    Pesan
-                  </span>
-                </div>
-              </div>
-
-              {/* Direct Checkout CTA Bar */}
-              <button
-                type="button"
-                onClick={() => setIsAuthOpen(true)}
-                className="w-full py-3 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-full p-6 sm:p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm hover:shadow-md transition-shadow text-left"
               >
-                <span>Buka WhatsApp Toko</span>
-                <ArrowRight className="size-3.5 text-[#cc785c]" />
-              </button>
+                {/* Creator Profile */}
+                <div className="text-center pb-4 border-b border-[#f0ece5]">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                    className="size-14 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2.5 shadow-2xs"
+                  >
+                    KS
+                  </motion.div>
+                  <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
+                  <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
+                  <p className="text-xs text-[#5c5850] mt-1.5 leading-relaxed">
+                    Biji kopi pilihan Nusantara, diseduh segar setiap hari.
+                  </p>
+                </div>
+
+                {/* Simple Clean Product Items */}
+                <div className="py-3.5 space-y-2.5">
+                  <motion.div
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
+                      alt="Kopi Susu Aren"
+                      className="size-12 rounded-xl object-cover shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
+                      <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
+                    </div>
+                    <motion.span
+                      whileHover={{ scale: 1.06, backgroundColor: '#141413', color: '#ffffff' }}
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ duration: 0.15 }}
+                      className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-colors select-none"
+                    >
+                      Pesan
+                    </motion.span>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
+                      alt="Croissant"
+                      className="size-12 rounded-xl object-cover shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Butter Croissant</span>
+                      <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
+                    </div>
+                    <motion.span
+                      whileHover={{ scale: 1.06, backgroundColor: '#141413', color: '#ffffff' }}
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ duration: 0.15 }}
+                      className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-colors select-none"
+                    >
+                      Pesan
+                    </motion.span>
+                  </motion.div>
+                </div>
+
+                {/* Direct Checkout CTA Bar */}
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.985 }}
+                  onClick={() => setIsAuthOpen(true)}
+                  className="w-full py-3 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer group"
+                >
+                  <span>Buka WhatsApp Toko</span>
+                  <ArrowRight className="size-3.5 text-[#cc785c] group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -204,7 +236,13 @@ export function LandingPage() {
       {/* ==================================================================== */}
       <section id="features" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center max-w-2xl mx-auto mb-12 sm:mb-16"
+          >
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               Fitur Lengkap
             </span>
@@ -214,11 +252,18 @@ export function LandingPage() {
             <p className="text-sm sm:text-base text-[#5c5850] mt-3">
               Dirancang dengan prinsip kesederhanaan: tanpa biaya tersembunyi, tanpa instalasi rumit.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
             {/* Bento Card 1: Etalase & Varian (Large - 8 cols) */}
-            <div className="md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 transition-colors">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4 }}
+              className="md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 hover:shadow-md transition-all"
+            >
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Katalog Interaktif
@@ -233,7 +278,11 @@ export function LandingPage() {
 
               {/* Visual Demo Card Row */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs">
+                <motion.div
+                  whileHover={{ y: -2, scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-colors hover:border-[#cc785c]/40"
+                >
                   <img
                     src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
                     alt="Kopi"
@@ -244,9 +293,13 @@ export function LandingPage() {
                     <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 22.000</span>
                     <span className="text-[10px] text-[#8c867b] block">Varian: Dingin / Hangat</span>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs">
+                <motion.div
+                  whileHover={{ y: -2, scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-colors hover:border-[#cc785c]/40"
+                >
                   <img
                     src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
                     alt="Pastry"
@@ -257,12 +310,19 @@ export function LandingPage() {
                     <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 18.000</span>
                     <span className="text-[10px] text-[#8c867b] block">Varian: Original / Cokelat</span>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Bento Card 2: 0% Komisi (4 cols) */}
-            <div className="md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md hover:shadow-xl transition-all"
+            >
               <div>
                 <span className="text-xs font-mono font-bold text-[#cc785c] uppercase tracking-wider">
                   Tanpa Potongan
@@ -281,10 +341,17 @@ export function LandingPage() {
               <div className="mt-8 pt-4 border-t border-neutral-800 text-xs font-mono text-[#cc785c] font-semibold">
                 100% Keuntungan Milik Anda
               </div>
-            </div>
+            </motion.div>
 
             {/* Bento Card 3: Checkout WhatsApp (6 cols) */}
-            <div className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 transition-colors">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4 }}
+              className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
+            >
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Alur Kilat
@@ -300,10 +367,17 @@ export function LandingPage() {
               <div className="mt-6 p-3 rounded-xl bg-white border border-[#e6dfd8] text-xs font-mono text-[#5c5850]">
                 "Halo Kak, saya mau pesan 1x Kopi Susu Aren..."
               </div>
-            </div>
+            </motion.div>
 
             {/* Bento Card 4: All-in-One Link Bio (6 cols) */}
-            <div className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 transition-colors">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
+            >
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Satu Alamat Web
@@ -320,7 +394,7 @@ export function LandingPage() {
                 <span>tautan.site/namatokomu</span>
                 <span className="text-[#cc785c] font-bold">Siap Disematkan di Bio</span>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -330,7 +404,13 @@ export function LandingPage() {
       {/* ==================================================================== */}
       <section id="how" className="scroll-mt-20 border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center max-w-xl mx-auto mb-12 sm:mb-16"
+          >
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               Cara Kerja
             </span>
@@ -340,7 +420,7 @@ export function LandingPage() {
             <p className="text-sm text-[#5c5850] mt-2">
               Tanpa perlu keahlian teknis coding atau setup server yang membingungkan.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -359,10 +439,15 @@ export function LandingPage() {
                 title: 'Pasang di Bio Medsos',
                 desc: 'Sematkan tautan di bio Instagram & TikTok. Duduk santai dan terima notifikasi pesanan rapi di WhatsApp.',
               },
-            ].map((step) => (
-              <div
+            ].map((step, idx) => (
+              <motion.div
                 key={step.num}
-                className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs flex flex-col justify-between"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:shadow-md hover:border-[#cc785c]/40 transition-all flex flex-col justify-between"
               >
                 <div>
                   <span className="font-mono text-4xl font-extrabold text-[#cc785c]">
@@ -375,7 +460,7 @@ export function LandingPage() {
                     {step.desc}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -386,7 +471,13 @@ export function LandingPage() {
       {/* ==================================================================== */}
       <section id="faq" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center max-w-xl mx-auto mb-12"
+          >
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               FAQ
             </span>
@@ -396,7 +487,7 @@ export function LandingPage() {
             <p className="text-sm text-[#5c5850] mt-2">
               Informasi lengkap seputar cara kerja, privasi transaksi, dan pengaturan toko.
             </p>
-          </div>
+          </motion.div>
 
           <div className="divide-y divide-[#e6dfd8] border-y border-[#e6dfd8]">
             {faqItems.map((item, idx) => (
@@ -441,7 +532,13 @@ export function LandingPage() {
       {/* 5. PRE-FOOTER CONVERSION BANNER */}
       {/* ==================================================================== */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-6xl mx-auto w-full">
-        <div className="p-8 sm:p-14 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="p-8 sm:p-14 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-xl"
+        >
           <div className="max-w-xl">
             <h2 className="font-sans text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
               Mulai buat etalase tokomu hari ini.
@@ -452,16 +549,18 @@ export function LandingPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <button
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setIsAuthOpen(true)}
-              className="px-7 py-4 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+              className="px-7 py-4 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-md cursor-pointer group"
             >
               <span>Buka Toko Gratis Sekarang</span>
-              <ArrowRight className="size-4" />
-            </button>
+              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ==================================================================== */}
