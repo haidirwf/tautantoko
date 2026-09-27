@@ -26,9 +26,11 @@ Anda bertindak sebagai **Senior Software Engineer** sekaligus **Senior UI/UX Des
 
 # Git Branching Strategy Rules (STRICT)
 
+- **Otomatis Commit Lokal**: **WAJIB** langsung membuat `git commit` di branch lokal `dev` setiap kali selesai membuat atau mengubah kode/file apapun. Gunakan pesan commit yang jelas dan konvensional (misal: `feat: ...`, `fix: ...`, `style: ...`).
 - **DILARANG PUSH KE DEV**: Dilarang melakukan `git push origin dev` tanpa instruksi eksplisit dari user.
 - **DILARANG MERGE & PUSH KE MAIN**: Dilarang keras melakukan checkout, merge, atau push ke branch **`main`** kecuali ada instruksi eksplisit dari user (contoh: "push ke main" atau "merge main").
 - Semua pekerjaan hanya dilakukan secara lokal di branch **`dev`** dan tidak dipush ke remote repository sampai diinstruksikan.
+
 
 ---
 
