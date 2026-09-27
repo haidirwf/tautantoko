@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import {
   Check,
   ChevronDown,
@@ -10,13 +13,144 @@ import { AuthModal } from '@/components/auth/AuthModal'
 import { useAuthStore } from '@/store/useAuthStore'
 import { formatIDR } from '@/lib/utils'
 
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, useGSAP)
+}
+
 export function LandingPage() {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [claimSlug, setClaimSlug] = useState('')
   const [activeFaq, setActiveFaq] = useState<number | null>(0)
 
   const navigate = useNavigate()
   const { signup, isAuthenticated } = useAuthStore()
+
+  useGSAP(
+    () => {
+      // 1. Hero Entrance Timeline with silky power3.out curve
+      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      heroTl
+        .from('.hero-headline', { opacity: 0, y: 35, duration: 0.9 })
+        .from('.hero-sub', { opacity: 0, y: 22, duration: 0.8 }, '-=0.65')
+        .from('.hero-claim', { opacity: 0, y: 20, duration: 0.8 }, '-=0.65')
+        .from('.hero-trust', { opacity: 0, y: 14, duration: 0.6 }, '-=0.6')
+        .from('.hero-card-wrapper', { opacity: 0, y: 40, scale: 0.96, duration: 1 }, '-=0.85')
+
+      // 2. Buttery Perpetual Floating Animation on the Showcase Card
+      gsap.to('.hero-float-card', {
+        y: -10,
+        duration: 3.2,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
+
+      // 3. Bento Grid Section Reveal (Left cards from Left, Right cards from Right)
+      gsap.from('.bento-header', {
+        scrollTrigger: { trigger: '#features', start: 'top 85%' },
+        opacity: 0,
+        y: 35,
+        duration: 0.85,
+        ease: 'power3.out',
+      })
+
+      gsap.from('.bento-left', {
+        scrollTrigger: { trigger: '.bento-grid', start: 'top 82%' },
+        opacity: 0,
+        x: -70,
+        duration: 0.95,
+        stagger: 0.18,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      })
+
+      gsap.from('.bento-right', {
+        scrollTrigger: { trigger: '.bento-grid', start: 'top 82%' },
+        opacity: 0,
+        x: 70,
+        duration: 0.95,
+        stagger: 0.18,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      })
+
+      // 4. Cara Kerja: Staggered sequential slide-in from left with line connections
+      gsap.from('.how-header', {
+        scrollTrigger: { trigger: '#how', start: 'top 85%' },
+        opacity: 0,
+        y: 35,
+        duration: 0.85,
+        ease: 'power3.out',
+      })
+
+      const stepsTl = gsap.timeline({
+        scrollTrigger: { trigger: '#how .step-grid', start: 'top 80%' },
+      })
+      stepsTl
+        .from('.step-box-0', {
+          opacity: 0,
+          x: -60,
+          duration: 0.8,
+          ease: 'power3.out',
+          clearProps: 'transform,opacity',
+        })
+        .from(
+          '.step-line-0',
+          {
+            scaleX: 0,
+            transformOrigin: 'left center',
+            duration: 0.45,
+            ease: 'power2.out',
+            clearProps: 'transform',
+          },
+          '-=0.3'
+        )
+        .from(
+          '.step-box-1',
+          {
+            opacity: 0,
+            x: -60,
+            duration: 0.8,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity',
+          },
+          '-=0.2'
+        )
+        .from(
+          '.step-line-1',
+          {
+            scaleX: 0,
+            transformOrigin: 'left center',
+            duration: 0.45,
+            ease: 'power2.out',
+            clearProps: 'transform',
+          },
+          '-=0.3'
+        )
+        .from(
+          '.step-box-2',
+          {
+            opacity: 0,
+            x: -60,
+            duration: 0.8,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity',
+          },
+          '-=0.2'
+        )
+
+      // 5. Pre-Footer Conversion Banner Reveal
+      gsap.from('.cta-banner-content', {
+        scrollTrigger: { trigger: '.cta-banner', start: 'top 85%' },
+        opacity: 0,
+        y: 40,
+        duration: 1,
+        ease: 'power3.out',
+      })
+    },
+    { scope: containerRef }
+  )
 
   const handleClaimSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +191,10 @@ export function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/25 selection:text-[#141413] font-sans">
+    <div
+      ref={containerRef}
+      className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/25 selection:text-[#141413] font-sans"
+    >
       {/* ==================================================================== */}
       {/* 1. HERO SECTION (Single Viewport Height: Left Copy & Claim, Right Preview Component) */}
       {/* ==================================================================== */}
@@ -65,31 +202,16 @@ export function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center w-full py-4 lg:py-6">
           {/* Left Column: Headline, Subtitle, Claim Input, Trust */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="font-sans text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-2xl"
-            >
+            <h1 className="hero-headline font-sans text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-2xl">
               Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-4 text-sm sm:text-base lg:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
-            >
+            <p className="hero-sub mt-4 text-sm sm:text-base lg:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal">
               Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
-            </motion.p>
+            </p>
 
             {/* Minimal Claim Input */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 sm:mt-8 max-w-md w-full"
-            >
+            <div className="hero-claim mt-6 sm:mt-8 max-w-md w-full">
               <form
                 onSubmit={handleClaimSubmit}
                 className="p-1.5 rounded-full border border-[#e6dfd8] bg-white shadow-xs flex items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
@@ -105,19 +227,17 @@ export function LandingPage() {
                   onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   className="w-full text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium bg-transparent"
                 />
-                <motion.button
+                <button
                   type="submit"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-colors shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer group"
+                  className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 group"
                 >
                   <span>Klaim</span>
                   <ArrowRight className="size-3.5 text-[#cc785c] group-hover:translate-x-0.5 transition-transform" />
-                </motion.button>
+                </button>
               </form>
 
               {/* Clean Trust Indicators */}
-              <div className="flex items-center justify-start gap-x-5 gap-y-2 mt-3.5 text-xs text-[#706c64] flex-wrap font-medium">
+              <div className="hero-trust flex items-center justify-start gap-x-5 gap-y-2 mt-3.5 text-xs text-[#706c64] flex-wrap font-medium">
                 <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-emerald-600 shrink-0" />
                   0% Potongan Komisi
@@ -131,31 +251,18 @@ export function LandingPage() {
                   Gratis Selamanya
                 </span>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Right Column: Pure Minimalist Showcase Card with Gentle Float & Interactive Items */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 28, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-sm sm:max-w-md"
-            >
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-full p-5 sm:p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm hover:shadow-md transition-shadow text-left"
-              >
+          <div className="hero-card-wrapper lg:col-span-5 flex justify-center lg:justify-end w-full">
+            <div className="w-full max-w-sm sm:max-w-md">
+              <div className="hero-float-card w-full p-5 sm:p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm hover:shadow-md transition-all text-left">
                 {/* Creator Profile */}
                 <div className="text-center pb-3.5 border-b border-[#f0ece5]">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.2 }}
-                    className="size-12 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2 shadow-2xs"
-                  >
+                  <div className="size-12 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2 shadow-2xs hover:scale-105 transition-transform">
                     KS
-                  </motion.div>
+                  </div>
                   <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
                   <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
                   <p className="text-xs text-[#5c5850] mt-1 leading-relaxed">
@@ -165,11 +272,7 @@ export function LandingPage() {
 
                 {/* Simple Clean Product Items */}
                 <div className="py-3 space-y-2">
-                  <motion.div
-                    whileHover={{ y: -2, scale: 1.01 }}
-                    transition={{ duration: 0.2 }}
-                    className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
-                  >
+                  <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-all hover:border-[#cc785c]/40 hover:bg-white hover:-translate-y-0.5 cursor-pointer">
                     <img
                       src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
                       alt="Kopi Susu Aren"
@@ -179,21 +282,12 @@ export function LandingPage() {
                       <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
                       <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
                     </div>
-                    <motion.span
-                      whileHover={{ scale: 1.06, backgroundColor: '#141413', color: '#ffffff' }}
-                      whileTap={{ scale: 0.94 }}
-                      transition={{ duration: 0.15 }}
-                      className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-colors select-none"
-                    >
+                    <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-all hover:bg-[#141413] hover:text-white select-none active:scale-95">
                       Pesan
-                    </motion.span>
-                  </motion.div>
+                    </span>
+                  </div>
 
-                  <motion.div
-                    whileHover={{ y: -2, scale: 1.01 }}
-                    transition={{ duration: 0.2 }}
-                    className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
-                  >
+                  <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-all hover:border-[#cc785c]/40 hover:bg-white hover:-translate-y-0.5 cursor-pointer">
                     <img
                       src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
                       alt="Croissant"
@@ -203,46 +297,33 @@ export function LandingPage() {
                       <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Butter Croissant</span>
                       <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
                     </div>
-                    <motion.span
-                      whileHover={{ scale: 1.06, backgroundColor: '#141413', color: '#ffffff' }}
-                      whileTap={{ scale: 0.94 }}
-                      transition={{ duration: 0.15 }}
-                      className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-colors select-none"
-                    >
+                    <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413] shadow-2xs transition-all hover:bg-[#141413] hover:text-white select-none active:scale-95">
                       Pesan
-                    </motion.span>
-                  </motion.div>
+                    </span>
+                  </div>
                 </div>
 
                 {/* Direct Checkout CTA Bar */}
-                <motion.button
+                <button
                   type="button"
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.985 }}
                   onClick={() => setIsAuthOpen(true)}
-                  className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer group"
+                  className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer group active:scale-98"
                 >
                   <span>Buka WhatsApp Toko</span>
                   <ArrowRight className="size-3.5 text-[#cc785c] group-hover:translate-x-1 transition-transform" />
-                </motion.button>
-              </motion.div>
-            </motion.div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ==================================================================== */}
-      {/* 2. BENTO GRID FEATURES (Directional Entrance Animations from Left & Right) */}
+      {/* 2. BENTO GRID FEATURES (GSAP Directional Entrance from Left & Right) */}
       {/* ==================================================================== */}
       <section id="features" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center max-w-2xl mx-auto mb-12 sm:mb-16"
-          >
+          <div className="bento-header text-center max-w-2xl mx-auto mb-12 sm:mb-16">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               Fitur Lengkap
             </span>
@@ -252,18 +333,11 @@ export function LandingPage() {
             <p className="text-sm sm:text-base text-[#5c5850] mt-3">
               Dirancang dengan prinsip kesederhanaan: tanpa biaya tersembunyi, tanpa instalasi rumit.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          <div className="bento-grid grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
             {/* Bento Card 1: Etalase & Varian (Large - 8 cols, slides from Left) */}
-            <motion.div
-              initial={{ opacity: 0, x: -60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 hover:shadow-md transition-all"
-            >
+            <div className="bento-left md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Katalog Interaktif
@@ -278,11 +352,7 @@ export function LandingPage() {
 
               {/* Visual Demo Card Row */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <motion.div
-                  whileHover={{ y: -2, scale: 1.01 }}
-                  transition={{ duration: 0.2 }}
-                  className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-colors hover:border-[#cc785c]/40"
-                >
+                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-all hover:border-[#cc785c]/40 hover:-translate-y-0.5">
                   <img
                     src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
                     alt="Kopi"
@@ -293,13 +363,9 @@ export function LandingPage() {
                     <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 22.000</span>
                     <span className="text-[10px] text-[#8c867b] block">Varian: Dingin / Hangat</span>
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ y: -2, scale: 1.01 }}
-                  transition={{ duration: 0.2 }}
-                  className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-colors hover:border-[#cc785c]/40"
-                >
+                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs transition-all hover:border-[#cc785c]/40 hover:-translate-y-0.5">
                   <img
                     src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
                     alt="Pastry"
@@ -310,19 +376,12 @@ export function LandingPage() {
                     <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 18.000</span>
                     <span className="text-[10px] text-[#8c867b] block">Varian: Original / Cokelat</span>
                   </div>
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Bento Card 2: 0% Komisi (4 cols, slides from Right) */}
-            <motion.div
-              initial={{ opacity: 0, x: 60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              className="md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md hover:shadow-xl transition-all"
-            >
+            <div className="bento-right md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
               <div>
                 <span className="text-xs font-mono font-bold text-[#cc785c] uppercase tracking-wider">
                   Tanpa Potongan
@@ -341,17 +400,10 @@ export function LandingPage() {
               <div className="mt-8 pt-4 border-t border-neutral-800 text-xs font-mono text-[#cc785c] font-semibold">
                 100% Keuntungan Milik Anda
               </div>
-            </motion.div>
+            </div>
 
             {/* Bento Card 3: Checkout WhatsApp (6 cols, slides from Left) */}
-            <motion.div
-              initial={{ opacity: 0, x: -60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
-            >
+            <div className="bento-left md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Alur Kilat
@@ -367,17 +419,10 @@ export function LandingPage() {
               <div className="mt-6 p-3 rounded-xl bg-white border border-[#e6dfd8] text-xs font-mono text-[#5c5850]">
                 "Halo Kak, saya mau pesan 1x Kopi Susu Aren..."
               </div>
-            </motion.div>
+            </div>
 
             {/* Bento Card 4: All-in-One Link Bio (6 cols, slides from Right) */}
-            <motion.div
-              initial={{ opacity: 0, x: 60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
-            >
+            <div className="bento-right md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
                 <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
                   Satu Alamat Web
@@ -394,23 +439,17 @@ export function LandingPage() {
                 <span>tautan.site/namatokomu</span>
                 <span className="text-[#cc785c] font-bold">Siap Disematkan di Bio</span>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ==================================================================== */}
-      {/* 3. 3-STEP WORKFLOW (Sequential Left-to-Right Reveal with Connecting Lines) */}
+      {/* 3. 3-STEP WORKFLOW (GSAP Sequential Left-to-Right with Connecting Lines) */}
       {/* ==================================================================== */}
       <section id="how" className="scroll-mt-20 border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24 overflow-hidden">
         <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center max-w-xl mx-auto mb-12 sm:mb-16"
-          >
+          <div className="how-header text-center max-w-xl mx-auto mb-12 sm:mb-16">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               Cara Kerja
             </span>
@@ -420,10 +459,10 @@ export function LandingPage() {
             <p className="text-sm text-[#5c5850] mt-2">
               Tanpa perlu keahlian teknis coding atau setup server yang membingungkan.
             </p>
-          </motion.div>
+          </div>
 
           <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+            <div className="step-grid grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
               {[
                 {
                   num: '01',
@@ -442,17 +481,8 @@ export function LandingPage() {
                 },
               ].map((step, idx) => (
                 <div key={step.num} className="relative flex flex-col">
-                  <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    whileHover={{ y: -4 }}
-                    transition={{
-                      duration: 0.55,
-                      delay: 0.1 + idx * 0.2,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:shadow-md hover:border-[#cc785c]/40 transition-all flex flex-col justify-between h-full relative"
+                  <div
+                    className={`step-box-${idx} p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-[#cc785c]/40 transition-all duration-300 flex flex-col justify-between h-full relative`}
                   >
                     <div>
                       {/* Step Number */}
@@ -472,11 +502,13 @@ export function LandingPage() {
 
                     {/* Connecting line between boxes on desktop */}
                     {idx < 2 && (
-                      <div className="hidden md:flex items-center absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-6">
-                        <div className="w-full h-[2px] bg-[#cc785c]/40" />
+                      <div
+                        className={`step-line-${idx} hidden md:flex items-center absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-6`}
+                      >
+                        <div className="w-full h-[2px] bg-[#cc785c]/50" />
                       </div>
                     )}
-                  </motion.div>
+                  </div>
 
                   {/* Connecting line on mobile between boxes */}
                   {idx < 2 && (
@@ -496,13 +528,7 @@ export function LandingPage() {
       {/* ==================================================================== */}
       <section id="faq" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center max-w-xl mx-auto mb-12"
-          >
+          <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               FAQ
             </span>
@@ -512,7 +538,7 @@ export function LandingPage() {
             <p className="text-sm text-[#5c5850] mt-2">
               Informasi lengkap seputar cara kerja, privasi transaksi, dan pengaturan toko.
             </p>
-          </motion.div>
+          </div>
 
           <div className="divide-y divide-[#e6dfd8] border-y border-[#e6dfd8]">
             {faqItems.map((item, idx) => (
@@ -556,14 +582,8 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 5. PRE-FOOTER CONVERSION BANNER */}
       {/* ==================================================================== */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-6xl mx-auto w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="p-8 sm:p-14 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-xl"
-        >
+      <section className="cta-banner px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-6xl mx-auto w-full">
+        <div className="cta-banner-content p-8 sm:p-14 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-xl">
           <div className="max-w-xl">
             <h2 className="font-sans text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
               Mulai buat etalase tokomu hari ini.
@@ -574,18 +594,16 @@ export function LandingPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <motion.button
+            <button
               type="button"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
               onClick={() => setIsAuthOpen(true)}
-              className="px-7 py-4 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-md cursor-pointer group"
+              className="px-7 py-4 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer group active:scale-98"
             >
               <span>Buka Toko Gratis Sekarang</span>
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            </button>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ==================================================================== */}
