@@ -1,59 +1,153 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   Check,
-  ShoppingBag,
   MessageCircle,
   ChevronDown,
-  Layers,
-  SendHorizontal,
   ArrowRight,
   Wifi,
   Battery,
-  Sparkles,
+  Sparkle,
 } from 'lucide-react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { useAuthStore } from '@/store/useAuthStore'
 import { formatIDR } from '@/lib/utils'
 
-interface DemoProduct {
+interface ShowcaseProfile {
   id: string
   name: string
-  category: 'beverage' | 'food' | 'fashion'
-  price: number
-  variantOptions: string[]
-  image: string
-  description: string
+  handle: string
+  tagline: string
+  bio: string
+  category: string
+  avatarInitial: string
+  themeColor: string
+  products: {
+    id: string
+    name: string
+    price: number
+    variants: string[]
+    image: string
+  }[]
+  links: {
+    title: string
+    url: string
+    icon: string
+  }[]
 }
 
-const DEMO_PRODUCTS: DemoProduct[] = [
+const SHOWCASE_PROFILES: ShowcaseProfile[] = [
   {
-    id: 'kopi-senja',
-    name: 'Kopi Susu Aren 250ml',
-    category: 'beverage',
-    price: 22000,
-    variantOptions: ['Dingin', 'Hangat'],
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80',
-    description: 'Espresso ganda, susu segar, dan gula aren organik',
+    id: 'fnb',
+    name: 'Kedai Kopi Senja',
+    handle: 'senjakopi',
+    category: 'Kopi & Kuliner',
+    tagline: 'Artisan Coffee & Fresh Pastries',
+    bio: 'Biji kopi pilihan Nusantara, diseduh segar setiap hari. Pengiriman instan & sameday.',
+    avatarInitial: 'KS',
+    themeColor: '#cc785c',
+    products: [
+      {
+        id: 'p1',
+        name: 'Kopi Susu Aren 250ml',
+        price: 22000,
+        variants: ['Dingin', 'Hangat'],
+        image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p2',
+        name: 'Artisan Butter Croissant',
+        price: 18000,
+        variants: ['Original', 'Cokelat Belgia'],
+        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p3',
+        name: 'Cold Brew Kemasan Botol',
+        price: 28000,
+        variants: ['Black Arabica', 'Latte'],
+        image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&auto=format&fit=crop&q=80',
+      },
+    ],
+    links: [
+      { title: 'Lokasi Kedai (Google Maps)', url: '#', icon: 'map' },
+      { title: 'Ikuti Kami di Instagram', url: '#', icon: 'instagram' },
+    ],
   },
   {
-    id: 'croissant',
-    name: 'Artisan Butter Croissant',
-    category: 'food',
-    price: 18000,
-    variantOptions: ['Original', 'Cokelat'],
-    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=80',
-    description: 'Renyah berlapis mentega Prancis dengan aroma harum',
+    id: 'fashion',
+    name: 'Batik Nusantara',
+    handle: 'batiknusantara',
+    category: 'Fashion & Etnik',
+    tagline: 'Busana Etnik Katun Primisima',
+    bio: 'Koleksi kemeja, dress, dan kain tenun ikat asli pengrajin lokal. Bahan adem & jahitan rapi.',
+    avatarInitial: 'BN',
+    themeColor: '#8c4e38',
+    products: [
+      {
+        id: 'p4',
+        name: 'Kemeja Batik Parang Slim',
+        price: 245000,
+        variants: ['M', 'L', 'XL'],
+        image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p5',
+        name: 'Dress Tenun Ikat Jepara',
+        price: 320000,
+        variants: ['All Size Regular', 'Plus Size'],
+        image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p6',
+        name: 'Totebag Kanvas Etnik',
+        price: 85000,
+        variants: ['Natural', 'Hitam'],
+        image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+      },
+    ],
+    links: [
+      { title: 'Katalog Koleksi Terbaru (PDF)', url: '#', icon: 'file' },
+      { title: 'Tanya Konsultasi Ukuran via WA', url: '#', icon: 'whatsapp' },
+    ],
   },
   {
-    id: 'totebag',
-    name: 'Totebag Kanvas Etnik',
-    category: 'fashion',
-    price: 85000,
-    variantOptions: ['Natural Cream', 'Midnight Black'],
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
-    description: 'Kanvas tebal premium dengan aksen tenun ikat',
+    id: 'craft',
+    name: 'Studio Kriya Kayu',
+    handle: 'kriyakayu',
+    category: 'Kriya & Dekorasi',
+    tagline: 'Handmade Wooden Home Living',
+    bio: 'Perabot meja dan aksesoris kayu jati solid ramah lingkungan. Dikerjakan manual presisi.',
+    avatarInitial: 'KK',
+    themeColor: '#7a5230',
+    products: [
+      {
+        id: 'p7',
+        name: 'Tatakan Cangkir Jati Set',
+        price: 65000,
+        variants: ['Isi 4 pcs', 'Isi 6 pcs'],
+        image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p8',
+        name: 'Lampu Meja Minimalis',
+        price: 175000,
+        variants: ['Warm White', 'Natural Wood'],
+        image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'p9',
+        name: 'Nampan Saji Kayu Pinus',
+        price: 95000,
+        variants: ['Sedang (30cm)', 'Besar (40cm)'],
+        image: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?w=400&auto=format&fit=crop&q=80',
+      },
+    ],
+    links: [
+      { title: 'Custom Order & Portofolio', url: '#', icon: 'external' },
+      { title: 'Official Instagram Studio', url: '#', icon: 'instagram' },
+    ],
   },
 ]
 
@@ -61,18 +155,26 @@ export function LandingPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [claimSlug, setClaimSlug] = useState('')
   const [activeFaq, setActiveFaq] = useState<number | null>(0)
-  const [catalogFilter, setCatalogFilter] = useState<'all' | 'beverage' | 'food' | 'fashion'>('all')
 
-  // Interactive Live Phone Simulation State
-  const [selectedDemoProduct, setSelectedDemoProduct] = useState<DemoProduct>(DEMO_PRODUCTS[0])
-  const [selectedVariant, setSelectedVariant] = useState<string>(DEMO_PRODUCTS[0].variantOptions[0])
+  // Interactive Live Phone Switcher
+  const [activeProfileIndex, setActiveProfileIndex] = useState(0)
+  const currentProfile = SHOWCASE_PROFILES[activeProfileIndex]
+  const [selectedProductIndex, setSelectedProductIndex] = useState(0)
+  const activeProduct = currentProfile.products[selectedProductIndex] || currentProfile.products[0]
+  const [selectedVariant, setSelectedVariant] = useState(activeProduct.variants[0])
 
   const navigate = useNavigate()
   const { signup, isAuthenticated } = useAuthStore()
 
-  const handleSelectProduct = (product: DemoProduct) => {
-    setSelectedDemoProduct(product)
-    setSelectedVariant(product.variantOptions[0])
+  const handleProfileSwitch = (idx: number) => {
+    setActiveProfileIndex(idx)
+    setSelectedProductIndex(0)
+    setSelectedVariant(SHOWCASE_PROFILES[idx].products[0].variants[0])
+  }
+
+  const handleSelectProduct = (idx: number) => {
+    setSelectedProductIndex(idx)
+    setSelectedVariant(currentProfile.products[idx].variants[0])
   }
 
   const handleClaimSubmit = (e: React.FormEvent) => {
@@ -90,86 +192,81 @@ export function LandingPage() {
     setActiveFaq(activeFaq === idx ? null : idx)
   }
 
-  const filteredCatalog = DEMO_PRODUCTS.filter(
-    (p) => catalogFilter === 'all' || p.category === catalogFilter
-  )
-
   const faqItems = [
     {
-      q: 'Bagaimana tautan.site meningkatkan konversi jualan saya?',
-      a: 'tautan.site menggabungkan tautan profil media sosial (link bio) dengan etalase produk interaktif. Calon pembeli dapat melihat foto produk, memilih varian secara mandiri, dan mengisi alamat pengiriman dalam satu halaman cepat. Ketika tombol checkout ditekan, seluruh rincian pesanan langsung tersusun rapi ke pesan WhatsApp Anda tanpa pembeli perlu mengetik manual.',
+      q: 'Apa perbedaan tautan.site dengan link bio biasa seperti Linktree?',
+      a: 'Link bio biasa hanya menampilkan tombol tautan pasif. tautan.site menggabungkan tautan profil dengan etalase produk interaktif yang memungkinkan pembeli memilih barang, menentukan varian, dan mengisi alamat pengiriman langsung. Checkout langsung tersusun rapi ke WhatsApp Anda tanpa pembeli perlu mengetik ulang.',
     },
     {
-      q: 'Apakah ada potongan komisi dari setiap transaksi penjualan?',
-      a: 'Sama sekali tidak ada potongan komisi (0% platform fee). Pembeli membayar langsung ke rekening bank atau QRIS pribadi yang Anda cantumkan.',
+      q: 'Apakah ada potongan komisi dari setiap penjualan?',
+      a: 'Sama sekali tidak ada potongan komisi (0% platform fee). Semua pembayaran langsung masuk 100% ke rekening bank atau QRIS pribadi yang Anda sediakan.',
     },
     {
-      q: 'Apakah pembeli perlu mengunduh aplikasi atau membuat akun?',
-      a: 'Tidak perlu. Etalase terbuka secara instan di browser ponsel pembeli dalam hitungan detik dengan beban data yang sangat ringan.',
+      q: 'Apakah pembeli wajib membuat akun atau login?',
+      a: 'Tidak perlu. Pembeli membuka link di browser HP mereka secara instan, memilih barang, dan langsung checkout ke WhatsApp dalam hitungan detik.',
     },
     {
-      q: 'Bagaimana cara penjual mengelola pesanan yang masuk?',
-      a: 'Setiap pesanan otomatis tercatat di Dashboard toko Anda. Di sana, Anda dapat memantau status pesanan, memperbarui ongkos kirim, dan memasukkan nomor resi ekspedisi.',
+      q: 'Bagaimana cara penjual menerima dan mengelola pesanan?',
+      a: 'Saat pembeli checkout, Anda menerima pesan terformat rapi di WhatsApp. Secara bersamaan, rekapan pesanan otomatis tercatat di Dashboard toko Anda untuk memudahkan pengecekan status bayar dan input nomor resi.',
     },
     {
-      q: 'Apakah saya bisa mengganti foto dan varian produk sewaktu-waktu?',
-      a: 'Tentu. Anda dapat menambah produk baru, mengunggah foto berformat WebP secara otomatis, mengubah harga dasar, dan mengatur opsi varian kapan saja.',
+      q: 'Apakah saya bisa menggunakan nama link sendiri?',
+      a: 'Bisa. Anda mendapatkan alamat ringkas tautan.site/namatokomu secara gratis saat mendaftar. Anda juga dapat mengubah informasi toko, foto produk, dan harga kapan saja.',
     },
   ]
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/20 selection:text-[#141413] overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/25 selection:text-[#141413] overflow-x-hidden font-sans">
       {/* ==================================================================== */}
-      {/* 1. HERO SECTION: INTERACTIVE DUAL SIMULATION */}
+      {/* 1. HERO SECTION (Linktree x Inkto Clean Aesthetic) */}
       {/* ==================================================================== */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
-          {/* Left Column: Headlines, Trust Value, & Domain Claim Input (7 cols) */}
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+          {/* Left Column: Headlines, Claim Input & Micro Value Props (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Elegant Tagline Pill (No dot pill) */}
+            {/* Minimal Pill Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#e8e2d9] shadow-2xs text-xs font-semibold text-[#8c4e38] mb-5"
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#e6dfd8] shadow-2xs text-xs font-semibold text-[#8c4e38] mb-6"
             >
-              <Sparkles className="size-3.5 text-[#cc785c]" />
-              <span>Etalase Mikro & Checkout WhatsApp untuk Penjual Medsos</span>
+              <Sparkle className="size-3 text-[#cc785c]" />
+              <span>Link in Bio Interaktif & Toko WhatsApp</span>
             </motion.div>
 
-            {/* Display Headline */}
+            {/* Confident Headline */}
             <motion.h1
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.12]"
-            >
-              Ubah Pengunjung Media Sosial <br className="hidden sm:inline" />
-              Menjadi <span className="text-[#cc785c]">Pembeli Pasti.</span>
-            </motion.h1>
-
-            {/* Subhead */}
-            <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-5 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
+              transition={{ duration: 0.55, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+              className="font-sans text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#141413] leading-[1.08]"
             >
-              Tampilkan katalog produk, kelola varian, dan terima pesanan terstruktur langsung ke WhatsApp tanpa potongan komisi sepeserpun.
+              Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-6 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
+            >
+              Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
             </motion.p>
 
-            {/* Live Domain Claim Engine */}
+            {/* Linktree-Style Claim Bar */}
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 w-full max-w-md"
+              transition={{ duration: 0.55, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-8 w-full max-w-lg"
             >
               <form
                 onSubmit={handleClaimSubmit}
-                className="p-1.5 rounded-2xl sm:rounded-full border border-[#e8e2d9] bg-white shadow-xs flex flex-col sm:flex-row items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
+                className="p-1.5 rounded-2xl sm:rounded-full border border-[#e6dfd8] bg-white shadow-xs flex flex-col sm:flex-row items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
               >
-                <div className="flex items-center w-full sm:w-auto flex-1 pl-3.5 pr-2 py-1">
+                <div className="flex items-center w-full sm:w-auto flex-1 pl-4 pr-2 py-1">
                   <span className="text-xs sm:text-sm text-[#8c867b] font-mono select-none font-semibold">
                     tautan.site/
                   </span>
@@ -187,64 +284,60 @@ export function LandingPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full sm:w-auto px-5 h-10 rounded-xl sm:rounded-full bg-[#141413] hover:bg-black text-white text-xs font-bold transition-all shrink-0 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full sm:w-auto px-6 h-11 rounded-xl sm:rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shrink-0 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Klaim Toko</span>
-                  <ArrowRight className="size-3.5 text-[#cc785c]" />
+                  <span>Klaim Tautan</span>
+                  <ArrowRight className="size-4 text-[#cc785c]" />
                 </motion.button>
               </form>
 
-              {/* Trust Indicators */}
+              {/* Clean Benefit Items */}
               <div className="flex items-center gap-3 sm:gap-4 mt-3.5 text-xs text-[#706c64] flex-wrap font-medium">
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-emerald-600" />
                   0% Potongan Komisi
                 </span>
                 <span className="text-neutral-300">•</span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-emerald-600" />
-                  Siap dalam 30 Detik
+                  Buka Toko 30 Detik
                 </span>
                 <span className="text-neutral-300">•</span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-emerald-600" />
-                  Tanpa Kartu Kredit
+                  Gratis Selamanya
                 </span>
               </div>
             </motion.div>
-
-            {/* Quick Demo Navigation */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 flex items-center gap-3"
-            >
-              <button
-                type="button"
-                onClick={() => setIsAuthOpen(true)}
-                className="px-6 py-3 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer flex items-center gap-2"
-              >
-                <span>Buka Toko Gratis Sekarang</span>
-                <ArrowRight className="size-4" />
-              </button>
-              <Link
-                to="/batik-nusantara"
-                className="px-5 py-3 rounded-full bg-white hover:bg-[#f5f1eb] border border-[#e8e2d9] text-[#141413] text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
-              >
-                Buka Demo Toko
-              </Link>
-            </motion.div>
           </div>
 
-          {/* Right Column: Interactive Smartphone + Dynamic WhatsApp Order Simulation (5 cols) */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+          {/* Right Column: Interactive Phone Canvas (Inkto / Linktree Storefront) (5 cols) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
+            {/* Preset Category Switcher */}
+            <div className="flex items-center gap-1.5 p-1 rounded-full bg-white border border-[#e6dfd8] shadow-2xs mb-4 select-none">
+              {SHOWCASE_PROFILES.map((prof, idx) => (
+                <button
+                  key={prof.id}
+                  type="button"
+                  onClick={() => handleProfileSwitch(idx)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    activeProfileIndex === idx
+                      ? 'bg-[#141413] text-white shadow-2xs'
+                      : 'text-[#706c64] hover:text-[#141413]'
+                  }`}
+                >
+                  {prof.category}
+                </button>
+              ))}
+            </div>
+
             <div className="relative w-full max-w-[320px] sm:max-w-[340px]">
-              {/* Smartphone Frame */}
+              {/* Minimalist Phone Canvas */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                key={currentProfile.id}
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full rounded-[40px] border-[6px] border-[#181715] bg-white shadow-xl overflow-hidden relative"
               >
                 {/* Status Bar */}
@@ -257,37 +350,51 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                {/* Smartphone Content: Buyer View */}
-                <div className="p-3.5 flex flex-col gap-3 bg-[#faf9f6]">
-                  {/* Store Header */}
-                  <div className="flex items-center justify-between pb-2.5 border-b border-[#e8e2d9]">
-                    <div>
-                      <div className="text-xs font-extrabold text-[#141413]">Kedai Senja</div>
-                      <div className="text-[10px] font-mono text-[#8c867b]">tautan.site/senja</div>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-md bg-[#faf0ea] text-[#cc785c] text-[10px] font-bold">
-                      Katalog Aktif
+                {/* Profile Header */}
+                <div className="p-4 flex flex-col items-center text-center bg-white border-b border-[#f0ece5]">
+                  <div
+                    className="size-14 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-xs mb-2"
+                    style={{ backgroundColor: currentProfile.themeColor }}
+                  >
+                    {currentProfile.avatarInitial}
+                  </div>
+                  <h3 className="font-extrabold text-sm text-[#141413] leading-tight">
+                    {currentProfile.name}
+                  </h3>
+                  <span className="text-[11px] font-mono text-[#8c867b]">
+                    tautan.site/{currentProfile.handle}
+                  </span>
+                  <p className="text-[11px] text-[#5c5850] mt-1.5 max-w-[240px] leading-relaxed">
+                    {currentProfile.bio}
+                  </p>
+                </div>
+
+                {/* Interactive Store Products */}
+                <div className="p-3.5 bg-[#faf9f5] flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between px-0.5">
+                    <span className="text-[11px] font-bold text-[#141413] uppercase tracking-wider">
+                      Etalase Belanja
                     </span>
+                    <span className="text-[10px] font-mono text-[#8c867b]">Klik untuk pilih</span>
                   </div>
 
-                  {/* Product Cards in Mobile View */}
                   <div className="flex flex-col gap-2">
-                    {DEMO_PRODUCTS.slice(0, 2).map((item) => {
-                      const isSelected = selectedDemoProduct.id === item.id
+                    {currentProfile.products.map((item, pIdx) => {
+                      const isSelected = selectedProductIndex === pIdx
                       return (
                         <div
                           key={item.id}
-                          onClick={() => handleSelectProduct(item)}
-                          className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2.5 ${
+                          onClick={() => handleSelectProduct(pIdx)}
+                          className={`p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-2.5 ${
                             isSelected
                               ? 'bg-white border-[#cc785c] ring-1 ring-[#cc785c]/30 shadow-2xs'
-                              : 'bg-white/80 border-[#e8e2d9] hover:border-[#cc785c]/50'
+                              : 'bg-white/90 border-[#e6dfd8] hover:border-[#cc785c]/40'
                           }`}
                         >
                           <img
                             src={item.image}
                             alt={item.name}
-                            className="size-12 rounded-lg object-cover shrink-0"
+                            className="size-12 rounded-xl object-cover shrink-0"
                           />
                           <div className="flex-1 min-w-0">
                             <span className="font-bold text-xs text-[#141413] block truncate">
@@ -298,26 +405,26 @@ export function LandingPage() {
                             </span>
                           </div>
                           <span
-                            className={`px-2 py-1 rounded text-[10px] font-bold shrink-0 transition-colors ${
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 transition-colors ${
                               isSelected
                                 ? 'bg-[#cc785c] text-white'
-                                : 'bg-[#faf9f6] text-[#706c64] border border-[#e8e2d9]'
+                                : 'bg-[#faf9f5] text-[#706c64] border border-[#e6dfd8]'
                             }`}
                           >
-                            {isSelected ? 'Dipilih' : '+ Pilih'}
+                            {isSelected ? 'Dipilih' : '+ Pesan'}
                           </span>
                         </div>
                       )
                     })}
                   </div>
 
-                  {/* Interactive Variant Picker Box */}
-                  <div className="p-2.5 rounded-xl bg-white border border-[#e8e2d9] text-left">
+                  {/* Variant Selection Box */}
+                  <div className="p-2.5 rounded-xl bg-white border border-[#e6dfd8] text-left">
                     <span className="text-[10px] text-[#706c64] font-semibold block mb-1.5">
-                      Pilih Varian untuk {selectedDemoProduct.name}:
+                      Pilihan Varian:
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      {selectedDemoProduct.variantOptions.map((v) => (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {activeProduct.variants.map((v) => (
                         <button
                           key={v}
                           type="button"
@@ -325,7 +432,7 @@ export function LandingPage() {
                           className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                             selectedVariant === v
                               ? 'bg-[#141413] text-white shadow-2xs'
-                              : 'bg-[#faf9f6] text-[#706c64] border border-[#e8e2d9] hover:text-[#141413]'
+                              : 'bg-[#faf9f5] text-[#706c64] border border-[#e6dfd8] hover:text-[#141413]'
                           }`}
                         >
                           {v}
@@ -334,12 +441,12 @@ export function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Simulated Mobile Checkout Action Bar */}
+                  {/* Checkout Button Bar */}
                   <div className="p-2.5 rounded-xl bg-[#141413] text-white flex items-center justify-between shadow-xs">
                     <div>
-                      <span className="text-[9px] text-white/60 block leading-none">Total Pesanan</span>
+                      <span className="text-[9px] text-white/60 block leading-none">Rincian</span>
                       <span className="font-mono text-xs font-bold text-white block mt-0.5">
-                        {formatIDR(selectedDemoProduct.price)}
+                        {formatIDR(activeProduct.price)}
                       </span>
                     </div>
                     <button
@@ -354,11 +461,11 @@ export function LandingPage() {
                 </div>
               </motion.div>
 
-              {/* Dynamic Responsive WhatsApp Message Bubble */}
+              {/* Floating WhatsApp Message Card */}
               <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                initial={{ opacity: 0, y: 15, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: 0.35, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full max-w-[290px] sm:max-w-[310px] absolute -bottom-6 -left-4 sm:-left-8 p-3.5 rounded-2xl bg-[#d9fdd3] border border-[#b4e6ad] text-[#111b21] shadow-xl text-left z-20"
               >
                 <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#b4e6ad]/60">
@@ -370,14 +477,14 @@ export function LandingPage() {
                 </div>
 
                 <p className="text-[11px] text-[#111b21] leading-relaxed font-sans">
-                  Halo <strong>Kedai Senja</strong>, saya mau pesan:
-                  <br />• 1x {selectedDemoProduct.name} ({selectedVariant})
-                  <br />• Total: <strong>{formatIDR(selectedDemoProduct.price)}</strong>
+                  Halo <strong>{currentProfile.name}</strong>, saya mau pesan:
+                  <br />• 1x {activeProduct.name} ({selectedVariant})
+                  <br />• Total: <strong>{formatIDR(activeProduct.price)}</strong>
                   <br /><span className="text-[10px] text-[#4a5568]">📍 Kirim: Jl. Senopati No. 12, Jakarta</span>
                 </p>
 
                 <div className="flex items-center justify-between text-[9px] text-[#667781] mt-1 pt-1 border-t border-[#b4e6ad]/40 font-mono">
-                  <span>Siap proses transaksi</span>
+                  <span>Siap diproses penjual</span>
                   <span className="text-[#53bdeb] font-bold">✓✓ Terkirim</span>
                 </div>
               </motion.div>
@@ -387,343 +494,207 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 2. VALUE COMPARISON: MANUAL CHAT VS TAUTAN.SITE */}
+      {/* 2. BENTO GRID FEATURES (Inspired by Linktree & Modern Clean UI) */}
       {/* ==================================================================== */}
-      <section id="advantages" className="border-t border-[#e8e2d9] bg-[#f5f2eb]/60 px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="max-w-5xl mx-auto">
+      <section id="features" className="border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
-              Efisiensi Transaksi
-            </span>
-            <h2 className="font-sans text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
-              Tinggalkan Format Chat Manual yang Melelahkan.
-            </h2>
-            <p className="text-sm text-[#5c5850] mt-3 leading-relaxed">
-              Bandingkan repotnya melayani pertanyaan berulang vs kecepatan checkout terstruktur bersama tautan.site.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            {/* Cara Manual Lama */}
-            <div className="p-7 sm:p-9 rounded-3xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col justify-between">
-              <div>
-                <span className="px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-bold inline-block">
-                  Sebelumnya: Chat Manual
-                </span>
-                <h3 className="font-sans text-xl font-bold text-[#141413] mt-4 mb-3">
-                  Waktu habis membalas tanya harga & rekap format
-                </h3>
-                <ul className="space-y-3 text-xs sm:text-sm text-[#5c5850]">
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-red-500 font-bold">✕</span>
-                    <span>Pertanyaan harga, stok, dan pilihan varian dijawab berulang-ulang setiap hari.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-red-500 font-bold">✕</span>
-                    <span>Format nama dan alamat sering tidak lengkap sehingga menghambat ekspedisi.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-red-500 font-bold">✕</span>
-                    <span>Calon pembeli kabur karena lama menunggu balasan saat toko sedang ramai.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-[#e8e2d9]/60 text-xs font-mono text-[#8c867b]">
-                Konversi rendah karena proses transaksi berbelit.
-              </div>
-            </div>
-
-            {/* Dengan tautan.site */}
-            <div className="p-7 sm:p-9 rounded-3xl bg-[#141413] text-white border border-neutral-800 shadow-lg flex flex-col justify-between">
-              <div>
-                <span className="px-3 py-1 rounded-full bg-[#cc785c]/20 text-[#cc785c] text-xs font-bold inline-block">
-                  Dengan tautan.site
-                </span>
-                <h3 className="font-sans text-xl font-bold text-white mt-4 mb-3">
-                  Etalase 1 tautan, pesanan tersusun rapi otomatis
-                </h3>
-                <ul className="space-y-3 text-xs sm:text-sm text-neutral-300">
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-[#cc785c] font-bold">✓</span>
-                    <span>Katalog bersih dengan foto jernih, harga jelas, dan varian yang dipilih sendiri oleh pembeli.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-[#cc785c] font-bold">✓</span>
-                    <span>Alamat dan nomor HP pembeli langsung terinput sebelum checkout ditekan.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-[#cc785c] font-bold">✓</span>
-                    <span>Rincian pesanan langsung tersaji di WhatsApp penjual, siap kirim dan terima transfer.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-neutral-800 text-xs font-mono text-[#cc785c] font-medium flex items-center justify-between">
-                <span>0% Biaya Potongan Komisi</span>
-                <span>Checkout 10 Detik</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ==================================================================== */}
-      {/* 3. INTERACTIVE PRODUCT CATALOG DEMO (#catalog) */}
-      {/* ==================================================================== */}
-      <section id="catalog" className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-6xl mx-auto w-full">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-          <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
-              Katalog Toko
-            </span>
-            <h2 className="font-sans text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-1.5">
-              Etalase Bersih, Belanja Cepat.
-            </h2>
-            <p className="text-sm text-[#5c5850] mt-1">
-              Inilah tampilan yang dinikmati pembeli Anda di smartphone mereka.
-            </p>
-          </div>
-
-          {/* Category Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border border-[#e8e2d9] shadow-2xs self-start sm:self-auto overflow-x-auto">
-            {[
-              { id: 'all', label: 'Semua Menu' },
-              { id: 'beverage', label: 'Minuman' },
-              { id: 'food', label: 'Makanan' },
-              { id: 'fashion', label: 'Fashion' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setCatalogFilter(tab.id as 'all' | 'beverage' | 'food' | 'fashion')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  catalogFilter === tab.id
-                    ? 'bg-[#141413] text-white shadow-2xs'
-                    : 'text-[#706c64] hover:text-[#141413]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {filteredCatalog.map((item) => {
-            const isSelected = selectedDemoProduct.id === item.id
-            return (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -4 }}
-                onClick={() => handleSelectProduct(item)}
-                className={`p-4 rounded-2xl bg-white border transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? 'border-[#cc785c] ring-2 ring-[#cc785c]/20 shadow-md'
-                    : 'border-[#e8e2d9] hover:border-[#cc785c]/40 shadow-2xs'
-                }`}
-              >
-                <div>
-                  <div className="aspect-4/3 w-full rounded-xl overflow-hidden bg-[#faf9f6] mb-3.5 border border-[#e8e2d9]/60">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="size-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <h3 className="font-sans text-base font-bold text-[#141413]">
-                    {item.name}
-                  </h3>
-                  <p className="text-xs text-[#706c64] mt-1 line-clamp-2">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-[#e8e2d9]/60 flex items-center justify-between">
-                  <span className="font-mono text-sm font-extrabold text-[#141413]">
-                    {formatIDR(item.price)}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-                      isSelected
-                        ? 'bg-[#cc785c] text-white'
-                        : 'bg-[#faf9f6] text-[#141413] border border-[#e8e2d9]'
-                    }`}
-                  >
-                    {isSelected ? 'Terpilih' : '+ Coba Beli'}
-                  </span>
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
-
-        {/* Live Simulation Feedback Banner */}
-        <div className="mt-6 p-4 rounded-2xl bg-[#141413] text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-            <span className="text-white/60">Simulasi:</span>
-            <span className="font-bold text-white">
-              {selectedDemoProduct.name} ({selectedVariant}) • {formatIDR(selectedDemoProduct.price)}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsAuthOpen(true)}
-            className="w-full sm:w-auto px-5 py-2 rounded-xl bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
-          >
-            <span>Buka Tokomu Gratis Sekarang</span>
-            <ArrowRight className="size-3.5" />
-          </button>
-        </div>
-      </section>
-
-      {/* ==================================================================== */}
-      {/* 4. FITUR UTAMA & KEUNGGULAN (#features) */}
-      {/* ==================================================================== */}
-      <section id="features" className="border-t border-[#e8e2d9] bg-[#f5f2eb]/40 px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               Fitur Lengkap
             </span>
-            <h2 className="font-sans text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
-              Didesain Khusus untuk Perdagangan Medsos Indonesia.
+            <h2 className="font-sans text-3xl sm:text-5xl font-extrabold tracking-tight text-[#141413] mt-2 leading-tight">
+              Semua yang kamu butuhkan untuk berjualan di media sosial.
+            </h2>
+            <p className="text-sm sm:text-base text-[#5c5850] mt-3">
+              Dirancang dengan prinsip kesederhanaan: tanpa biaya tersembunyi, tanpa instalasi rumit.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            {/* Bento Card 1: Etalase & Varian (Large - 8 cols) */}
+            <div className="md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 transition-colors">
+              <div>
+                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
+                  Katalog Interaktif
+                </span>
+                <h3 className="font-sans text-2xl sm:text-3xl font-extrabold text-[#141413] mt-2 mb-3">
+                  Pajang Produk dengan Foto Jernih & Varian Lengkap
+                </h3>
+                <p className="text-sm text-[#5c5850] leading-relaxed max-w-xl">
+                  Unggah foto produk yang otomatis dioptimalkan ke format WebP ringan. Tambahkan pilihan ukuran, rasa, atau warna dengan perhitungan harga otomatis yang transparan bagi pembeli.
+                </p>
+              </div>
+
+              {/* Visual Demo Card Row */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs">
+                  <img
+                    src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
+                    alt="Kopi"
+                    className="size-12 rounded-xl object-cover"
+                  />
+                  <div>
+                    <span className="text-xs font-bold text-[#141413] block">Kopi Susu Aren</span>
+                    <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 22.000</span>
+                    <span className="text-[10px] text-[#8c867b] block">Varian: Dingin / Hangat</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white border border-[#e6dfd8] flex items-center gap-3 shadow-2xs">
+                  <img
+                    src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
+                    alt="Pastry"
+                    className="size-12 rounded-xl object-cover"
+                  />
+                  <div>
+                    <span className="text-xs font-bold text-[#141413] block">Artisan Croissant</span>
+                    <span className="text-xs font-mono font-bold text-[#cc785c]">Rp 18.000</span>
+                    <span className="text-[10px] text-[#8c867b] block">Varian: Original / Cokelat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bento Card 2: 0% Komisi (4 cols) */}
+            <div className="md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md">
+              <div>
+                <span className="text-xs font-mono font-bold text-[#cc785c] uppercase tracking-wider">
+                  Tanpa Potongan
+                </span>
+                <div className="font-sans text-5xl sm:text-6xl font-extrabold text-white mt-3 mb-2 tracking-tight">
+                  0%
+                </div>
+                <h3 className="font-sans text-xl font-bold text-white mb-2">
+                  Bebas Biaya Platform
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                  Uang penjualan langsung ditransfer ke rekening bank atau QRIS Anda. Tidak ada potongan komisi per transaksi sepeserpun.
+                </p>
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-neutral-800 text-xs font-mono text-[#cc785c] font-semibold">
+                100% Keuntungan Milik Anda
+              </div>
+            </div>
+
+            {/* Bento Card 3: Checkout WhatsApp (6 cols) */}
+            <div className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 transition-colors">
+              <div>
+                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
+                  Alur Kilat
+                </span>
+                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mt-2 mb-3">
+                  Checkout Langsung ke WhatsApp
+                </h3>
+                <p className="text-sm text-[#5c5850] leading-relaxed">
+                  Pembeli tidak perlu mendaftar akun atau mengingat kata sandi. Cukup pilih produk, isi alamat, dan rincian pesanan langsung tersusun rapi di WhatsApp.
+                </p>
+              </div>
+
+              <div className="mt-6 p-3 rounded-xl bg-white border border-[#e6dfd8] text-xs font-mono text-[#5c5850]">
+                "Halo Kak, saya mau pesan 1x Kopi Susu Aren..."
+              </div>
+            </div>
+
+            {/* Bento Card 4: All-in-One Link Bio (6 cols) */}
+            <div className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 transition-colors">
+              <div>
+                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
+                  Satu Alamat Web
+                </span>
+                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mt-2 mb-3">
+                  Satukan Semua Tautan Bisnismu
+                </h3>
+                <p className="text-sm text-[#5c5850] leading-relaxed">
+                  Sematkan tautan Instagram, TikTok, alamat Google Maps toko fisik, hingga marketplace dalam satu profil elegan yang mudah diingat pembeli.
+                </p>
+              </div>
+
+              <div className="mt-6 flex items-center gap-2 text-xs font-mono text-[#8c867b]">
+                <span>tautan.site/namatokomu</span>
+                <span className="text-[#cc785c] font-bold">Siap Disematkan di Bio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* 3. 3-STEP WORKFLOW (Frictionless Onboarding) */}
+      {/* ==================================================================== */}
+      <section id="how" className="border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
+              Cara Kerja
+            </span>
+            <h2 className="font-sans text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
+              Mulai berjualan dalam 3 langkah ringkas.
             </h2>
             <p className="text-sm text-[#5c5850] mt-2">
-              Semua kemudahan transaksi toko online modern tanpa kerumitan administrasi.
+              Tanpa perlu keahlian teknis coding atau setup server yang membingungkan.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Feature 1 */}
-            <div className="p-7 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="size-11 rounded-xl bg-[#faf0ea] border border-[#f0ded3] flex items-center justify-center text-[#cc785c] mb-5">
-                  <Layers className="size-5" />
+            {[
+              {
+                num: '01',
+                title: 'Klaim Tautan Tokomu',
+                desc: 'Tentukan nama tokomu dan dapatkan link unik tautan.site/namamu dalam waktu kurang dari 30 detik.',
+              },
+              {
+                num: '02',
+                title: 'Pajang Produk & Varian',
+                desc: 'Upload foto produk favorit, tentukan harga, dan atur pilihan varian agar pembeli bisa memilih mandiri.',
+              },
+              {
+                num: '03',
+                title: 'Pasang di Bio Medsos',
+                desc: 'Sematkan tautan di bio Instagram & TikTok. Duduk santai dan terima notifikasi pesanan rapi di WhatsApp.',
+              },
+            ].map((step) => (
+              <div
+                key={step.num}
+                className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs flex flex-col justify-between"
+              >
+                <div>
+                  <span className="font-mono text-4xl font-extrabold text-[#cc785c]">
+                    {step.num}
+                  </span>
+                  <h3 className="font-sans text-lg font-bold text-[#141413] mt-4 mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#5c5850] leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
-                <h3 className="font-sans text-lg font-bold text-[#141413]">
-                  All-in-One Link Bio
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5c5850] mt-2.5 leading-relaxed">
-                  Satukan profil Instagram, TikTok, alamat Google Maps, dan etalase belanja dalam 1 tautan ringkas yang mudah disematkan di bio.
-                </p>
               </div>
-              <div className="mt-6 pt-3 border-t border-[#e8e2d9]/60 text-xs font-semibold text-[#cc785c]">
-                ✦ Gantikan bio-link pasif
-              </div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="p-7 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="size-11 rounded-xl bg-[#faf0ea] border border-[#f0ded3] flex items-center justify-center text-[#cc785c] mb-5">
-                  <ShoppingBag className="size-5" />
-                </div>
-                <h3 className="font-sans text-lg font-bold text-[#141413]">
-                  Katalog & Multi Varian
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5c5850] mt-2.5 leading-relaxed">
-                  Upload foto produk dengan kompresi WebP otomatis. Atur opsi varian ukuran, rasa, atau warna dengan kalkulasi harga seketika.
-                </p>
-              </div>
-              <div className="mt-6 pt-3 border-t border-[#e8e2d9]/60 text-xs font-semibold text-[#cc785c]">
-                ✦ Ringan & hemat kuota pembeli
-              </div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="p-7 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="size-11 rounded-xl bg-[#faf0ea] border border-[#f0ded3] flex items-center justify-center text-[#cc785c] mb-5">
-                  <SendHorizontal className="size-5" />
-                </div>
-                <h3 className="font-sans text-lg font-bold text-[#141413]">
-                  Checkout Cepat ke WhatsApp
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5c5850] mt-2.5 leading-relaxed">
-                  Tanpa perlu login yang merepotkan pembeli. Nama, produk pilihan, dan alamat pengiriman langsung terkirim rapi ke WhatsApp Anda.
-                </p>
-              </div>
-              <div className="mt-6 pt-3 border-t border-[#e8e2d9]/60 text-xs font-semibold text-[#cc785c]">
-                ✦ Format pesan siap kirim
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ==================================================================== */}
-      {/* 5. ROADMAP: 3 LANGKAH RINGKAS (#how) */}
+      {/* 4. PERTANYAAN UMUM / FAQ (#faq) */}
       {/* ==================================================================== */}
-      <section id="how" className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-5xl mx-auto w-full">
-        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
-            Alur Kerja
-          </span>
-          <h2 className="font-sans text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
-            Mulai Berjualan dalam Tiga Langkah Ringkas.
-          </h2>
-          <p className="text-sm text-[#5c5850] mt-2">
-            Siap pakai tanpa memerlukan keahlian teknis coding.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              step: '01',
-              title: 'Klaim Tautan Toko',
-              desc: 'Daftarkan nama tokomu dalam 30 detik. Dapatkan alamat web ringkas tautan.site/namatokomu.',
-            },
-            {
-              step: '02',
-              title: 'Upload Produk & Varian',
-              desc: 'Pajang foto barang terbaikmu, tentukan harga, dan atur pilihan varian dengan mudah.',
-            },
-            {
-              step: '03',
-              title: 'Pasang di Bio & Terima Order',
-              desc: 'Sematkan di profil Instagram & TikTok. Terima rekapan pesanan rapi di WhatsApp Anda.',
-            },
-          ].map((item) => (
-            <div
-              key={item.step}
-              className="p-6 rounded-2xl bg-white border border-[#e8e2d9] shadow-2xs flex flex-col justify-between"
-            >
-              <div>
-                <span className="font-mono text-3xl font-extrabold text-[#cc785c]">
-                  {item.step}
-                </span>
-                <h3 className="font-sans text-lg font-bold text-[#141413] mt-3">
-                  {item.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5c5850] mt-2 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ==================================================================== */}
-      {/* 6. PERTANYAAN UMUM (#faq) */}
-      {/* ==================================================================== */}
-      <section id="faq" className="border-t border-[#e8e2d9] bg-[#f5f2eb]/50 px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="faq" className="border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-10">
+          <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-xs font-mono uppercase tracking-widest text-[#cc785c] font-bold">
               FAQ
             </span>
-            <h2 className="font-sans text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
+            <h2 className="font-sans text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141413] mt-2">
               Pertanyaan yang Sering Diajukan
             </h2>
+            <p className="text-sm text-[#5c5850] mt-2">
+              Informasi lengkap seputar cara kerja, privasi transaksi, dan pengaturan toko.
+            </p>
           </div>
 
-          <div className="divide-y divide-[#e8e2d9] border-y border-[#e8e2d9] bg-white rounded-2xl shadow-2xs px-5 sm:px-8">
+          <div className="divide-y divide-[#e6dfd8] border-y border-[#e6dfd8]">
             {faqItems.map((item, idx) => (
-              <div key={idx} className="py-4 sm:py-5">
+              <div key={idx} className="py-5">
                 <button
                   type="button"
                   onClick={() => toggleFaq(idx)}
@@ -748,7 +719,7 @@ export function LandingPage() {
                       transition={{ duration: 0.25, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <p className="text-xs sm:text-sm text-[#5c5850] pt-2.5 pb-1 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#5c5850] pt-3 leading-relaxed pr-6">
                         {item.a}
                       </p>
                     </motion.div>
@@ -761,44 +732,46 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 7. PRE-FOOTER CONVERSION CARD */}
+      {/* 5. PRE-FOOTER CONVERSION BANNER */}
       {/* ==================================================================== */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 max-w-5xl mx-auto w-full">
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-xl">
-          <div className="max-w-lg">
-            <h2 className="font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-6xl mx-auto w-full">
+        <div className="p-8 sm:p-14 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-xl">
+          <div className="max-w-xl">
+            <h2 className="font-sans text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
               Mulai buat etalase tokomu hari ini.
             </h2>
-            <p className="text-xs sm:text-sm text-neutral-300 mt-2 leading-relaxed">
-              Daftar gratis dalam 30 detik. 0% potongan komisi transaksi. Langsung terhubung ke WhatsApp bisnis Anda.
+            <p className="text-sm text-neutral-300 mt-3 leading-relaxed">
+              Daftar gratis dalam 30 detik. 0% komisi platform. Ubah pengunjung profil media sosialmu menjadi pembeli pasti.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsAuthOpen(true)}
-            className="px-6 py-3.5 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md shrink-0 cursor-pointer"
-          >
-            <span>Buka Toko Gratis</span>
-            <ArrowRight className="size-4" />
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsAuthOpen(true)}
+              className="px-7 py-4 rounded-full bg-[#cc785c] hover:bg-[#b8674d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+            >
+              <span>Buka Toko Gratis Sekarang</span>
+              <ArrowRight className="size-4" />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ==================================================================== */}
-      {/* 8. FOOTER */}
+      {/* 6. MINIMALIST FOOTER */}
       {/* ==================================================================== */}
-      <footer className="border-t border-[#e8e2d9] bg-white py-8 px-4 sm:px-6 text-[#5c5850] text-xs">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+      <footer className="border-t border-[#e6dfd8] bg-white py-8 px-4 sm:px-6 text-[#5c5850] text-xs">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
             <span className="font-sans text-base font-extrabold text-[#141413]">tautan.site</span>
             <span className="text-neutral-300">|</span>
-            <span className="text-xs text-[#706c64]">Platform Etalase Mikro & Checkout WhatsApp</span>
+            <span className="text-xs text-[#706c64]">Link in Bio Interaktif & Toko WhatsApp</span>
           </div>
+
           <div className="flex items-center gap-5 text-xs font-semibold">
-            <a href="#advantages" className="hover:text-[#141413] transition-colors">Keunggulan</a>
-            <a href="#catalog" className="hover:text-[#141413] transition-colors">Katalog</a>
-            <a href="#how" className="hover:text-[#141413] transition-colors">Alur</a>
+            <a href="#features" className="hover:text-[#141413] transition-colors">Fitur</a>
+            <a href="#how" className="hover:text-[#141413] transition-colors">Cara Kerja</a>
             <a href="#faq" className="hover:text-[#141413] transition-colors">FAQ</a>
             <button
               type="button"
@@ -809,9 +782,10 @@ export function LandingPage() {
             </button>
           </div>
         </div>
-        <div className="max-w-5xl mx-auto mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between text-[11px] text-[#8c867b]">
-          <span>© 2026 tautan.site. Didesain untuk pedagang mandiri & UMKM Indonesia.</span>
-          <span className="font-medium text-[#141413]">0% Biaya Platform</span>
+
+        <div className="max-w-6xl mx-auto mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between text-[11px] text-[#8c867b]">
+          <span>© 2026 tautan.site. Didedikasikan untuk pelaku usaha mandiri & kreator Indonesia.</span>
+          <span className="font-medium text-[#141413]">0% Potongan Komisi</span>
         </div>
       </footer>
 

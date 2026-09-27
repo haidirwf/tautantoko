@@ -33,36 +33,26 @@ export function Navbar() {
 
           {/* Navigation Links in Center matching UIref.webp */}
           {isLandingPage ? (
-            <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-medium text-neutral-600">
+            <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-semibold text-neutral-600">
               <button
                 type="button"
                 onClick={() => {
-                  const el = document.getElementById('advantages')
+                  const el = document.getElementById('features')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Tentang
+                Fitur
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  const el = document.getElementById('catalog')
+                  const el = document.getElementById('how')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Katalog
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const el = document.getElementById('advantages')
-                  el?.scrollIntoView({ behavior: 'smooth' })
-                }}
-                className="hover:text-black transition-colors relative py-1 cursor-pointer"
-              >
-                Harga
+                Cara Kerja
               </button>
               <button
                 type="button"
@@ -72,7 +62,7 @@ export function Navbar() {
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
               >
-                Bantuan
+                FAQ
               </button>
             </nav>
           ) : isMerchantArea ? (
@@ -187,34 +177,34 @@ export function Navbar() {
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  const el = document.getElementById('advantages')
+                  const el = document.getElementById('features')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Fitur & Solusi
+                Fitur
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  const el = document.getElementById('catalog')
+                  const el = document.getElementById('how')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Etalase Toko
+                Cara Kerja
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  const el = document.getElementById('advantages')
+                  const el = document.getElementById('faq')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
               >
-                Keunggulan
+                FAQ
               </button>
               <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
                 <button
