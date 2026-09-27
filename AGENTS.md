@@ -20,9 +20,14 @@ Anda bertindak sebagai **Senior Software Engineer** sekaligus **Senior UI/UX Des
 
 # Strict UI Guidelines
 
-## Larangan Dot Pill
+## 1. Larangan Dot Pill
 - **DILARANG membuat komponen status "dot pill"**:
   - Dilarang keras menampilkan badge/pill dengan titik bulat berkedip seperti `[● Toko Aktif]`, status dot pill di header, atau elemen dot pill serupa di seluruh antarmuka aplikasi.
+
+## 2. Larangan Badge Sparkle / AI Pill
+- **DILARANG membuat komponen "Sparkle / AI Pill Badge"**:
+  - Dilarang keras menambahkan badge pill dekoratif di atas headline dengan ikon kilau/bintang (`<Sparkle />`, `<Sparkles />`, `✦`, `✨`) dan teks seperti `[✨ Link in Bio Interaktif...]` atau sejenisnya di seluruh antarmuka aplikasi.
+
 
 # Git Workflow & Commit Rules (MANDATORY & STRICT)
 
