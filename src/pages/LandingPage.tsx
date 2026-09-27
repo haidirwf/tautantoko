@@ -455,14 +455,10 @@ export function LandingPage() {
                     className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:shadow-md hover:border-[#cc785c]/40 transition-all flex flex-col justify-between h-full relative"
                   >
                     <div>
-                      {/* Top Step Number with Internal Connecting Line */}
-                      <div className="flex items-center justify-between mb-4">
+                      {/* Step Number */}
+                      <div className="mb-4">
                         <span className="font-mono text-3xl sm:text-4xl font-extrabold text-[#cc785c]">
                           {step.num}
-                        </span>
-                        <div className="h-[2px] flex-1 mx-3.5 bg-gradient-to-r from-[#cc785c]/40 via-[#cc785c]/20 to-[#cc785c]/40 rounded-full" />
-                        <span className="text-[11px] font-mono text-[#8c867b] font-semibold uppercase tracking-wider">
-                          Langkah {step.num}
                         </span>
                       </div>
 
@@ -474,11 +470,10 @@ export function LandingPage() {
                       </p>
                     </div>
 
-                    {/* Connecting bridge between boxes on desktop */}
+                    {/* Connecting line between boxes on desktop */}
                     {idx < 2 && (
-                      <div className="hidden md:flex items-center absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-6 justify-center">
-                        <div className="w-full h-[2px] bg-[#cc785c]/50" />
-                        <div className="size-2 rounded-full bg-[#cc785c] shrink-0 -ml-1 shadow-2xs" />
+                      <div className="hidden md:flex items-center absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-6">
+                        <div className="w-full h-[2px] bg-[#cc785c]/40" />
                       </div>
                     )}
                   </motion.div>
@@ -486,7 +481,7 @@ export function LandingPage() {
                   {/* Connecting line on mobile between boxes */}
                   {idx < 2 && (
                     <div className="md:hidden flex justify-center py-1.5">
-                      <div className="w-[2px] h-4 bg-gradient-to-b from-[#cc785c]/60 to-[#cc785c]/20 rounded-full" />
+                      <div className="w-[2px] h-4 bg-[#cc785c]/40" />
                     </div>
                   )}
                 </div>
