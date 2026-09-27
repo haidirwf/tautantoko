@@ -59,141 +59,144 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/25 selection:text-[#141413] font-sans">
       {/* ==================================================================== */}
-      {/* 1. HERO SECTION (Current Clean & Confident Hero) */}
+      {/* 1. HERO SECTION (2-Column: Left Copy & Claim, Right Preview Component) */}
       {/* ==================================================================== */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-20 sm:pb-28 max-w-5xl mx-auto w-full text-center">
-        {/* Confident Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="font-sans text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-4xl mx-auto"
-        >
-          Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 text-base sm:text-lg text-[#5c5850] max-w-2xl mx-auto leading-relaxed font-normal"
-        >
-          Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
-        </motion.p>
-
-        {/* Minimal Claim Input */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-10 max-w-md mx-auto w-full"
-        >
-          <form
-            onSubmit={handleClaimSubmit}
-            className="p-1.5 rounded-full border border-[#e6dfd8] bg-white shadow-xs flex items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
-          >
-            <div className="flex items-center pl-4 pr-1 text-xs sm:text-sm text-[#8c867b] font-mono select-none font-semibold">
-              tautan.site/
-            </div>
-            <input
-              type="text"
-              required
-              placeholder="namatokomu"
-              value={claimSlug}
-              onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-              className="w-full text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium bg-transparent"
-            />
-            <button
-              type="submit"
-              className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer"
+      <section className="px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* Left Column: Headline, Subtitle, Claim Input, Trust */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="font-sans text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.1] max-w-2xl"
             >
-              <span>Klaim</span>
-              <ArrowRight className="size-3.5 text-[#cc785c]" />
-            </button>
-          </form>
+              Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
+            </motion.h1>
 
-          {/* Clean Trust Indicators */}
-          <div className="flex items-center justify-center gap-3 sm:gap-5 mt-4 text-xs text-[#706c64] flex-wrap font-medium">
-            <span className="flex items-center gap-1.5">
-              <Check className="size-3.5 text-emerald-600" />
-              0% Potongan Komisi
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <Check className="size-3.5 text-emerald-600" />
-              Buka Toko 30 Detik
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <Check className="size-3.5 text-emerald-600" />
-              Gratis Selamanya
-            </span>
-          </div>
-        </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-6 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
+            >
+              Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
+            </motion.p>
 
-        {/* Pure Minimalist Showcase Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-14 max-w-sm mx-auto p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm text-left"
-        >
-          {/* Creator Profile */}
-          <div className="text-center pb-4 border-b border-[#f0ece5]">
-            <div className="size-14 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2.5 shadow-2xs">
-              KS
-            </div>
-            <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
-            <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
-            <p className="text-xs text-[#5c5850] mt-1.5 leading-relaxed">
-              Biji kopi pilihan Nusantara, diseduh segar setiap hari.
-            </p>
-          </div>
+            {/* Minimal Claim Input */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-8 max-w-md w-full"
+            >
+              <form
+                onSubmit={handleClaimSubmit}
+                className="p-1.5 rounded-full border border-[#e6dfd8] bg-white shadow-xs flex items-center gap-2 focus-within:border-[#cc785c] focus-within:ring-2 focus-within:ring-[#cc785c]/20 transition-all hover:border-[#cc785c]/60"
+              >
+                <div className="flex items-center pl-4 pr-1 text-xs sm:text-sm text-[#8c867b] font-mono select-none font-semibold">
+                  tautan.site/
+                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="namatokomu"
+                  value={claimSlug}
+                  onChange={(e) => setClaimSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  className="w-full text-xs sm:text-sm text-[#141413] placeholder:text-[#a09a8f] focus:outline-none font-medium bg-transparent"
+                />
+                <button
+                  type="submit"
+                  className="px-5 h-10 rounded-full bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold transition-all shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Klaim</span>
+                  <ArrowRight className="size-3.5 text-[#cc785c]" />
+                </button>
+              </form>
 
-          {/* Simple Clean Product Items */}
-          <div className="py-3.5 space-y-2.5">
-            <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
-              <img
-                src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
-                alt="Kopi Susu Aren"
-                className="size-11 rounded-xl object-cover shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
-                <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
+              {/* Clean Trust Indicators */}
+              <div className="flex items-center justify-start gap-x-5 gap-y-2 mt-4 text-xs text-[#706c64] flex-wrap font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Check className="size-3.5 text-emerald-600 shrink-0" />
+                  0% Potongan Komisi
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="size-3.5 text-emerald-600 shrink-0" />
+                  Buka Toko 30 Detik
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="size-3.5 text-emerald-600 shrink-0" />
+                  Gratis Selamanya
+                </span>
               </div>
-              <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
-                Pesan
-              </span>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
-              <img
-                src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
-                alt="Croissant"
-                className="size-11 rounded-xl object-cover shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#141413] block truncate">Butter Croissant</span>
-                <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
-              </div>
-              <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
-                Pesan
-              </span>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Direct Checkout CTA Bar */}
-          <button
-            type="button"
-            onClick={() => setIsAuthOpen(true)}
-            className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <span>Buka WhatsApp Toko</span>
-            <ArrowRight className="size-3 text-[#cc785c]" />
-          </button>
-        </motion.div>
+          {/* Right Column: Pure Minimalist Showcase Card */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-sm p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm text-left"
+            >
+              {/* Creator Profile */}
+              <div className="text-center pb-4 border-b border-[#f0ece5]">
+                <div className="size-14 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2.5 shadow-2xs">
+                  KS
+                </div>
+                <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
+                <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
+                <p className="text-xs text-[#5c5850] mt-1.5 leading-relaxed">
+                  Biji kopi pilihan Nusantara, diseduh segar setiap hari.
+                </p>
+              </div>
+
+              {/* Simple Clean Product Items */}
+              <div className="py-3.5 space-y-2.5">
+                <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
+                    alt="Kopi Susu Aren"
+                    className="size-11 rounded-xl object-cover shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
+                    <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
+                    Pesan
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
+                    alt="Croissant"
+                    className="size-11 rounded-xl object-cover shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-bold text-[#141413] block truncate">Butter Croissant</span>
+                    <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
+                    Pesan
+                  </span>
+                </div>
+              </div>
+
+              {/* Direct Checkout CTA Bar */}
+              <button
+                type="button"
+                onClick={() => setIsAuthOpen(true)}
+                className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Buka WhatsApp Toko</span>
+                <ArrowRight className="size-3 text-[#cc785c]" />
+              </button>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* ==================================================================== */}
