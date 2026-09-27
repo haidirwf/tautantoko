@@ -258,6 +258,30 @@ export const api = {
     }
   },
 
+  async uploadProductImage(file: Blob | File, storeId?: string): Promise<string> {
+    if (isSupabaseConfigured && supabase) {
+      const fileExt = 'webp'
+      const fileName = `${storeId || 'common'}/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(fileName, file, {
+          contentType: 'image/webp',
+          upsert: true,
+        })
+
+      if (error) {
+        throw error
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(data.path)
+
+      return publicUrlData.publicUrl
+    }
+    throw new Error('Supabase client tidak terkonfigurasi')
+  },
+
   async getStoreLinks(storeId: string): Promise<StoreLink[]> {
     if (isSupabaseConfigured && supabase && storeId) {
       const { data } = await supabase

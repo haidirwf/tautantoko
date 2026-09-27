@@ -489,6 +489,7 @@ export function CatalogPage() {
                 onChange={(url) => setImageUrl(url)}
                 label="Foto Produk"
                 required={false}
+                storeId={storeId}
               />
 
               <div>
@@ -624,6 +625,7 @@ export function CatalogPage() {
                 onChange={(url) => setEditImageUrl(url)}
                 label="Foto Produk"
                 required={false}
+                storeId={storeId}
               />
 
               <div className="p-3 rounded-xl bg-[#faf8f5] border border-[#e8e2d9] flex items-center gap-2.5 shadow-2xs">

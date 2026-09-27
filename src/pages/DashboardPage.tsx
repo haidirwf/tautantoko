@@ -421,6 +421,7 @@ export function DashboardPage() {
                 onChange={(url) => setNewProdImage(url)}
                 label="Foto Produk"
                 required={false}
+                storeId={storeId}
               />
 
               <div>

@@ -67,7 +67,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => {
-                  const el = document.getElementById('partners')
+                  const el = document.getElementById('faq')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="hover:text-black transition-colors relative py-1 cursor-pointer"
@@ -198,7 +198,7 @@ export function Navbar() {
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false)
-                  const el = document.getElementById('etalase')
+                  const el = document.getElementById('catalog')
                   el?.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className="text-left text-sm font-semibold text-neutral-700 hover:text-black py-1.5 transition-colors cursor-pointer"
