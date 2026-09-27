@@ -28,71 +28,71 @@ export function LandingPage() {
 
   useGSAP(
     () => {
-      // 1. Hero Entrance Timeline with silky power3.out curve
-      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      // 1. Hero Entrance Timeline with snappy, energetic curve
+      const heroTl = gsap.timeline({ defaults: { ease: 'power2.out' } })
       heroTl
-        .from('.hero-headline', { opacity: 0, y: 35, duration: 0.9 })
-        .from('.hero-sub', { opacity: 0, y: 22, duration: 0.8 }, '-=0.65')
-        .from('.hero-claim', { opacity: 0, y: 20, duration: 0.8 }, '-=0.65')
-        .from('.hero-trust', { opacity: 0, y: 14, duration: 0.6 }, '-=0.6')
-        .from('.hero-card-wrapper', { opacity: 0, y: 40, scale: 0.96, duration: 1 }, '-=0.85')
+        .from('.hero-headline', { opacity: 0, y: 22, duration: 0.45 })
+        .from('.hero-sub', { opacity: 0, y: 16, duration: 0.35 }, '-=0.3')
+        .from('.hero-claim', { opacity: 0, y: 14, duration: 0.35 }, '-=0.25')
+        .from('.hero-trust', { opacity: 0, y: 10, duration: 0.3 }, '-=0.25')
+        .from('.hero-card-wrapper', { opacity: 0, y: 22, scale: 0.98, duration: 0.45 }, '-=0.35')
 
-      // 2. Buttery Perpetual Floating Animation on the Showcase Card
+      // 2. Responsive Perpetual Floating Animation on the Showcase Card
       gsap.to('.hero-float-card', {
-        y: -10,
-        duration: 3.2,
+        y: -8,
+        duration: 2.2,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut',
       })
 
-      // 3. Bento Grid Section Reveal (Left cards from Left, Right cards from Right)
+      // 3. Bento Grid Section Reveal (Fast & Crisp: Left from Left, Right from Right)
       gsap.from('.bento-header', {
-        scrollTrigger: { trigger: '#features', start: 'top 85%' },
+        scrollTrigger: { trigger: '#features', start: 'top 90%' },
         opacity: 0,
-        y: 35,
-        duration: 0.85,
-        ease: 'power3.out',
+        y: 20,
+        duration: 0.4,
+        ease: 'power2.out',
       })
 
       gsap.from('.bento-left', {
-        scrollTrigger: { trigger: '.bento-grid', start: 'top 82%' },
+        scrollTrigger: { trigger: '.bento-grid', start: 'top 86%' },
         opacity: 0,
-        x: -70,
-        duration: 0.95,
-        stagger: 0.18,
-        ease: 'power3.out',
+        x: -35,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: 'power2.out',
         clearProps: 'transform,opacity',
       })
 
       gsap.from('.bento-right', {
-        scrollTrigger: { trigger: '.bento-grid', start: 'top 82%' },
+        scrollTrigger: { trigger: '.bento-grid', start: 'top 86%' },
         opacity: 0,
-        x: 70,
-        duration: 0.95,
-        stagger: 0.18,
-        ease: 'power3.out',
+        x: 35,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: 'power2.out',
         clearProps: 'transform,opacity',
       })
 
-      // 4. Cara Kerja: Staggered sequential slide-in from left with line connections
+      // 4. Cara Kerja: Fast sequential slide-in from left with line connections
       gsap.from('.how-header', {
-        scrollTrigger: { trigger: '#how', start: 'top 85%' },
+        scrollTrigger: { trigger: '#how', start: 'top 90%' },
         opacity: 0,
-        y: 35,
-        duration: 0.85,
-        ease: 'power3.out',
+        y: 20,
+        duration: 0.4,
+        ease: 'power2.out',
       })
 
       const stepsTl = gsap.timeline({
-        scrollTrigger: { trigger: '#how .step-grid', start: 'top 80%' },
+        scrollTrigger: { trigger: '#how .step-grid', start: 'top 86%' },
       })
       stepsTl
         .from('.step-box-0', {
           opacity: 0,
-          x: -60,
-          duration: 0.8,
-          ease: 'power3.out',
+          x: -35,
+          duration: 0.38,
+          ease: 'power2.out',
           clearProps: 'transform,opacity',
         })
         .from(
@@ -100,53 +100,53 @@ export function LandingPage() {
           {
             scaleX: 0,
             transformOrigin: 'left center',
-            duration: 0.45,
+            duration: 0.2,
             ease: 'power2.out',
             clearProps: 'transform',
           },
-          '-=0.3'
+          '-=0.15'
         )
         .from(
           '.step-box-1',
           {
             opacity: 0,
-            x: -60,
-            duration: 0.8,
-            ease: 'power3.out',
+            x: -35,
+            duration: 0.38,
+            ease: 'power2.out',
             clearProps: 'transform,opacity',
           },
-          '-=0.2'
+          '-=0.1'
         )
         .from(
           '.step-line-1',
           {
             scaleX: 0,
             transformOrigin: 'left center',
-            duration: 0.45,
+            duration: 0.2,
             ease: 'power2.out',
             clearProps: 'transform',
           },
-          '-=0.3'
+          '-=0.15'
         )
         .from(
           '.step-box-2',
           {
             opacity: 0,
-            x: -60,
-            duration: 0.8,
-            ease: 'power3.out',
+            x: -35,
+            duration: 0.38,
+            ease: 'power2.out',
             clearProps: 'transform,opacity',
           },
-          '-=0.2'
+          '-=0.1'
         )
 
       // 5. Pre-Footer Conversion Banner Reveal
       gsap.from('.cta-banner-content', {
-        scrollTrigger: { trigger: '.cta-banner', start: 'top 85%' },
+        scrollTrigger: { trigger: '.cta-banner', start: 'top 88%' },
         opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: 'power3.out',
+        y: 25,
+        duration: 0.45,
+        ease: 'power2.out',
       })
     },
     { scope: containerRef }
@@ -339,11 +339,8 @@ export function LandingPage() {
             {/* Bento Card 1: Etalase & Varian (Large - 8 cols, slides from Left) */}
             <div className="bento-left md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
-                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
-                  Katalog Interaktif
-                </span>
-                <h3 className="font-sans text-2xl sm:text-3xl font-extrabold text-[#141413] mt-2 mb-3">
-                  Pajang Produk dengan Foto Jernih & Varian Lengkap
+                <h3 className="font-sans text-2xl sm:text-3xl font-extrabold text-[#141413] mb-3 leading-tight">
+                  Pajang Produk dengan <span className="text-[#cc785c]">Foto Jernih & Varian Lengkap</span>
                 </h3>
                 <p className="text-sm text-[#5c5850] leading-relaxed max-w-xl">
                   Unggah foto produk yang otomatis dioptimalkan ke format WebP ringan. Tambahkan pilihan ukuran, rasa, atau warna dengan perhitungan harga otomatis yang transparan bagi pembeli.
@@ -383,14 +380,11 @@ export function LandingPage() {
             {/* Bento Card 2: 0% Komisi (4 cols, slides from Right) */}
             <div className="bento-right md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
               <div>
-                <span className="text-xs font-mono font-bold text-[#cc785c] uppercase tracking-wider">
-                  Tanpa Potongan
-                </span>
-                <div className="font-sans text-5xl sm:text-6xl font-extrabold text-white mt-3 mb-2 tracking-tight">
+                <div className="font-sans text-5xl sm:text-6xl font-extrabold text-[#cc785c] mb-2 tracking-tight">
                   0%
                 </div>
-                <h3 className="font-sans text-xl font-bold text-white mb-2">
-                  Bebas Biaya Platform
+                <h3 className="font-sans text-xl font-bold text-white mb-2 leading-snug">
+                  Bebas <span className="text-[#cc785c]">Biaya Platform</span>
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
                   Uang penjualan langsung ditransfer ke rekening bank atau QRIS Anda. Tidak ada potongan komisi per transaksi sepeserpun.
@@ -405,11 +399,8 @@ export function LandingPage() {
             {/* Bento Card 3: Checkout WhatsApp (6 cols, slides from Left) */}
             <div className="bento-left md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
-                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
-                  Alur Kilat
-                </span>
-                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mt-2 mb-3">
-                  Checkout Langsung ke WhatsApp
+                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mb-3 leading-tight">
+                  Checkout Langsung ke <span className="text-[#cc785c]">WhatsApp</span>
                 </h3>
                 <p className="text-sm text-[#5c5850] leading-relaxed">
                   Pembeli tidak perlu mendaftar akun atau mengingat kata sandi. Cukup pilih produk, isi alamat, dan rincian pesanan langsung tersusun rapi di WhatsApp.
@@ -424,11 +415,8 @@ export function LandingPage() {
             {/* Bento Card 4: All-in-One Link Bio (6 cols, slides from Right) */}
             <div className="bento-right md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
               <div>
-                <span className="text-xs font-bold text-[#cc785c] uppercase tracking-wider font-mono">
-                  Satu Alamat Web
-                </span>
-                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mt-2 mb-3">
-                  Satukan Semua Tautan Bisnismu
+                <h3 className="font-sans text-2xl font-extrabold text-[#141413] mb-3 leading-tight">
+                  Satukan Semua <span className="text-[#cc785c]">Tautan Bisnismu</span>
                 </h3>
                 <p className="text-sm text-[#5c5850] leading-relaxed">
                   Sematkan tautan Instagram, TikTok, alamat Google Maps toko fisik, hingga marketplace dalam satu profil elegan yang mudah diingat pembeli.
