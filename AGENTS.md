@@ -24,12 +24,12 @@ Anda bertindak sebagai **Senior Software Engineer** sekaligus **Senior UI/UX Des
 - **DILARANG membuat komponen status "dot pill"**:
   - Dilarang keras menampilkan badge/pill dengan titik bulat berkedip seperti `[● Toko Aktif]`, status dot pill di header, atau elemen dot pill serupa di seluruh antarmuka aplikasi.
 
-# Git Branching Strategy Rules (STRICT)
+# Git Workflow & Commit Rules (MANDATORY & STRICT)
 
-- **Otomatis Commit Lokal**: **WAJIB** langsung membuat `git commit` di branch lokal `dev` setiap kali selesai membuat atau mengubah kode/file apapun. Gunakan pesan commit yang jelas dan konvensional (misal: `feat: ...`, `fix: ...`, `style: ...`).
-- **DILARANG PUSH KE DEV**: Dilarang melakukan `git push origin dev` tanpa instruksi eksplisit dari user.
-- **DILARANG MERGE & PUSH KE MAIN**: Dilarang keras melakukan checkout, merge, atau push ke branch **`main`** kecuali ada instruksi eksplisit dari user (contoh: "push ke main" atau "merge main").
-- Semua pekerjaan hanya dilakukan secara lokal di branch **`dev`** dan tidak dipush ke remote repository sampai diinstruksikan.
+- **Mandatory Post-Edit Auto-Commit**: Immediately after completing any file modification or file creation, execute a local `git commit` on the `dev` branch using Conventional Commits format (`feat:`, `fix:`, `style:`, `refactor:`, `chore:`). Never leave uncommitted changes at the end of a task turn.
+- **Strict Remote Push Gate**: NEVER execute `git push origin dev` or any remote push unless the user explicitly commands it in the prompt.
+- **Strict Main Branch Protection**: NEVER checkout, merge, or push to the `main` branch under any circumstances unless explicitly instructed by the user (e.g., "push ke main" or "merge main").
+- **Local Isolation**: All development activities must remain strictly isolated inside the local `dev` branch.
 
 
 ---
