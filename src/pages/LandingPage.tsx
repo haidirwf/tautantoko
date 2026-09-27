@@ -59,17 +59,17 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col justify-between selection:bg-[#cc785c]/25 selection:text-[#141413] font-sans">
       {/* ==================================================================== */}
-      {/* 1. HERO SECTION (2-Column: Left Copy & Claim, Right Preview Component) */}
+      {/* 1. HERO SECTION (Single Viewport Height: Left Copy & Claim, Right Preview Component) */}
       {/* ==================================================================== */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
+      <section className="px-4 sm:px-6 lg:px-8 py-8 lg:py-0 min-h-[calc(100vh-4rem)] flex items-center justify-center max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center w-full py-4 lg:py-6">
           {/* Left Column: Headline, Subtitle, Claim Input, Trust */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="font-sans text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-3xl"
+              className="font-sans text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-2xl"
             >
               Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
             </motion.h1>
@@ -78,7 +78,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 text-base sm:text-lg lg:text-xl text-[#5c5850] max-w-2xl leading-relaxed font-normal"
+              className="mt-4 text-sm sm:text-base lg:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
             >
               Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
             </motion.p>
@@ -88,7 +88,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 max-w-lg w-full"
+              className="mt-6 sm:mt-8 max-w-md w-full"
             >
               <form
                 onSubmit={handleClaimSubmit}
@@ -117,7 +117,7 @@ export function LandingPage() {
               </form>
 
               {/* Clean Trust Indicators */}
-              <div className="flex items-center justify-start gap-x-5 gap-y-2 mt-4 text-xs text-[#706c64] flex-wrap font-medium">
+              <div className="flex items-center justify-start gap-x-5 gap-y-2 mt-3.5 text-xs text-[#706c64] flex-wrap font-medium">
                 <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-emerald-600 shrink-0" />
                   0% Potongan Komisi
@@ -140,40 +140,40 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 28, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-md"
+              className="w-full max-w-sm sm:max-w-md"
             >
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-full p-6 sm:p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm hover:shadow-md transition-shadow text-left"
+                className="w-full p-5 sm:p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm hover:shadow-md transition-shadow text-left"
               >
                 {/* Creator Profile */}
-                <div className="text-center pb-4 border-b border-[#f0ece5]">
+                <div className="text-center pb-3.5 border-b border-[#f0ece5]">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.2 }}
-                    className="size-14 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2.5 shadow-2xs"
+                    className="size-12 rounded-full bg-[#cc785c] text-white flex items-center justify-center font-bold text-base mx-auto mb-2 shadow-2xs"
                   >
                     KS
                   </motion.div>
                   <h3 className="font-extrabold text-sm text-[#141413]">Kedai Kopi Senja</h3>
                   <span className="text-xs font-mono text-[#8c867b]">tautan.site/senja</span>
-                  <p className="text-xs text-[#5c5850] mt-1.5 leading-relaxed">
+                  <p className="text-xs text-[#5c5850] mt-1 leading-relaxed">
                     Biji kopi pilihan Nusantara, diseduh segar setiap hari.
                   </p>
                 </div>
 
                 {/* Simple Clean Product Items */}
-                <div className="py-3.5 space-y-2.5">
+                <div className="py-3 space-y-2">
                   <motion.div
                     whileHover={{ y: -2, scale: 1.01 }}
                     transition={{ duration: 0.2 }}
-                    className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
+                    className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
                   >
                     <img
                       src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
                       alt="Kopi Susu Aren"
-                      className="size-12 rounded-xl object-cover shrink-0"
+                      className="size-11 rounded-xl object-cover shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
@@ -192,12 +192,12 @@ export function LandingPage() {
                   <motion.div
                     whileHover={{ y: -2, scale: 1.01 }}
                     transition={{ duration: 0.2 }}
-                    className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
+                    className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3 transition-colors hover:border-[#cc785c]/40 hover:bg-white cursor-pointer"
                   >
                     <img
                       src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
                       alt="Croissant"
-                      className="size-12 rounded-xl object-cover shrink-0"
+                      className="size-11 rounded-xl object-cover shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Butter Croissant</span>
@@ -220,7 +220,7 @@ export function LandingPage() {
                   whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.985 }}
                   onClick={() => setIsAuthOpen(true)}
-                  className="w-full py-3 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer group"
+                  className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer group"
                 >
                   <span>Buka WhatsApp Toko</span>
                   <ArrowRight className="size-3.5 text-[#cc785c] group-hover:translate-x-1 transition-transform" />
@@ -232,12 +232,12 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 2. BENTO GRID FEATURES (Requested from Previous Version) */}
+      {/* 2. BENTO GRID FEATURES (Directional Entrance Animations from Left & Right) */}
       {/* ==================================================================== */}
-      <section id="features" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="features" className="scroll-mt-20 border-t border-[#e6dfd8] bg-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24 overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -255,13 +255,13 @@ export function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-            {/* Bento Card 1: Etalase & Varian (Large - 8 cols) */}
+            {/* Bento Card 1: Etalase & Varian (Large - 8 cols, slides from Left) */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -60 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -4 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="md:col-span-8 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs group hover:border-[#cc785c]/40 hover:shadow-md transition-all"
             >
               <div>
@@ -314,13 +314,13 @@ export function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Bento Card 2: 0% Komisi (4 cols) */}
+            {/* Bento Card 2: 0% Komisi (4 cols, slides from Right) */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: 60 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -4 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
               className="md:col-span-4 p-8 sm:p-10 rounded-3xl bg-[#141413] text-white border border-neutral-800 flex flex-col justify-between shadow-md hover:shadow-xl transition-all"
             >
               <div>
@@ -343,13 +343,13 @@ export function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Bento Card 3: Checkout WhatsApp (6 cols) */}
+            {/* Bento Card 3: Checkout WhatsApp (6 cols, slides from Left) */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -60 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -4 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
             >
               <div>
@@ -369,13 +369,13 @@ export function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Bento Card 4: All-in-One Link Bio (6 cols) */}
+            {/* Bento Card 4: All-in-One Link Bio (6 cols, slides from Right) */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: 60 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -4 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
               className="md:col-span-6 p-8 sm:p-10 rounded-3xl bg-[#faf9f5] border border-[#e6dfd8] flex flex-col justify-between shadow-2xs hover:border-[#cc785c]/40 hover:shadow-md transition-all"
             >
               <div>
@@ -400,9 +400,9 @@ export function LandingPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 3. 3-STEP WORKFLOW (Requested from Previous Version) */}
+      {/* 3. 3-STEP WORKFLOW (Sequential Left-to-Right Reveal with Connecting Lines) */}
       {/* ==================================================================== */}
-      <section id="how" className="scroll-mt-20 border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section id="how" className="scroll-mt-20 border-t border-[#e6dfd8] bg-[#faf9f5] px-4 sm:px-6 lg:px-8 py-16 sm:py-24 overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -422,46 +422,76 @@ export function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                num: '01',
-                title: 'Klaim Tautan Tokomu',
-                desc: 'Tentukan nama tokomu dan dapatkan link unik tautan.site/namamu dalam waktu kurang dari 30 detik.',
-              },
-              {
-                num: '02',
-                title: 'Pajang Produk & Varian',
-                desc: 'Upload foto produk favorit, tentukan harga, dan atur pilihan varian agar pembeli bisa memilih mandiri.',
-              },
-              {
-                num: '03',
-                title: 'Pasang di Bio Medsos',
-                desc: 'Sematkan tautan di bio Instagram & TikTok. Duduk santai dan terima notifikasi pesanan rapi di WhatsApp.',
-              },
-            ].map((step, idx) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:shadow-md hover:border-[#cc785c]/40 transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <span className="font-mono text-4xl font-extrabold text-[#cc785c]">
-                    {step.num}
-                  </span>
-                  <h3 className="font-sans text-lg font-bold text-[#141413] mt-4 mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#5c5850] leading-relaxed">
-                    {step.desc}
-                  </p>
+          <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+              {[
+                {
+                  num: '01',
+                  title: 'Klaim Tautan Tokomu',
+                  desc: 'Tentukan nama tokomu dan dapatkan link unik tautan.site/namamu dalam waktu kurang dari 30 detik.',
+                },
+                {
+                  num: '02',
+                  title: 'Pajang Produk & Varian',
+                  desc: 'Upload foto produk favorit, tentukan harga, dan atur pilihan varian agar pembeli bisa memilih mandiri.',
+                },
+                {
+                  num: '03',
+                  title: 'Pasang di Bio Medsos',
+                  desc: 'Sematkan tautan di bio Instagram & TikTok. Duduk santai dan terima notifikasi pesanan rapi di WhatsApp.',
+                },
+              ].map((step, idx) => (
+                <div key={step.num} className="relative flex flex-col">
+                  <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    whileHover={{ y: -4 }}
+                    transition={{
+                      duration: 0.55,
+                      delay: 0.1 + idx * 0.2,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-2xs hover:shadow-md hover:border-[#cc785c]/40 transition-all flex flex-col justify-between h-full relative"
+                  >
+                    <div>
+                      {/* Top Step Number with Internal Connecting Line */}
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="font-mono text-3xl sm:text-4xl font-extrabold text-[#cc785c]">
+                          {step.num}
+                        </span>
+                        <div className="h-[2px] flex-1 mx-3.5 bg-gradient-to-r from-[#cc785c]/40 via-[#cc785c]/20 to-[#cc785c]/40 rounded-full" />
+                        <span className="text-[11px] font-mono text-[#8c867b] font-semibold uppercase tracking-wider">
+                          Langkah {step.num}
+                        </span>
+                      </div>
+
+                      <h3 className="font-sans text-lg font-bold text-[#141413] mb-2">
+                        {step.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[#5c5850] leading-relaxed">
+                        {step.desc}
+                      </p>
+                    </div>
+
+                    {/* Connecting bridge between boxes on desktop */}
+                    {idx < 2 && (
+                      <div className="hidden md:flex items-center absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-6 justify-center">
+                        <div className="w-full h-[2px] bg-[#cc785c]/50" />
+                        <div className="size-2 rounded-full bg-[#cc785c] shrink-0 -ml-1 shadow-2xs" />
+                      </div>
+                    )}
+                  </motion.div>
+
+                  {/* Connecting line on mobile between boxes */}
+                  {idx < 2 && (
+                    <div className="md:hidden flex justify-center py-1.5">
+                      <div className="w-[2px] h-4 bg-gradient-to-b from-[#cc785c]/60 to-[#cc785c]/20 rounded-full" />
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
