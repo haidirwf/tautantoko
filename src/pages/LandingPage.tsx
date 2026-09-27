@@ -61,15 +61,15 @@ export function LandingPage() {
       {/* ==================================================================== */}
       {/* 1. HERO SECTION (2-Column: Left Copy & Claim, Right Preview Component) */}
       {/* ==================================================================== */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+      <section className="px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
           {/* Left Column: Headline, Subtitle, Claim Input, Trust */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="font-sans text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#141413] leading-[1.1] max-w-2xl"
+              className="font-sans text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[#141413] leading-[1.08] max-w-3xl"
             >
               Satu tautan untuk semua yang kamu <span className="text-[#cc785c]">jual dan bagikan.</span>
             </motion.h1>
@@ -78,7 +78,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 text-base sm:text-lg text-[#5c5850] max-w-xl leading-relaxed font-normal"
+              className="mt-6 text-base sm:text-lg lg:text-xl text-[#5c5850] max-w-2xl leading-relaxed font-normal"
             >
               Gantikan link bio pasif dengan etalase belanja modern. Pajang produk, terima pesanan terstruktur, dan sambungkan pembeli langsung ke WhatsApp tanpa potongan komisi.
             </motion.p>
@@ -88,7 +88,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 max-w-md w-full"
+              className="mt-8 max-w-lg w-full"
             >
               <form
                 onSubmit={handleClaimSubmit}
@@ -138,7 +138,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-sm p-6 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm text-left"
+              className="w-full max-w-md p-6 sm:p-7 rounded-3xl bg-white border border-[#e6dfd8] shadow-sm text-left"
             >
               {/* Creator Profile */}
               <div className="text-center pb-4 border-b border-[#f0ece5]">
@@ -154,32 +154,32 @@ export function LandingPage() {
 
               {/* Simple Clean Product Items */}
               <div className="py-3.5 space-y-2.5">
-                <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
+                <div className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
                   <img
                     src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=80"
                     alt="Kopi Susu Aren"
-                    className="size-11 rounded-xl object-cover shrink-0"
+                    className="size-12 rounded-xl object-cover shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
+                    <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Kopi Susu Aren</span>
                     <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(22000)}</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
+                  <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413]">
                     Pesan
                   </span>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
+                <div className="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#e6dfd8] flex items-center justify-between gap-3">
                   <img
                     src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&auto=format&fit=crop&q=80"
                     alt="Croissant"
-                    className="size-11 rounded-xl object-cover shrink-0"
+                    className="size-12 rounded-xl object-cover shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs font-bold text-[#141413] block truncate">Butter Croissant</span>
+                    <span className="text-xs sm:text-sm font-bold text-[#141413] block truncate">Butter Croissant</span>
                     <span className="text-xs font-mono text-[#cc785c] font-bold">{formatIDR(18000)}</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[10px] font-bold text-[#141413]">
+                  <span className="px-3 py-1 rounded-lg bg-white border border-[#e6dfd8] text-[11px] font-bold text-[#141413]">
                     Pesan
                   </span>
                 </div>
@@ -189,10 +189,10 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setIsAuthOpen(true)}
-                className="w-full py-2.5 rounded-xl bg-[#141413] hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                className="w-full py-3 rounded-xl bg-[#141413] hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <span>Buka WhatsApp Toko</span>
-                <ArrowRight className="size-3 text-[#cc785c]" />
+                <ArrowRight className="size-3.5 text-[#cc785c]" />
               </button>
             </motion.div>
           </div>
